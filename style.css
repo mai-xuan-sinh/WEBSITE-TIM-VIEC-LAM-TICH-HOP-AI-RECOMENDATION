@@ -96,54 +96,65 @@ body {
 }
 
 /* Hero Section - Banner động */
+/* HERO SECTION */
 .hero-section {
-  background: linear-gradient(120deg, #e9f3f7 0%, #ffffff 100%);
-  border-radius: 32px;
-  margin: 32px 0 48px;
-  padding: 40px 0;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-  transition: background 0.4s ease-in-out;
+  width: 100%;
+  height: 100vh; /* full màn hình */
+  min-height: 500px;
+
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  background-size: cover;        /* ảnh phủ kín */
+  background-position: center;   /* căn giữa */
+  background-repeat: no-repeat;
+
+  transition: background-image 0.5s ease-in-out;
 }
 
+/* overlay làm ảnh tối nhẹ cho chữ dễ đọc */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* chỉnh độ tối ở đây */
+  z-index: 1;
+}
+
+/* nội dung nằm trên overlay */
 .hero-content {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+  color: #fff;
 }
 
+/* badge */
 .hero-badge {
   display: inline-block;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(4px);
-  padding: 6px 18px;
-  border-radius: 40px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #136b8a;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  margin-bottom: 15px;
+  font-weight: 500;
 }
 
+/* title */
 .hero-title {
-  font-size: 2.8rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #0a2e42;
-  margin-bottom: 20px;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .hero-title span {
-  background: linear-gradient(120deg, #1d7e9e, #0f4f6b);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  color: #00d4ff;
 }
 
+/* mô tả */
 .hero-desc {
   font-size: 1.1rem;
-  color: #2c5a74;
-  max-width: 650px;
-  margin-bottom: 32px;
+  max-width: 500px;
+  margin-bottom: 20px;
 }
 
 .search-bar {

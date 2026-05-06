@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     userBox.innerHTML = `
       <div class="user-info">
         <i class="fa fa-user-circle avatar-icon"></i>
-        <span class="username">${user.fullname || user.username}</span>
+      <span class="username">${user.fullname || user.username}</span>
         <button id="logoutBtn">Đăng xuất</button>
       </div>
     `;
