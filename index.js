@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   // ================== USER ==================
   const userBox = document.getElementById("userBox");
   const authButtons = document.getElementById("authButtons");
@@ -9,18 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
     authButtons.style.display = "none";
 
     userBox.innerHTML = `
-      <div class="user-info">
+      <a href="profile.html" class="user-info">
         <i class="fa fa-user-circle avatar-icon"></i>
-      <span class="username">${user.fullname || user.username}</span>
-        <button id="logoutBtn">Đăng xuất</button>
-      </div>
+        <span class="username">${user.fullname || user.username}</span>
+        <button id="logoutBtn" type="button">Đăng xuất</button>
+      </a>
     `;
 
-    document.getElementById("logoutBtn").onclick = () => {
-      localStorage.removeItem("currentUser");
-      location.reload();
-    };
-
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.onclick = () => {
+        localStorage.removeItem("currentUser");
+        location.reload();
+      };
+    }
   } else {
     authButtons.style.display = "flex";
     userBox.innerHTML = "";
@@ -28,167 +29,334 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ================== SEARCH ==================
   const searchBtn = document.querySelector(".search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      const keyword = document.getElementById("skillInput").value.toLowerCase();
+      const district = document.getElementById("districtSelect").value;
 
-  searchBtn.addEventListener("click", () => {
-    const keyword = document.getElementById("skillInput").value.toLowerCase();
-    const district = document.getElementById("districtSelect").value;
+      if (!district) {
+        alert("Chọn quận trước!");
+        return;
+      }
 
-    const filtered = jobsData.filter(job => {
-      const matchSkill =
-        job.title.toLowerCase().includes(keyword) ||
-        job.skills.some(skill => skill.includes(keyword));
+      const jobs = jobsData[district] || [];
 
-      const matchDistrict = !district || job.district === district;
+      const filtered = jobs.filter(job => {
+        const skillsMatch = Array.isArray(job.skills)
+          ? job.skills.some(skill => String(skill).toLowerCase().includes(keyword))
+          : false;
 
-      return matchSkill && matchDistrict;
-    });
+        return (
+          job.title.toLowerCase().includes(keyword) ||
+          skillsMatch ||
+          job.field.toLowerCase().includes(keyword)
+        );
+      });
 
-    renderJobs(filtered, 1);
+      renderJobs(filtered, 1);
 
-    setTimeout(() => {
-      document.getElementById("jobList").scrollIntoView({
+      document.getElementById("jobList")?.scrollIntoView({
         behavior: "smooth"
       });
-    }, 100);
-  });
-
-  document.getElementById("skillInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") searchBtn.click();
-  });
-
-  // ================== LOAD DEFAULT ==================
-  const defaultDistrict = document.getElementById("districtSelect").value;
-  const defaultJobs = jobsData.filter(job => job.district === defaultDistrict);
-  renderJobs(defaultJobs, 1);
-
-  document.getElementById("districtSelect").addEventListener("change", (e) => {
-    const district = e.target.value;
-    const filtered = jobsData.filter(job => job.district === district);
-    renderJobs(filtered, 1);
-  });
-
+    });
+  }
 });
 
-
 // ================== DATA ==================
-const jobsData = [
-  { id: 1, title: "Frontend Developer", company: "FPT Software", district: "hai-chau", skills: ["react", "javascript"], salary: "15-20M", desc: "Làm UI, sử dụng React, teamwork Agile." },
-  { id: 2, title: "Backend Developer", company: "Axon Active", district: "ngu-hanh-son", skills: ["node.js", "express"], salary: "18-25M", desc: "Xây dựng API, làm việc với MongoDB." },
-  { id: 3, title: "Java Developer", company: "TMA Solutions", district: "lien-chieu", skills: ["java", "spring"], salary: "20-30M", desc: "Phát triển hệ thống enterprise." },
-  { id: 4, title: "UI/UX Designer", company: "Design Studio", district: "hai-chau", skills: ["figma", "uiux"], salary: "12-18M", desc: "Thiết kế giao diện app/web." },
+const jobsPerPage = 6; // ✅ THÊM vì code của bạn dùng jobsPerPage nhưng chưa khai báo
 
-  // 👉 thêm để test phân trang
-  { id: 5, title: "Tester", company: "ABC", district: "lien-chieu", skills: ["test"], salary: "10-15M", desc: "" },
-  { id: 6, title: "DevOps", company: "XYZ", district: "lien-chieu", skills: ["aws"], salary: "25-30M", desc: "" },
-  { id: 7, title: "Mobile Dev", company: "GameLoft", district: "lien-chieu", skills: ["flutter"], salary: "14-20M", desc: "" },
-  { id: 8, title: "Data Analyst", company: "DN Corp", district: "lien-chieu", skills: ["sql"], salary: "16-22M", desc: "" },
-  { id: 9, title: "AI Engineer", company: "FPT", district: "lien-chieu", skills: ["ai"], salary: "30-40M", desc: "" }
-];
+const jobsData = {
+  "hai-chau": [
+    {
+      id: 1,
+      title: "Frontend Developer",
+      company: "FPT Software",
+      field: "Công nghệ thông tin",
+      skills: ["react", "javascript"],
+      salary: "15-25M",
+      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+      desc: "Làm UI, React, teamwork Agile."
+    },
+    {
+      id: 2,
+      title: "UI/UX Designer",
+      company: "Design Studio",
+      field: "Thiết kế - Sáng tạo",
+      skills: ["figma", "uiux"],
+      salary: "12-18M",
+      image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e",
+      desc: "Thiết kế giao diện web/app."
+    },
+    {
+      id: 3,
+      title: "Marketing Executive",
+      company: "Danang Media",
+      field: "Kinh doanh - Marketing",
+      skills: ["marketing"],
+      salary: "10-18M",
+      image: "https://images.unsplash.com/photo-1557838923-2985c318be48",
+      desc: "Chạy ads, quản lý chiến dịch."
+    }
+  ],
 
+  "lien-chieu": [
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "Công ty Cổ phần Phát triển Phần mềm ASIA (AsiaSoft)",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "img/asiaSoft.png",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Backend Developer",
+      company: "Công ty Cổ phần Phần mềm BRAVO",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 10,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 4,
+      title: "Java Developer",
+      company: "TMA Solutions",
+      field: "Công nghệ thông tin",
+      skills: ["java", "spring"],
+      salary: "20-30M",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+      desc: "Phát triển hệ thống backend."
+    },
+    {
+      id: 5,
+      title: "Kỹ sư xây dựng",
+      company: "XD Miền Trung",
+      field: "Xây dựng - Bất động sản",
+      skills: ["autocad"],
+      salary: "18-25M",
+      image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e",
+      desc: "Giám sát công trình."
+    },
+    {
+      id: 6,
+      title: "Nhân viên kho",
+      company: "Logistics VN",
+      field: "Logistics - Vận hành",
+      skills: ["warehouse"],
+      salary: "8-12M",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d",
+      desc: "Quản lý hàng hóa."
+    }
+  ],
 
-// ================== PAGINATION ==================
-let currentPage = 1;
-const jobsPerPage = 8;
-let currentList = [];
+  "ngu-hanh-son": [
+    {
+      id: 7,
+      title: "Backend Developer",
+      company: "Axon Active",
+      field: "Công nghệ thông tin",
+      skills: ["nodejs"],
+      salary: "18-28M",
+      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
+      desc: "Xây dựng API."
+    },
+    {
+      id: 8,
+      title: "Lễ tân khách sạn",
+      company: "Fusion Resort",
+      field: "Du lịch - Khách sạn",
+      skills: ["giao tiếp"],
+      salary: "7-12M",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      desc: "Đón tiếp khách."
+    }
+  ],
+
+  "son-tra": [
+    {
+      id: 9,
+      title: "Hướng dẫn viên",
+      company: "Danang Travel",
+      field: "Du lịch - Khách sạn",
+      skills: ["tour"],
+      salary: "10-15M",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+      desc: "Dẫn tour du lịch."
+    },
+    {
+      id: 10,
+      title: "Nhân viên nhà hàng",
+      company: "Seafood Restaurant",
+      field: "Dịch vụ - Nhà hàng",
+      skills: ["phục vụ"],
+      salary: "6-10M",
+      image: "https://images.unsplash.com/photo-1555992336-03a23c7b20ee",
+      desc: "Phục vụ khách."
+    }
+  ],
+
+  "thanh-khe": [
+    {
+      id: 11,
+      title: "Kế toán",
+      company: "Finance Corp",
+      field: "Tài chính - Ngân hàng",
+      skills: ["excel"],
+      salary: "12-18M",
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f",
+      desc: "Quản lý tài chính."
+    },
+    {
+      id: 12,
+      title: "Nhân sự",
+      company: "HR Solutions",
+      field: "Hành chính - Nhân sự",
+      skills: ["hr"],
+      salary: "10-15M",
+      image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
+      desc: "Tuyển dụng, quản lý nhân sự."
+    }
+  ],
+
+  "cam-le": [
+    {
+      id: 13,
+      title: "Công nhân sản xuất",
+      company: "Factory DN",
+      field: "Sản xuất - Kỹ thuật",
+      skills: ["kỹ thuật"],
+      salary: "8-12M",
+      image: "https://images.unsplash.com/photo-1581091870627-3b1d4a6a8e2c",
+      desc: "Làm việc dây chuyền."
+    },
+    {
+      id: 14,
+      title: "Giáo viên tiếng Anh",
+      company: "English Center",
+      field: "Giáo dục - Đào tạo",
+      skills: ["english"],
+      salary: "12-20M",
+      image: "https://images.unsplash.com/photo-1584697964190-3a1a2c1f9c5d",
+      desc: "Dạy tiếng Anh."
+    }
+  ]
+};
 
 function renderJobs(list, page = 1) {
   const jobList = document.getElementById("jobList");
 
-  currentList = list;
-  currentPage = page;
-
-  jobList.style.display = "block";
-
-  if (list.length === 0) {
+  if (!list || list.length === 0) {
     jobList.innerHTML = "<p>Không tìm thấy công việc phù hợp</p>";
-    document.getElementById("pagination").innerHTML = "";
     return;
   }
 
   const start = (page - 1) * jobsPerPage;
-  const end = start + jobsPerPage;
-  const paginatedJobs = list.slice(start, end);
+  const paginatedJobs = list.slice(start, start + jobsPerPage);
 
   jobList.innerHTML = paginatedJobs.map(job => `
     <div class="job-card">
-      <div class="job-title">${job.title}</div>
-      <div class="company">${job.company}</div>
-      <div>📍 ${job.district}</div>
-      <div>💰 ${job.salary}</div>
-      <button onclick="viewDetail(${job.id})">Xem chi tiết</button>
+      <div class="job-img">
+        <img src="${job.image}" alt="">
+      </div>
+
+      <div class="job-content">
+        <div class="job-title">${job.title}</div>
+
+        <div class="job-company">
+          <i class="fas fa-building"></i> ${job.company}
+        </div>
+
+        <div class="job-info">
+          <div><i class="fas fa-map-marker-alt"></i> ${getDistrictByJobId(job.id)}</div>
+          <div><i class="fas fa-money-bill-wave"></i> ${job.salary}</div>
+        </div>
+
+        <button type="button" onclick="viewDetail(${job.id})">Xem chi tiết</button>
+      </div>
     </div>
   `).join("");
-
-  renderPagination(list.length);
 }
 
-function renderPagination(total) {
-  const pageCount = Math.ceil(total / jobsPerPage);
-  const pagination = document.getElementById("pagination");
-
-  if (!pagination) return;
-
-  pagination.innerHTML = "";
-
-  for (let i = 1; i <= pageCount; i++) {
-    pagination.innerHTML += `
-      <button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
-        ${i}
-      </button>
-    `;
-  }
-}
-
-function changePage(page) {
-  renderJobs(currentList, page);
-
-  document.getElementById("jobList").scrollIntoView({
-    behavior: "smooth"
-  });
-}
-
-
-// ================== MODAL ==================
-function viewDetail(id) {
-  const job = jobsData.find(j => j.id === id);
-
-  const detail = document.getElementById("jobDetail");
-  detail.innerHTML = `
-    <h2>${job.title}</h2>
-    <p><b>Công ty:</b> ${job.company}</p>
-    <p><b>Khu vực:</b> ${job.district}</p>
-    <p><b>Lương:</b> ${job.salary}</p>
-    <p>${job.desc}</p>
-    <button class="apply-btn" onclick="applyJob(${job.id})">Ứng tuyển</button>
-  `;
-
-  document.getElementById("jobModal").style.display = "block";
-}
-
-
-// ================== CLOSE MODAL ==================
-const closeBtn = document.getElementById("closeModal");
-if (closeBtn) {
-  closeBtn.onclick = () => {
-    document.getElementById("jobModal").style.display = "none";
+function formatDistrict(key) {
+  const map = {
+    "hai-chau": "Hải Châu",
+    "lien-chieu": "Liên Chiểu",
+    "thanh-khe": "Thanh Khê",
+    "ngu-hanh-son": "Ngũ Hành Sơn",
+    "son-tra": "Sơn Trà",
+    "cam-le": "Cẩm Lệ"
   };
+  return map[key] || key;
 }
 
-
-// ================== APPLY ==================
-function applyJob(id) {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-
-  if (!user) {
-    alert("Bạn cần đăng nhập!");
-    return;
+function getDistrictByJobId(id) {
+  for (const key in jobsData) {
+    if (jobsData[key].some(j => j.id === id)) {
+      return formatDistrict(key);
+    }
   }
-
-  let applied = JSON.parse(localStorage.getItem("appliedJobs")) || [];
-
-  applied.push({ user: user.email, jobId: id });
-
-  localStorage.setItem("appliedJobs", JSON.stringify(applied));
-
-  alert("Ứng tuyển thành công!");
+  return "Không rõ";
 }

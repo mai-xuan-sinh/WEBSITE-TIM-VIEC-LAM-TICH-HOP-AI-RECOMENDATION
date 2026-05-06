@@ -383,29 +383,21 @@ heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
   const skillInput = document.getElementById('skillInput');
   const suggestionsList = document.getElementById('suggestionsList');
 
-  // Danh sách từ khóa gợi ý
-  const suggestionsData = [
-    { text: 'React', category: 'Kỹ năng', count: 45 },
-    { text: 'Frontend Developer', category: 'Vị trí', count: 32 },
-    { text: 'Backend Developer', category: 'Vị trí', count: 28 },
-    { text: 'Node.js', category: 'Kỹ năng', count: 37 },
-    { text: 'JavaScript', category: 'Kỹ năng', count: 68 },
-    { text: 'Python', category: 'Kỹ năng', count: 24 },
-    { text: 'Marketing', category: 'Ngành', count: 21 },
-    { text: 'Lễ tân', category: 'Vị trí', count: 15 },
-    { text: 'Kỹ sư xây dựng', category: 'Vị trí', count: 12 },
-    { text: 'UI/UX Designer', category: 'Vị trí', count: 18 },
-    { text: 'DevOps', category: 'Kỹ năng', count: 22 },
-    { text: 'Java', category: 'Kỹ năng', count: 31 },
-    { text: 'PHP', category: 'Kỹ năng', count: 19 },
-    { text: 'Sales', category: 'Vị trí', count: 26 },
-    { text: 'Quản lý dự án', category: 'Vị trí', count: 14 },
-    { text: 'AI Engineer', category: 'Vị trí', count: 9 },
-    { text: 'Data Analyst', category: 'Vị trí', count: 16 },
-    { text: 'Tester', category: 'Vị trí', count: 23 },
-    { text: 'Mobile Developer', category: 'Vị trí', count: 20 },
-    { text: 'Flutter', category: 'Kỹ năng', count: 11 }
-  ];
+  // Danh sách lĩnh vực
+const suggestionsData = [
+  { text: 'Công nghệ thông tin', category: 'Ngành', count: 32 },
+  { text: 'Du lịch - Khách sạn', category: 'Ngành', count: 27 },
+  { text: 'Kinh doanh - Marketing', category: 'Ngành', count: 21 },
+  { text: 'Xây dựng - Bất động sản', category: 'Ngành', count: 18 },
+  { text: 'Logistics - Vận hành', category: 'Ngành', count: 26 },
+  { text: 'Giáo dục - Đào tạo', category: 'Ngành', count: 18 },
+  { text: 'Tài chính - Ngân hàng', category: 'Ngành', count: 22 },
+  { text: 'Thiết kế - Sáng tạo', category: 'Ngành', count: 19 },
+  { text: 'Y tế - Chăm sóc sức khỏe', category: 'Ngành', count: 14 },
+  { text: 'Sản xuất - Kỹ thuật', category: 'Ngành', count: 25 },
+  { text: 'Hành chính - Nhân sự', category: 'Ngành', count: 17 },
+  { text: 'Dịch vụ - Nhà hàng', category: 'Ngành', count: 20 }
+];
 
   // Hàm highlight từ khóa
   function highlightKeyword(text, keyword) {
@@ -415,14 +407,23 @@ heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
   }
 
   // Hàm lấy icon theo category
-  function getIconForCategory(category) {
-    const icons = {
-      'Kỹ năng': 'code',
-      'Vị trí': 'user-tie',
-      'Ngành': 'chart-line'
-    };
-    return icons[category] || 'tag';
-  }
+  function getIconForCategory(text) {
+  const icons = {
+    'Công nghệ thông tin': 'code',
+    'Du lịch - Khách sạn': 'hotel',
+    'Kinh doanh - Marketing': 'chart-line',
+    'Xây dựng - Bất động sản': 'hard-hat',
+    'Logistics - Vận hành': 'truck',
+    'Giáo dục - Đào tạo': 'chalkboard-teacher',
+    'Tài chính - Ngân hàng': 'coins',
+    'Thiết kế - Sáng tạo': 'palette',
+    'Y tế - Chăm sóc sức khỏe': 'heartbeat',
+    'Sản xuất - Kỹ thuật': 'cogs',
+    'Hành chính - Nhân sự': 'user-tie',
+    'Dịch vụ - Nhà hàng': 'utensils'
+  };
+  return icons[text] || 'tag';
+}
 
   // Hàm hiển thị gợi ý
   function showSuggestions(filterText = '') {
@@ -445,7 +446,7 @@ heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
     
     suggestionsList.innerHTML = filtered.map(item => `
       <div class="suggestion-item" data-value="${item.text}">
-        <i class="fas fa-${getIconForCategory(item.category)}"></i>
+       <i class="fas fa-${getIconForCategory(item.text)}"></i>
         <span class="suggestion-text">${highlightKeyword(item.text, keyword)}</span>
         <span class="suggestion-count">${item.count} việc</span>
       </div>
@@ -489,8 +490,14 @@ heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
     }
   });
 </script>
+
+<!-- index.js -->
 <script src="index.js"></script>
-<script src="auth.js"></script>
+
+<!-- auth -->
 <link rel="stylesheet" href="auth.css">
+<script src="auth.js"></script>
+</body>
+</html>
 </body>
 </html>
