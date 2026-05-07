@@ -25,7 +25,10 @@ body {
     padding: 0 15px;
 }
 
-/* Navbar */
+/* =========================
+   NAVBAR
+========================= */
+
 .navbar {
     background: var(--white);
     padding: 10px 0;
@@ -70,6 +73,11 @@ body {
     font-size: 14px;
     font-weight: 500;
     margin: 0 12px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-blue);
 }
 
 .nav-links a.active {
@@ -79,44 +87,87 @@ body {
     border-radius: 20px;
 }
 
-.nav-auth {
+.nav-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
-.nav-icons {
+/* =========================
+   AUTH BUTTONS
+========================= */
+
+#authButtons {
     display: flex;
-    gap: 15px;
-    font-size: 18px;
-    color: var(--text-gray);
+    gap: 10px;
 }
 
-.badge-icon {
-    position: relative;
-}
-
-.badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    font-size: 10px;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 10px;
-}
-
-.badge.red { background: #ef4444; }
-.badge.pink { background: #ec4899; }
-
-.btn-login, .btn-register {
-    border: none;
-    background: none;
+#authButtons a {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-/* Hero Section */
+#authButtons a:first-child {
+    color: #1b6b87;
+    background: #e6f4f9;
+}
+
+#authButtons a:first-child:hover {
+    background: #d0ecf5;
+}
+
+#authButtons a:last-child {
+    color: #fff;
+    background: linear-gradient(135deg, #1b6b87, #38bdf8);
+    box-shadow: 0 4px 12px rgba(27,107,135,0.3);
+}
+
+#authButtons a:last-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(27,107,135,0.4);
+}
+
+/* =========================
+   USER LOGIN
+========================= */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.user-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.logout-btn {
+    border: none;
+    background: #ff4d4f;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.logout-btn:hover {
+    background: #e60023;
+}
+
+/* =========================
+   HERO
+========================= */
+
 .hero {
     position: relative;
     height: 450px;
@@ -124,18 +175,22 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1350&q=80'); /* Thay bằng ảnh thực tế của bạn */
+
+    background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1350&q=80');
     background-size: cover;
+    background-position: center;
+
     color: white;
 }
 
 .hero-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(59, 130, 246, 0.8), rgba(236, 72, 153, 0.8));
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(59, 130, 246, 0.8),
+        rgba(236, 72, 153, 0.8)
+    );
 }
 
 .hero-content {
@@ -144,12 +199,13 @@ body {
 }
 
 .hero-badge {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.2);
     display: inline-block;
     padding: 8px 20px;
     border-radius: 20px;
     font-size: 14px;
     margin-bottom: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .hero h1 {
@@ -161,6 +217,11 @@ body {
     color: #fbbf24;
 }
 
+.hero p {
+    font-size: 16px;
+    opacity: 0.95;
+}
+
 .hero-btns {
     margin-top: 30px;
     display: flex;
@@ -168,26 +229,32 @@ body {
     gap: 15px;
 }
 
+.btn-white,
+.btn-glass {
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
 .btn-white {
     background: white;
     color: var(--primary-purple);
     border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
 }
 
 .btn-glass {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
     color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 600;
+    backdrop-filter: blur(10px);
 }
 
-/* Steps Bar */
+/* =========================
+   STEP BAR
+========================= */
+
 .steps-bar {
     background: white;
     padding: 20px 0;
@@ -217,10 +284,10 @@ body {
     height: 30px;
     background: #e5e7eb;
     border-radius: 50%;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-dark);
 }
 
 .step.active .step-num {
@@ -234,7 +301,10 @@ body {
     background: #e5e7eb;
 }
 
-/* Main Content */
+/* =========================
+   MAIN CONTENT
+========================= */
+
 .main-content {
     padding: 40px 0;
 }
@@ -265,9 +335,12 @@ body {
     color: white;
 }
 
-/* CV Sections */
+/* =========================
+   SECTION TITLE
+========================= */
+
 .cv-section {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .section-title {
@@ -281,18 +354,25 @@ body {
 .title-icon {
     width: 45px;
     height: 45px;
-    border-radius: 10px;
+    border-radius: 12px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     color: white;
 }
 
-.bg-purple { background: var(--primary-purple); }
-.bg-blue { background: var(--primary-blue); }
+.bg-purple {
+    background: var(--primary-purple);
+}
+
+.bg-blue {
+    background: var(--primary-blue);
+}
 
 .title-text h2 {
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .title-text span {
@@ -305,98 +385,147 @@ body {
     color: var(--text-gray);
 }
 
-/* CV Grid & Cards */
+.title-icon i {
+    transition: transform 0.3s ease;
+}
+
+.section-title:hover .title-icon i {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* =========================
+   CV GRID
+========================= */
+
 .cv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
 }
 
 .cv-card {
-    background: white;
-    border-radius: 12px;
+    background: #fff;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid #e5e7eb;
     transition: 0.3s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
 }
 
 .cv-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 .cv-thumb {
-    height: 250px;
-    background: #f3f4f6;
-    position: relative;
+    height: 180px;
+    background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    position: relative;
+}
+
+.cv-image-placeholder {
+    width: 70px;
+    height: 90px;
+    border-radius: 14px;
+    border: 3px solid #8b5cf6;
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #1e3a8a;
+    font-weight: 800;
+    font-size: 26px;
 }
 
 .tag-popular {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #f59e0b;
+
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+
     color: white;
     font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 4px;
-}
+    font-weight: 600;
 
-.cv-image-placeholder {
-    width: 100px;
-    height: 120px;
-    border: 3px solid #ec4899;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #1e3a8a;
-    font-weight: 800;
-    font-size: 30px;
+    padding: 4px 10px;
+    border-radius: 999px;
 }
 
 .cv-info {
-    padding: 15px;
+    padding: 16px;
 }
 
-.cv-info h3 { font-size: 16px; margin-bottom: 5px; }
-.cv-desc { color: var(--text-gray); font-size: 13px; }
-.cv-detail { font-size: 12px; color: #9ca3af; margin: 8px 0; }
+.cv-info h3 {
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.cv-desc {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.cv-detail {
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
 
 .cv-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 15px;
+    gap: 6px;
+    margin-bottom: 14px;
 }
 
 .cv-tags span {
     background: #f3f4f6;
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    color: #4b5563;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
 }
 
 .btn-use-template {
     width: 100%;
-    padding: 10px;
-    border-radius: 8px;
+    height: 42px;
+
     border: none;
-    background: var(--primary-blue);
+    border-radius: 10px;
+
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
     color: white;
+    font-size: 14px;
     font-weight: 600;
+
     cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-use-template:hover {
+    transform: translateY(-2px);
 }
 
 .btn-use-template.secondary {
     background: #f3f4f6;
-    color: var(--text-gray);
+    color: #374151;
 }
 
-/* Summary Box */
+/* =========================
+   SUMMARY BOX
+========================= */
+
 .summary-box {
     margin-top: 50px;
     background: #f5f3ff;
@@ -415,9 +544,11 @@ body {
 .summary-icon {
     background: var(--primary-purple);
     color: white;
+
     width: 35px;
     height: 35px;
     border-radius: 8px;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -440,107 +571,212 @@ body {
     color: var(--text-gray);
 }
 
+/* =========================
+   CV MODAL
+========================= */
 
+.cv-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
 
+    display: none;
+    justify-content: center;
+    align-items: center;
 
-
-
-
-
-/* ===== USER LOGIN UI ===== */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  padding: 6px 12px;
-  border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: 0.3s;
+    z-index: 9999;
+    padding: 20px;
 }
 
-.user-info:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.cv-modal-content {
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+    border-radius: 20px;
+
+    padding: 30px;
 }
 
-.user-name {
-  font-weight: 500;
-  color: #333;
+.cv-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
 }
 
-.logout-btn {
-  border: none;
-  background: #ff4d4f;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 13px;
+.cv-modal-header h2 {
+    font-size: 26px;
+    color: #1e3a8a;
 }
 
-.logout-btn:hover {
-  background: #e60023;
+.close-modal {
+    font-size: 32px;
+    cursor: pointer;
+    color: #6b7280;
 }
 
+/* =========================
+   FORM
+========================= */
 
-
-
-
-/* ===== AUTH BUTTONS (ĐĂNG NHẬP / ĐĂNG KÝ) ===== */
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.cv-form {
+    display: grid;
+    gap: 18px;
 }
 
-/* container */
-#authButtons {
-  display: flex;
-  gap: 10px;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
-/* style chung */
-#authButtons a {
-  padding: 8px 16px;
-  border-radius: 999px; /* bo tròn full */
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
+.form-group label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-/* ĐĂNG NHẬP */
-#authButtons a:first-child {
-  color: #1b6b87;
-  background: #e6f4f9;
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+
+    font-size: 15px;
+    outline: none;
 }
 
-#authButtons a:first-child:hover {
-  background: #d0ecf5;
+.form-group textarea {
+    resize: vertical;
 }
 
-/* ĐĂNG KÝ (nổi bật hơn) */
-#authButtons a:last-child {
-  color: #fff;
-  background: linear-gradient(135deg, #1b6b87, #38bdf8);
-  box-shadow: 0 4px 12px rgba(27,107,135,0.3);
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #3b82f6;
 }
 
-#authButtons a:last-child:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(27,107,135,0.4);
-  opacity: 0.95;
+/* =========================
+   BUTTON CREATE CV
+========================= */
+
+.btn-create-cv {
+    height: 50px;
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
+/* =========================
+   CV PREVIEW
+========================= */
 
+.cv-preview {
+    display: none;
 
+    max-width: 900px;
+    margin: 50px auto;
 
-.title-icon i {
-  transition: transform 0.3s ease;
+    background: white;
+    border-radius: 20px;
+
+    padding: 40px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-.section-title:hover .title-icon i {
-  transform: scale(1.2) rotate(5deg);
+.preview-header {
+    text-align: center;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.preview-header h1 {
+    font-size: 42px;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.preview-header p {
+    font-size: 18px;
+    color: #6b7280;
+}
+
+.preview-section {
+    margin-bottom: 30px;
+}
+
+.preview-section h3 {
+    font-size: 20px;
+    color: #3b82f6;
+    margin-bottom: 12px;
+}
+
+.preview-section p {
+    line-height: 1.8;
+    color: #374151;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .nav-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero-btns {
+        flex-direction: column;
+    }
+
+    .steps-container {
+        flex-direction: column;
+    }
+
+    .step-line {
+        width: 1px;
+        height: 30px;
+    }
+
+    .cv-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cv-preview {
+        padding: 25px;
+    }
+
+    .preview-header h1 {
+        font-size: 30px;
+    }
+
+    .cv-modal-content {
+        padding: 20px;
+    }
 }
