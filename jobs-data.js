@@ -1034,6 +1034,24 @@ const allJobs = [
     image: "img/log4.jpg",
     desc: "Theo dõi và điều phối hoạt động vận chuyển hàng hóa."
   },
+  {
+    id: 999,
+    title: "Chuyên viên tín dụng",
+    company: "Ngân hàng Vietcombank Đà Nẵng",
+    field: "Tài chính - Ngân hàng",
+    location: "Hải Châu",
+    salary: "12 - 18 triệu",
+    skills: ["Excel", "Tài chính", "Kế toán"]
+},
+{
+    id: 1000,
+    title: "Nhân viên giao dịch ngân hàng",
+    company: "BIDV Đà Nẵng",
+    field: "Tài chính - Ngân hàng",
+    location: "Thanh Khê",
+    salary: "10 - 15 triệu",
+    skills: ["Giao tiếp", "Ngân hàng", "Tin học"]
+},
 ];
 
 /// ================== HIỂN THỊ THẺ NGÀNH ==================
