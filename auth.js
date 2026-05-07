@@ -27,4 +27,28 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+
+  const usernameText = document.getElementById("usernameText");
+  const userBox = document.getElementById("userBox");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (user) {
+    usernameText.textContent = user.fullname || user.username;
+
+    // đảm bảo có thể click vào profile
+    userBox.href = "profile.html";
+  } else {
+    usernameText.textContent = "Khách";
+    userBox.href = "login.html";
+  }
+
+  if (logoutBtn) {
+    logoutBtn.onclick = () => {
+      localStorage.removeItem("currentUser");
+      window.location.reload();
+    };
+  }
+});
 });

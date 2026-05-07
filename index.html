@@ -498,6 +498,15 @@ const suggestionsData = [
 <!-- auth -->
 <link rel="stylesheet" href="auth.css">
 <script src="auth.js"></script>
+<!-- Thêm file data vào trước script chính -->
+<script src="jobs-data.js"></script>
+<script>
+    const featuredContainer = document.querySelector('.jobs-grid');
+    // Lấy 3 công việc đầu tiên để làm "Việc làm nổi bật"
+    const featuredJobs = allJobs.slice(0, 3); 
+    
+    featuredContainer.innerHTML = featuredJobs.map(job => createJobCard(job)).join('');
+</script>
 </body>
 </html>
 </body>
