@@ -24,10 +24,18 @@
                 <a href="tao-cv.html">Tạo CV</a>
                 <a href="hotro.html">Hỗ trợ</a>
             </nav>
-    <div id="userBox">
-  <a href="profile.html" class="user-info">
-    <i class="fas fa-user-circle avatar-icon"></i>
-    <span class="username">Tên người dùng</span>
+   <div id="userBox">
+
+    <a href="profile.html" class="user-profile">
+        <i class="fas fa-user-circle"></i>
+        <span class="username">Tên người dùng</span>
+    </a>
+
+    <button class="logout-btn" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i>
+        Đăng xuất
+    </button>
+
 </div>
         </div>
     </header>
@@ -243,6 +251,14 @@
             </div>
         </div>
     </div>
+    <script>
+function logoutUser(){
+
+    localStorage.removeItem("currentUser");
+
+    window.location.href = "login.html";
+}
+</script>
 <script src="auth.js"></script>
 </body>
 </html>

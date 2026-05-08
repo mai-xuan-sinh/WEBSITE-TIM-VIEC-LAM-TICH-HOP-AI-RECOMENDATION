@@ -214,17 +214,24 @@
 
                             </div>
 
-                            <div class="card-bottom">
+                           <div class="card-bottom">
 
-                                <button class="btn-apply"
-                                    onclick="applyJob(event, ${job.id})">
+    <button class="btn-detail"
+        onclick="viewDetail(event, ${job.id})">
 
-                                    Ứng tuyển
+        <i class="fas fa-eye"></i>
+        Xem chi tiết
 
-                                </button>
+    </button>
 
-                            </div>
+    <button class="btn-apply"
+        onclick="applyJob(event, ${job.id})">
 
+        Ứng tuyển
+
+    </button>
+
+</div>
                         </div>
 
                     </div>

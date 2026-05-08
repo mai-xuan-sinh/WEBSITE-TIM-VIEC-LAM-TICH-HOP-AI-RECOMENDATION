@@ -1175,6 +1175,13 @@ function applyJob(event, jobId) {
   localStorage.setItem("applyJobId", jobId);
   window.location.href = `apply.html?id=${jobId}`;
 }
+window.viewDetail = function(event, id) {
+
+    event.stopPropagation();
+
+    window.location.href =
+        `job-detail.html?id=${id}`;
+};
 
 // ================= AUTO LOAD =================
 document.addEventListener("DOMContentLoaded", () => {

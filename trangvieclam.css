@@ -548,3 +548,39 @@ body {
         font-size: 16px;
     }
 }
+
+
+
+
+
+
+
+
+
+.card-bottom{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+}
+
+.btn-detail{
+    flex:1;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    background:#e2e8f0;
+    color:#0f172a;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-detail:hover{
+    background:#cbd5e1;
+    transform:translateY(-2px);
+}
+
+.btn-apply{
+    flex:1;
+}

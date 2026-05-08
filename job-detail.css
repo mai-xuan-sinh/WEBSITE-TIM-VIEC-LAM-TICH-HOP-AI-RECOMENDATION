@@ -332,3 +332,91 @@ body {
     font-size: 12px;
     color: #777;
 }
+
+
+
+
+
+/* =========================
+   USER BOX
+========================= */
+
+#userBox{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* PROFILE */
+
+.user-profile{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    text-decoration:none;
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+
+    padding:10px 16px;
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.user-profile:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(37,99,235,0.25);
+}
+
+.user-profile i{
+    font-size:18px;
+}
+
+/* LOGOUT */
+
+.logout-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    border:none;
+    outline:none;
+
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    color:#fff;
+
+    padding:10px 16px;
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.logout-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(239,68,68,0.3);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    #userBox{
+        width:100%;
+        justify-content:flex-end;
+    }
+
+    .user-profile,
+    .logout-btn{
+        padding:8px 12px;
+        font-size:13px;
+    }
+}
