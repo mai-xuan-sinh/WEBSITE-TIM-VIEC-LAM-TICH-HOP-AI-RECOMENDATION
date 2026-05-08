@@ -408,13 +408,127 @@
                     `job-detail.html?id=${id}`;
             };
 
-            window.applyJob = function(event, id) {
+            const applyModal = document.getElementById("applyModal");
+const closeApply = document.getElementById("closeApply");
+const applyForm = document.getElementById("applyForm");
+const savedCVSelect =
+    document.getElementById("savedCVSelect");
 
-                event.stopPropagation();
+const selectedCVInfo =
+    document.getElementById("selectedCVInfo");
 
-                window.location.href =
-                    `job-detail.html?id=${id}`;
-            };
+const savedCVs =
+    JSON.parse(localStorage.getItem("savedCVs")) || [];
+
+/* LOAD CV */
+
+savedCVs.forEach((cv, index) => {
+
+    savedCVSelect.innerHTML += `
+    
+        <option value="${index}">
+            ${cv.fullName || "CV"} - 
+            ${cv.position || "Chưa có vị trí"}
+        </option>
+    
+    `;
+});
+
+/* HIỂN THỊ CV */
+
+savedCVSelect.addEventListener("change", () => {
+
+    const index = savedCVSelect.value;
+
+    if(index === ""){
+
+        selectedCVInfo.style.display = "none";
+        return;
+    }
+
+    const cv = savedCVs[index];
+
+    selectedCVInfo.style.display = "block";
+
+    selectedCVInfo.innerHTML = `
+    
+        <p><strong>Họ tên:</strong> ${cv.fullName}</p>
+
+        <p><strong>Vị trí:</strong> ${cv.position}</p>
+
+        <p><strong>Email:</strong> ${cv.email}</p>
+
+        <p><strong>SĐT:</strong> ${cv.phone}</p>
+    
+    `;
+});
+
+window.applyJob = function(event, id) {
+
+    event.stopPropagation();
+
+    const job =
+        allJobs.find(item => item.id === id);
+
+    if (!job) return;
+
+    document.getElementById("applyJobTitle")
+        .textContent = job.title;
+
+    document.getElementById("applyCompany")
+        .textContent = job.company;
+
+    document.getElementById("applyLocation")
+        .innerHTML =
+        `<i class="fas fa-map-marker-alt"></i> ${job.location}`;
+
+    document.getElementById("applySalary")
+        .innerHTML =
+        `<i class="fas fa-money-bill-wave"></i> ${job.salary}`;
+
+    applyModal.classList.add("active");
+};
+
+// ĐÓNG MODAL
+closeApply.addEventListener("click", () => {
+    applyModal.classList.remove("active");
+});
+
+// CLICK NGOÀI ĐỂ ĐÓNG
+applyModal.addEventListener("click", (e) => {
+
+    if (e.target === applyModal) {
+        applyModal.classList.remove("active");
+    }
+
+});
+
+// SUBMIT
+applyForm.addEventListener("submit", (e) => {
+
+    e.preventDefault();
+
+    const name =
+        document.getElementById("applyName").value;
+
+    const email =
+        document.getElementById("applyEmail").value;
+        const selectedCV = savedCVSelect.value;
+
+   alert(`
+Ứng tuyển thành công!
+
+Họ tên: ${name}
+Email: ${email}
+
+CV đã chọn:
+${savedCVs[selectedCV]?.fullName || "Không có"}
+`);
+
+    applyForm.reset();
+
+    applyModal.classList.remove("active");
+});
 
             // =============================
             // INIT
@@ -425,6 +539,91 @@
 
         });
     </script>
+
+
+<!-- APPLY MODAL -->
+<div class="apply-modal" id="applyModal">
+
+    <div class="apply-box">
+
+        <button class="close-apply" id="closeApply">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <h2>Ứng tuyển công việc</h2>
+
+        <div class="apply-job-info">
+
+            <h3 id="applyJobTitle">Tên công việc</h3>
+
+            <p id="applyCompany">
+                Công ty
+            </p>
+
+            <div class="apply-meta">
+
+                <span id="applyLocation">
+                    <i class="fas fa-map-marker-alt"></i>
+                </span>
+
+                <span id="applySalary">
+                    <i class="fas fa-money-bill-wave"></i>
+                </span>
+
+            </div>
+
+        </div>
+
+        <form id="applyForm">
+
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" id="applyName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="applyEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" id="applyPhone" required>
+            </div>
+
+           <div class="form-group">
+
+    <label>Chọn CV đã lưu</label>
+
+    <select id="savedCVSelect" required>
+
+        <option value="">
+            -- Chọn CV --
+        </option>
+
+    </select>
+
+</div>
+
+<div class="selected-cv-info" id="selectedCVInfo"></div>
+
+            <div class="form-group">
+                <label>Giới thiệu bản thân</label>
+                <textarea id="applyMessage"
+                    rows="4"
+                    placeholder="Nhập giới thiệu ngắn..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-apply-btn">
+                <i class="fas fa-paper-plane"></i>
+                Gửi ứng tuyển
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
 
     <script src="auth.js"></script>
 
