@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Đã Lưu</title>
+
+    <link rel="stylesheet" href="luucv.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="saved-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1>CV Đã Lưu</h1>
+        <p>Danh sách CV bạn đã tạo và lưu trên hệ thống</p>
+    </div>
+
+    <!-- LIST -->
+    <div class="cv-list" id="cvList"></div>
+
+    <!-- BACK -->
+    <div class="back-wrapper">
+        <a href="taocv.html" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại 
+        </a>
+    </div>
+
+</div>
+
+<script>
+
+const cvList = document.getElementById("cvList");
+
+const savedCVs =
+JSON.parse(localStorage.getItem("savedCVs")) || [];
+
+/* =========================
+   EMPTY
+========================= */
+
+if(savedCVs.length === 0){
+
+    cvList.innerHTML = `
+
+    <div class="empty-box">
+
+        <i class="fa-solid fa-folder-open"></i>
+
+        <h2>Chưa có CV nào</h2>
+
+        <p>Hãy tạo CV để hiển thị tại đây</p>
+
+    </div>
+
+    `;
+}
+
+/* =========================
+   RENDER CV
+========================= */
+
+else{
+
+    savedCVs.forEach((cv,index)=>{
+
+        cvList.innerHTML += `
+
+        <div class="cv-card">
+
+            <div class="cv-top">
+
+                <div class="cv-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+
+                <div>
+
+                    <h2>${cv.template || "CV Chuyên Nghiệp"}</h2>
+
+                    <span>
+                        ${cv.createdAt || "Không có thời gian"}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="cv-content">
+
+                <p>
+                    <strong>Họ tên:</strong>
+                    ${cv.fullName || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Vị trí:</strong>
+                    ${cv.position || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    ${cv.email || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>SĐT:</strong>
+                    ${cv.phone || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Địa chỉ:</strong>
+                    ${cv.address || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Giới thiệu:</strong>
+                    ${cv.intro || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Kỹ năng:</strong>
+                    ${cv.skills || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Học vấn:</strong>
+                    ${cv.education || "Chưa cập nhật"}
+                </p>
+
+                <p>
+                    <strong>Kinh nghiệm:</strong>
+                    ${cv.experience || "Chưa cập nhật"}
+                </p>
+
+            </div>
+
+            <div class="cv-actions">
+
+                <button
+                class="btn-delete"
+                onclick="deleteCV(${index})">
+
+                    <i class="fa-solid fa-trash"></i>
+                    Xóa CV
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+    });
+
+}
+
+/* =========================
+   DELETE CV
+========================= */
+
+function deleteCV(index){
+
+    let savedCVs =
+    JSON.parse(localStorage.getItem("savedCVs")) || [];
+
+    savedCVs.splice(index,1);
+
+    localStorage.setItem(
+        "savedCVs",
+        JSON.stringify(savedCVs)
+    );
+
+    location.reload();
+}
+
+</script>
+
+</body>
+</html>
