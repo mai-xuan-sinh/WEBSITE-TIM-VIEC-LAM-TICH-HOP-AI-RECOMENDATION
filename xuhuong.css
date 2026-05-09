@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /* Reset & Căn bản */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 body { background-color: #f8fafc; color: #334155; }
@@ -145,7 +145,6 @@ body { background-color: #f8fafc; color: #334155; }
 .h-right { text-align: right; }
 .h-right h3 { font-size: 28px; font-weight: 800; margin-bottom: 2px; transition: 0.3s;}
 .h-right p { font-size: 13px; opacity: 0.9; transition: 0.3s;}
-=======
 :root{
     --primary:#2563eb;
     --primary-dark:#1e40af;
@@ -949,4 +948,3 @@ button{
     }
 
 }
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd

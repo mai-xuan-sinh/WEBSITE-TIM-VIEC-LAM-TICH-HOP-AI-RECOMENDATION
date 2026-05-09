@@ -1052,8 +1052,7 @@ const allJobs = [
     salary: "10 - 15 triệu",
     skills: ["Giao tiếp", "Ngân hàng", "Tin học"]
 },
-<<<<<<< HEAD
-=======
+
 {
   id: 265,
   title: "DevOps Engineer",
@@ -3955,7 +3954,6 @@ const allJobs = [
   image: "img/bank45.jpg",
   desc: "Tư vấn đầu tư và quản lý tài sản khách hàng."
 },
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd
 ];
 
 /// ================== HIỂN THỊ THẺ NGÀNH ==================
