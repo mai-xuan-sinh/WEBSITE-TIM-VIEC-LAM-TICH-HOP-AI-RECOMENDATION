@@ -95,6 +95,7 @@ button{
   );
 
   -webkit-background-clip:text;
+  background-clip:text;
   color:transparent;
 }
 
@@ -188,30 +189,78 @@ button{
   box-shadow:0 15px 30px rgba(14,165,233,0.35);
 }
 
-.user-info{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 18px;
-  border-radius:999px;
-  background:#fff;
-  border:1px solid var(--border);
-  box-shadow:var(--shadow-sm);
-  transition:0.3s;
+/* ===== USER INFO STYLES (ĐÃ CẬP NHẬT) ===== */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f5f9;
+  padding: 6px 15px;
+  border-radius: 40px;
+  border: 1px solid #e2e8f0;
+  transition: 0.3s;
 }
 
-.user-info:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-md);
+.user-info:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
-.avatar-icon{
-  font-size:20px;
-  color:var(--primary);
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary, #0ea5e9), #38bdf8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
 }
 
-.username{
-  font-weight:700;
+.user-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+#userBox {
+  display: none;
+}
+
+/* ===== ĐỒNG BỘ NAVBAR ACTIVE ===== */
+.nav-links a.active,
+.nav-links a.active-link {
+  color: var(--primary, #0ea5e9) !important;
+  position: relative;
+}
+
+.nav-links a.active::after,
+.nav-links a.active-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 999px;
 }
 
 /* =========================================
@@ -605,10 +654,9 @@ button{
   color:#475569;
 }
 
-/*/* =========================
-   AI SECTION FIX
-========================= */
-
+/* =========================================
+   AI SECTION
+========================================= */
 .ai-recommend-box{
   position:relative;
   margin-top:120px;
@@ -870,40 +918,174 @@ button{
     0 15px 30px rgba(34,211,238,0.30);
 }
 
-/* MOBILE */
-@media(max-width:768px){
+/* =========================================
+   DANANG VIDEO SECTION
+========================================= */
+.danang-video-section{
+  position:relative;
 
-  .ai-recommend-box{
-    padding:35px 22px;
-    border-radius:28px;
-  }
+  padding:100px 0 40px;
 
-  .ai-header{
-    flex-direction:column;
-  }
+  background:
+    linear-gradient(
+      180deg,
+      #f4f8fb,
+      #ffffff
+    );
+}
 
-  .ai-title{
-    font-size:34px;
-  }
+.danang-video-box{
+  position:relative;
 
-  .ai-card .job-title{
-    padding-right:0;
-    font-size:22px;
-  }
+  display:grid;
 
-  .match-percent{
-    position:relative;
-    top:auto;
-    right:auto;
+  grid-template-columns:1fr 1fr;
 
-    display:inline-block;
+  gap:60px;
 
-    margin-bottom:16px;
-  }
+  align-items:center;
 
-  .ai-refresh-btn{
-    width:100%;
-  }
+  padding:60px;
+
+  border-radius:40px;
+
+  overflow:hidden;
+
+  background:#fff;
+
+  border:1px solid #e2e8f0;
+
+  box-shadow:
+    0 30px 60px rgba(15,23,42,0.08);
+}
+
+.video-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+
+  padding:10px 18px;
+
+  border-radius:999px;
+
+  background:#e0f2fe;
+
+  color:#0284c7;
+
+  font-size:13px;
+  font-weight:800;
+
+  letter-spacing:1px;
+
+  margin-bottom:24px;
+}
+
+.danang-video-content h2{
+  font-size:52px;
+
+  line-height:1.1;
+
+  font-weight:900;
+
+  letter-spacing:-2px;
+
+  color:#0f172a;
+
+  margin-bottom:24px;
+}
+
+.danang-video-content h2 span{
+  display:block;
+
+  margin-top:8px;
+
+  color:#0ea5e9;
+}
+
+.danang-video-content p{
+  font-size:17px;
+
+  line-height:1.9;
+
+  color:#475569;
+
+  margin-bottom:35px;
+}
+
+.video-stats{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.video-stats .stat-item{
+  min-width:140px;
+
+  padding:20px;
+
+  border-radius:22px;
+
+  background:#f8fafc;
+
+  border:1px solid #e2e8f0;
+}
+
+.video-stats .stat-item h3{
+  font-size:30px;
+
+  font-weight:900;
+
+  color:#0284c7;
+
+  margin-bottom:6px;
+}
+
+.video-stats .stat-item span{
+  color:#64748b;
+  font-size:14px;
+  font-weight:600;
+}
+
+.danang-video-wrapper{
+  position:relative;
+}
+
+.danang-video-wrapper video{
+  width:100%;
+  height:560px;
+
+  object-fit:cover;
+
+  border-radius:32px;
+
+  position:relative;
+  z-index:2;
+
+  box-shadow:
+    0 30px 60px rgba(15,23,42,0.18);
+}
+
+.video-glow{
+  position:absolute;
+
+  width:100%;
+  height:100%;
+
+  top:30px;
+  left:30px;
+
+  border-radius:32px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(14,165,233,0.25),
+      rgba(56,189,248,0.10)
+    );
+
+  filter:blur(20px);
+
+  z-index:1;
 }
 
 /* =========================================
@@ -1090,6 +1272,22 @@ button{
   }
 }
 
+@media(max-width:992px){
+
+  .danang-video-box{
+    grid-template-columns:1fr;
+    padding:40px;
+  }
+
+  .danang-video-content h2{
+    font-size:42px;
+  }
+
+  .danang-video-wrapper video{
+    height:420px;
+  }
+}
+
 @media(max-width:768px){
 
   .header-flex{
@@ -1150,6 +1348,41 @@ button{
   .job-modal-content{
     padding:30px 20px;
   }
+
+  .danang-video-section{
+    padding:70px 0 20px;
+  }
+
+  .danang-video-box{
+    padding:24px;
+    border-radius:28px;
+    gap:35px;
+  }
+
+  .danang-video-content h2{
+    font-size:32px;
+  }
+
+  .danang-video-content p{
+    font-size:15px;
+  }
+
+  .video-stats{
+    flex-direction:column;
+  }
+
+  .video-stats .stat-item{
+    width:100%;
+  }
+
+  .danang-video-wrapper video{
+    height:280px;
+    border-radius:24px;
+  }
+
+  .video-glow{
+    display:none;
+  }
 }
 
 @media(max-width:480px){
@@ -1191,240 +1424,5 @@ button{
 
   .nav-links a{
     font-size:14px;
-  }
-}
-
-
-
-
-/* =========================================
-   DANANG VIDEO SECTION
-========================================= */
-
-.danang-video-section{
-  position:relative;
-
-  padding:100px 0 40px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #f4f8fb,
-      #ffffff
-    );
-}
-
-.danang-video-box{
-  position:relative;
-
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:60px;
-
-  align-items:center;
-
-  padding:60px;
-
-  border-radius:40px;
-
-  overflow:hidden;
-
-  background:#fff;
-
-  border:1px solid #e2e8f0;
-
-  box-shadow:
-    0 30px 60px rgba(15,23,42,0.08);
-}
-
-/* LEFT CONTENT */
-.video-tag{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-
-  padding:10px 18px;
-
-  border-radius:999px;
-
-  background:#e0f2fe;
-
-  color:#0284c7;
-
-  font-size:13px;
-  font-weight:800;
-
-  letter-spacing:1px;
-
-  margin-bottom:24px;
-}
-
-.danang-video-content h2{
-  font-size:52px;
-
-  line-height:1.1;
-
-  font-weight:900;
-
-  letter-spacing:-2px;
-
-  color:#0f172a;
-
-  margin-bottom:24px;
-}
-
-.danang-video-content h2 span{
-  display:block;
-
-  margin-top:8px;
-
-  color:#0ea5e9;
-}
-
-.danang-video-content p{
-  font-size:17px;
-
-  line-height:1.9;
-
-  color:#475569;
-
-  margin-bottom:35px;
-}
-
-.video-stats{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.stat-item{
-  min-width:140px;
-
-  padding:20px;
-
-  border-radius:22px;
-
-  background:#f8fafc;
-
-  border:1px solid #e2e8f0;
-}
-
-.stat-item h3{
-  font-size:30px;
-
-  font-weight:900;
-
-  color:#0284c7;
-
-  margin-bottom:6px;
-}
-
-.stat-item span{
-  color:#64748b;
-  font-size:14px;
-  font-weight:600;
-}
-
-/* VIDEO */
-.danang-video-wrapper{
-  position:relative;
-}
-
-.danang-video-wrapper video{
-  width:100%;
-  height:560px;
-
-  object-fit:cover;
-
-  border-radius:32px;
-
-  position:relative;
-  z-index:2;
-
-  box-shadow:
-    0 30px 60px rgba(15,23,42,0.18);
-}
-
-.video-glow{
-  position:absolute;
-
-  width:100%;
-  height:100%;
-
-  top:30px;
-  left:30px;
-
-  border-radius:32px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(14,165,233,0.25),
-      rgba(56,189,248,0.10)
-    );
-
-  filter:blur(20px);
-
-  z-index:1;
-}
-
-/* MOBILE */
-@media(max-width:992px){
-
-  .danang-video-box{
-    grid-template-columns:1fr;
-
-    padding:40px;
-  }
-
-  .danang-video-content h2{
-    font-size:42px;
-  }
-
-  .danang-video-wrapper video{
-    height:420px;
-  }
-}
-
-@media(max-width:768px){
-
-  .danang-video-section{
-    padding:70px 0 20px;
-  }
-
-  .danang-video-box{
-    padding:24px;
-
-    border-radius:28px;
-
-    gap:35px;
-  }
-
-  .danang-video-content h2{
-    font-size:32px;
-  }
-
-  .danang-video-content p{
-    font-size:15px;
-  }
-
-  .video-stats{
-    flex-direction:column;
-  }
-
-  .stat-item{
-    width:100%;
-  }
-
-  .danang-video-wrapper video{
-    height:280px;
-
-    border-radius:24px;
-  }
-
-  .video-glow{
-    display:none;
   }
 }

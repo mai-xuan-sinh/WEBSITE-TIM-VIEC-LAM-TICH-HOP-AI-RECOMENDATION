@@ -1052,7 +1052,6 @@ const allJobs = [
     salary: "10 - 15 triệu",
     skills: ["Giao tiếp", "Ngân hàng", "Tin học"]
 },
-
 {
   id: 265,
   title: "DevOps Engineer",

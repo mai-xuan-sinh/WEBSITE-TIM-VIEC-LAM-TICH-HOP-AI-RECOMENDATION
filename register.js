@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const userTypeCards = document.querySelectorAll(".type-card");
@@ -324,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd
 // TYPE SWITCH
 const typeCards = document.querySelectorAll('.type-card');
 const employerFields = document.getElementById('employerFields');
@@ -457,8 +454,4 @@ const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
   // RESET FORM
   window.location.href = "login.html";
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd

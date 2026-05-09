@@ -38,8 +38,14 @@
   box-sizing:border-box;
 }
 
-html{
-  scroll-behavior:smooth;
+.comp-logo-box {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 body{
@@ -51,9 +57,10 @@ body{
   overflow-x:hidden;
 }
 
-img{
-  max-width:100%;
-  display:block;
+.text-logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #2c56d6;
 }
 
 a{

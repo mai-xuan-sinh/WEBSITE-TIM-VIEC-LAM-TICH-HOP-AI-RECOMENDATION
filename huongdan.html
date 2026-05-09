@@ -3,370 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>Hướng dẫn sử dụng - DANANG WORK</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="huongdan.css">
+    <style>
+       
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 500; padding: 8px 12px; }
+        .nav-links a.active { color: #0ea5e9; position: relative; }
+        .nav-links a.active::after { content: ""; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: #0ea5e9; }
+        .user-info { display: flex; align-items: center; gap: 10px; background: #f1f5f9; padding: 5px 12px; border-radius: 30px; }
+        .user-avatar { width: 28px; height: 28px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .logout-btn { background: #ef4444; border: none; padding: 4px 10px; border-radius: 20px; color: white; cursor: pointer; }
+        #userBox { display: none; }
+    </style>
 </head>
 <body>
 
-    <!-- NAVBAR ĐỒNG BỘ TỪ TRANG XU HƯỚNG -->
     <nav class="navbar">
-=======
-    <title>Hướng dẫn - DANANG WORK</title>
-    <link rel="stylesheet" href="huongdan.css">
-    <!-- Thêm icon font nếu cần (ví dụ Font Awesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-
-    <!-- Header / Navbar -->
-    <header class="navbar">
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd
         <div class="logo">
             <span class="logo-main">DANANG WORK</span>
             <p class="logo-sub">Tìm việc thông minh tại Đà Nẵng</p>
         </div>
-<<<<<<< HEAD
-        <ul class="nav-links">
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="trangvieclam.html">Việc làm</a></li>
-            <li><a href="congty.html">Công ty</a></li>
-            <li><a href="xuhuong.html">Xu hướng</a></li>
-            <li class="active"><a href="huongdan.html">Hướng dẫn</a></li>
-            <li><a href="taocv.html">Tạo CV</a></li>
-            <li><a href="hotro.html">Hỗ trợ</a></li>
-        </ul>
+        <div class="nav-links">
+            <a href="index.html">Trang chủ</a>
+            <a href="trangvieclam.html">Việc làm</a>
+            <a href="congty.html">Công ty</a>
+            <a href="xuhuong.html">Xu hướng</a>
+            <a href="huongdan.html" class="active">Hướng dẫn</a>
+            <a href="taocv.html">Tạo CV</a>
+            <a href="hotro.html">Hỗ trợ</a>
+        </div>
         <div class="nav-right">
-            <!-- Nút Đăng nhập / Đăng ký (Ẩn khi đang đăng nhập) -->
-            <div id="authButtons" class="auth-buttons" style="display: none;">
-                <a href="login.html" class="btn-login">Đăng nhập</a>
-                <a href="register.html" class="btn-register">Đăng ký</a>
+            <div id="authButtons" style="display: flex; gap: 10px;">
+                <a href="login.html">Đăng nhập</a>
+                <a href="register.html">Đăng ký</a>
             </div>
-            
-            <!-- Trạng thái Đã Đăng Nhập -->
-            <div id="userBox" class="user-box">
-                <!-- Vùng Profile Clickable -->
-                <div class="user-info" id="profileClick" title="Xem hồ sơ cá nhân">
-                    <i class="fa-solid fa-circle-user"></i>
-                    <span id="userName">Trần Tiển Thắng</span>
-                </div>
-                <!-- Nút Đăng Xuất -->
-                <button id="btnLogout" class="btn-logout">Đăng xuất</button>
-            </div>
+            <div id="userBox" style="display: none;"></div>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
     <header class="hero-section">
         <div class="overlay"></div>
         <div class="hero-content">
-            <div class="report-badge">
-                <i class="fa-solid fa-book-open"></i> Hướng dẫn sử dụng
-            </div>
+            <div class="report-badge"><i class="fa-solid fa-book-open"></i> Hướng dẫn sử dụng</div>
             <h1>Bắt đầu hành trình <br> <span>tìm việc thành công</span></h1>
             <p>Hướng dẫn chi tiết từ A-Z giúp bạn làm quen và sử dụng hiệu quả các tính năng của DANANG WORK</p>
         </div>
     </header>
 
     <main class="container layout-wrapper">
-        
-        <!-- CỘT TRÁI: SIDEBAR MENU -->
         <aside class="sidebar">
             <h3>Nội dung</h3>
             <ul class="sidebar-menu">
-                <li class="active" data-target="sec-gioi-thieu">
-                    <i class="fa-regular fa-circle-check"></i> Giới thiệu
-                </li>
-                <li data-target="sec-dang-ky">
-                    <i class="fa-regular fa-circle-check"></i> Đăng ký tài khoản
-                </li>
-                <li data-target="sec-tao-cv">
-                    <i class="fa-regular fa-circle-check"></i> Tạo hồ sơ & CV
-                </li>
-                <li data-target="sec-tim-viec">
-                    <i class="fa-regular fa-circle-check"></i> Tìm kiếm việc làm
-                </li>
-                <li data-target="sec-ung-tuyen">
-                    <i class="fa-regular fa-circle-check"></i> Ứng tuyển
-                </li>
-                <li data-target="sec-ai-goi-y">
-                    <i class="fa-regular fa-circle-check"></i> AI gợi ý việc làm
-                </li>
-                <li data-target="sec-phong-van">
-                    <i class="fa-regular fa-circle-check"></i> Chuẩn bị phỏng vấn
-                </li>
+                <li class="active" data-target="sec-gioi-thieu"><i class="fa-regular fa-circle-check"></i> Giới thiệu</li>
+                <li data-target="sec-dang-ky"><i class="fa-regular fa-circle-check"></i> Đăng ký tài khoản</li>
+                <li data-target="sec-tao-cv"><i class="fa-regular fa-circle-check"></i> Tạo hồ sơ & CV</li>
+                <li data-target="sec-tim-viec"><i class="fa-regular fa-circle-check"></i> Tìm kiếm việc làm</li>
+                <li data-target="sec-ung-tuyen"><i class="fa-regular fa-circle-check"></i> Ứng tuyển</li>
+                <li data-target="sec-ai-goi-y"><i class="fa-regular fa-circle-check"></i> AI gợi ý việc làm</li>
+                <li data-target="sec-phong-van"><i class="fa-regular fa-circle-check"></i> Chuẩn bị phỏng vấn</li>
             </ul>
         </aside>
 
-        <!-- CỘT PHẢI: NỘI DUNG HIỂN THỊ -->
         <section class="content-area">
-            
-            <!-- SECTION 1: GIỚI THIỆU (Mặc định hiển thị) -->
             <div id="sec-gioi-thieu" class="content-section active">
                 <h2 class="section-title">Giới thiệu</h2>
                 <div class="intro-box">
-                    <p>Chào mừng bạn đến với DANANG WORK - nền tảng kết nối việc làm thông minh tại Đà Nẵng. Hướng dẫn này sẽ giúp bạn làm quen với các tính năng và tận dụng tối đa công nghệ AI để tìm kiếm công việc mơ ước.</p>
-                    
+                    <p>Chào mừng bạn đến với DANANG WORK - nền tảng kết nối việc làm thông minh tại Đà Nẵng...</p>
                     <div class="feature-cards">
-                        <div class="f-card">
-                            <div class="f-icon blue"><i class="fa-solid fa-bullseye"></i></div>
-                            <h4>Tìm việc nhanh</h4>
-                            <p>Hơn 1000+ việc làm</p>
-                        </div>
-                        <div class="f-card">
-                            <div class="f-icon green"><i class="fa-solid fa-robot"></i></div>
-                            <h4>Gợi ý thông minh</h4>
-                            <p>AI phân tích kỹ năng</p>
-                        </div>
-                        <div class="f-card">
-                            <div class="f-icon purple"><i class="fa-solid fa-briefcase"></i></div>
-                            <h4>Kết nối trực tiếp</h4>
-                            <p>Với nhà tuyển dụng</p>
-                        </div>
+                        <div class="f-card"><div class="f-icon blue"><i class="fa-solid fa-bullseye"></i></div><h4>Tìm việc nhanh</h4><p>Hơn 1000+ việc làm</p></div>
+                        <div class="f-card"><div class="f-icon green"><i class="fa-solid fa-robot"></i></div><h4>Gợi ý thông minh</h4><p>AI phân tích kỹ năng</p></div>
+                        <div class="f-card"><div class="f-icon purple"><i class="fa-solid fa-briefcase"></i></div><h4>Kết nối trực tiếp</h4><p>Với nhà tuyển dụng</p></div>
                     </div>
                 </div>
-
                 <h2 class="section-title" style="margin-top: 40px;">Câu hỏi thường gặp</h2>
                 <div class="faq-container">
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Tôi có cần trả phí để sử dụng DANANG WORK không?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Hoàn toàn không! Mọi tính năng dành cho Ứng viên từ việc tạo CV, ứng tuyển đến nhận gợi ý AI đều miễn phí 100%.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Làm thế nào để AI gợi ý việc làm chính xác?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Bạn chỉ cần điền đầy đủ thông tin kỹ năng, kinh nghiệm và mục tiêu nghề nghiệp trong phần Hồ Sơ. Hệ thống AI sẽ tự động phân tích và khớp nối với các Job Description (JD) phù hợp nhất.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Tôi có thể ứng tuyển bao nhiêu công việc cùng lúc?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Không có giới hạn số lượng công việc bạn có thể ứng tuyển. Tuy nhiên, chúng tôi khuyên bạn nên chọn lọc kỹ để tăng tỷ lệ phản hồi từ nhà tuyển dụng.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Làm sao để biết nhà tuyển dụng đã xem hồ sơ của tôi?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Khi nhà tuyển dụng mở và xem CV của bạn, hệ thống sẽ tự động gửi thông báo (Notification) góc phải màn hình và qua Email bạn đã đăng ký.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Tôi có thể chỉnh sửa hồ sơ sau khi đã tạo không?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Có, bạn có thể vào phần "Quản lý hồ sơ" bất cứ lúc nào để cập nhật thêm kinh nghiệm, dự án mới hoặc thay đổi kỹ năng.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Làm thế nào để bảo mật thông tin cá nhân của tôi?
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Bạn có thể sử dụng tính năng "Ẩn hồ sơ" hoặc "Chỉ nhà tuyển dụng uy tín mới được xem" trong phần Cài đặt quyền riêng tư để bảo vệ thông tin.</p>
-                        </div>
-=======
-        <nav>
-            <ul>
-                <li><a href="index.html">Trang chủ</a></li>
-                <li><a href="trangvieclam.html">Việc làm</a></li>
-                <li><a href="congty.html">Công ty</a></li>
-                <li><a href="xuhuong.html">Xu hướng</a></li>
-                <li><a href="huongdan.html" class="active">Hướng dẫn</a></li>
-                <li><a href="taocv.html">Tạo CV</a></li>
-                <li><a href="hotro.html">Hỗ trợ</a></li>
-            </ul>
-        </nav>
-  <div id="authButtons">
-    <a href="login.html">Đăng nhập</a>
-    <a href="register.html">Đăng ký</a>
-  </div>
-
-  <div id="userBox"></div>
-</div>
-        </div>
-    </header>
-
-    <!-- Hero Banner -->
-    <section class="hero-section">
-        <div class="hero-overlay">
-            <div class="hero-content">
-                <span class="badge"><i class="fa-solid fa-book-open"></i> Hướng dẫn sử dụng</span>
-                <h1>Bắt đầu hành trình <br> <span>tìm việc thành công</span></h1>
-                <p>Hướng dẫn chi tiết từ A-Z giúp bạn làm quen và sử dụng hiệu quả các tính năng của DANANG WORK</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content Container -->
-    <main class="container">
-        <!-- Sidebar Menu -->
-        <aside class="sidebar">
-            <h3>Nội dung</h3>
-            <ul>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Giới thiệu</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Đăng ký tài khoản</a></li>
-                <li class="active"><a href="#"><i class="fa-regular fa-circle-check"></i> Tạo hồ sơ & CV</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Tìm kiếm việc làm</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Ứng tuyển</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> AI gợi ý việc làm</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Chuẩn bị phỏng vấn</a></li>
-            </ul>
-        </aside>
-
-        <!-- Main Content -->
-        <section class="content-area">
-<h2 class="section-title">Giới thiệu</h2>
-            <div class="card info-box">
-                <p>Chào mừng bạn đến với DANANG WORK - nền tảng kết nối việc làm thông minh tại Đà Nẵng. Hướng dẫn này sẽ giúp bạn làm quen với các tính năng và tận dụng tối đa công nghệ AI để tìm kiếm công việc mơ ước.</p>
-                
-                <div class="feature-grid">
-                    <div class="feature-item blue">
-                        <i class="fa-solid fa-bullseye"></i>
-                        <h4>Tìm việc nhanh</h4>
-                        <p>Hơn 1000+ việc làm</p>
-                    </div>
-                    <div class="feature-item green">
-                        <i class="fa-solid fa-robot"></i>
-                        <h4>Gợi ý thông minh</h4>
-                        <p>AI phân tích kỹ năng</p>
-                    </div>
-                    <div class="feature-item purple">
-                        <i class="fa-solid fa-briefcase"></i>
-                        <h4>Kết nối trực tiếp</h4>
-                        <p>Với nhà tuyển dụng</p>
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd
-                    </div>
+                    <div class="faq-item"><div class="faq-question">Tôi có cần trả phí để sử dụng DANANG WORK không?<i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>Hoàn toàn không! Mọi tính năng dành cho Ứng viên đều miễn phí 100%.</p></div></div>
+                    <div class="faq-item"><div class="faq-question">Làm thế nào để AI gợi ý việc làm chính xác?<i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>Bạn chỉ cần điền đầy đủ thông tin kỹ năng, kinh nghiệm trong phần Hồ Sơ.</p></div></div>
+                    <div class="faq-item"><div class="faq-question">Tôi có thể ứng tuyển bao nhiêu công việc cùng lúc?<i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>Không có giới hạn số lượng công việc bạn có thể ứng tuyển.</p></div></div>
+                    <div class="faq-item"><div class="faq-question">Làm sao để biết nhà tuyển dụng đã xem hồ sơ của tôi?<i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>Hệ thống sẽ tự động gửi thông báo khi nhà tuyển dụng xem CV của bạn.</p></div></div>
+                    <div class="faq-item"><div class="faq-question">Tôi có thể chỉnh sửa hồ sơ sau khi đã tạo không?<i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>Có, bạn có thể cập nhật hồ sơ bất cứ lúc nào.</p></div></div>
                 </div>
             </div>
 
-<<<<<<< HEAD
-            <!-- SECTION 2: ĐĂNG KÝ TÀI KHOẢN -->
-            <div id="sec-dang-ky" class="content-section">
-                <h2 class="section-title">Hướng dẫn đăng ký tài khoản</h2>
-                <div class="intro-box">
-                    <p>Để bắt đầu sử dụng hệ thống, bạn cần có một tài khoản ứng viên hợp lệ.</p>
-                    <ol class="steps-list">
-                        <li>Truy cập vào nút <strong>Đăng ký</strong> ở góc trên bên phải màn hình.</li>
-                        <li>Điền đầy đủ thông tin: Họ tên, Email, Mật khẩu.</li>
-                        <li>Xác nhận Email thông qua mã OTP được gửi đến hộp thư của bạn.</li>
-                        <li>Đăng nhập và bắt đầu trải nghiệm!</li>
-                    </ol>
-                </div>
-            </div>
-
-            <!-- SECTION 3: TẠO HỒ SƠ & CV -->
-            <div id="sec-tao-cv" class="content-section">
-                <h2 class="section-title">Tạo hồ sơ & CV chuẩn ATS</h2>
-                <div class="intro-box">
-                    <p>Hồ sơ chất lượng sẽ giúp AI của chúng tôi phân tích chính xác hơn.</p>
-                    <ul class="steps-list">
-                        <li><strong>Bước 1:</strong> Chọn mục "Tạo CV" trên thanh menu.</li>
-                        <li><strong>Bước 2:</strong> Chọn template CV phù hợp với ngành nghề của bạn.</li>
-                        <li><strong>Bước 3:</strong> Điền các trường thông tin: Học vấn, Kinh nghiệm, Kỹ năng cứng & Kỹ năng mềm.</li>
-                        <li><strong>Bước 4:</strong> Lưu và tải xuống file PDF hoặc sử dụng trực tiếp để ứng tuyển.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- CÁC SECTION KHÁC (Placeholder để test logic Menu) -->
-            <div id="sec-tim-viec" class="content-section">
-                <h2 class="section-title">Tìm kiếm việc làm</h2>
-                <div class="intro-box"><p>Sử dụng thanh công cụ tìm kiếm với các bộ lọc thông minh: Mức lương, Cấp bậc, Ngành nghề, Địa điểm (Hải Châu, Liên Chiểu, Thanh Khê...)</p></div>
-            </div>
-            
-            <div id="sec-ung-tuyen" class="content-section">
-                <h2 class="section-title">Hướng dẫn ứng tuyển</h2>
-                <div class="intro-box"><p>Sau khi chọn được công việc ưng ý, click "Ứng tuyển ngay", chọn CV bạn vừa tạo và gửi kèm một đoạn Cover Letter ngắn gọn để gây ấn tượng.</p></div>
-            </div>
-
-            <div id="sec-ai-goi-y" class="content-section">
-                <h2 class="section-title">AI gợi ý việc làm</h2>
-                <div class="intro-box"><p>Công nghệ Deep Learning của Danang Work sẽ đối chiếu keyword trong CV của bạn với hàng ngàn JD mỗi ngày để gửi thông báo những job có độ tương thích trên 80%.</p></div>
-            </div>
-
-            <div id="sec-phong-van" class="content-section">
-                <h2 class="section-title">Chuẩn bị phỏng vấn</h2>
-                <div class="intro-box"><p>Chúng tôi cung cấp kho tài liệu câu hỏi phỏng vấn thường gặp cho 8 ngành nghề trọng điểm tại Đà Nẵng để bạn tự tin chinh phục nhà tuyển dụng.</p></div>
-            </div>
-
+            <div id="sec-dang-ky" class="content-section"><h2 class="section-title">Hướng dẫn đăng ký tài khoản</h2><div class="intro-box"><ol class="steps-list"><li>Truy cập vào nút <strong>Đăng ký</strong> ở góc trên bên phải.</li><li>Điền đầy đủ thông tin: Họ tên, Email, Mật khẩu.</li><li>Xác nhận Email và đăng nhập.</li></ol></div></div>
+            <div id="sec-tao-cv" class="content-section"><h2 class="section-title">Tạo hồ sơ & CV chuẩn ATS</h2><div class="intro-box"><ul class="steps-list"><li>Chọn mục "Tạo CV" trên thanh menu.</li><li>Chọn template CV phù hợp.</li><li>Điền thông tin và lưu lại.</li></ul></div></div>
+            <div id="sec-tim-viec" class="content-section"><h2 class="section-title">Tìm kiếm việc làm</h2><div class="intro-box"><p>Sử dụng thanh công cụ tìm kiếm với các bộ lọc thông minh.</p></div></div>
+            <div id="sec-ung-tuyen" class="content-section"><h2 class="section-title">Hướng dẫn ứng tuyển</h2><div class="intro-box"><p>Click "Ứng tuyển ngay", chọn CV và gửi kèm Cover Letter.</p></div></div>
+            <div id="sec-ai-goi-y" class="content-section"><h2 class="section-title">AI gợi ý việc làm</h2><div class="intro-box"><p>AI sẽ gửi thông báo những job có độ tương thích trên 80%.</p></div></div>
+            <div id="sec-phong-van" class="content-section"><h2 class="section-title">Chuẩn bị phỏng vấn</h2><div class="intro-box"><p>Kho tài liệu câu hỏi phỏng vấn cho 8 ngành nghề tại Đà Nẵng.</p></div></div>
         </section>
     </main>
 
-    <script src="huongdan.js"></script>
+    <script>
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+                item.classList.add('active');
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(item.dataset.target).classList.add('active');
+            });
+        });
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.querySelector('.faq-question').addEventListener('click', () => {
+                item.classList.toggle('active');
+                const icon = item.querySelector('.faq-question i');
+                icon.style.transform = item.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+            });
+        });
+
+        function updateAuthUI() {
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            if (!authDiv || !userDiv) return;
+            let currentUser = localStorage.getItem('currentUser');
+            let isLoggedIn = false, userName = "";
+            if (currentUser) { try { const user = JSON.parse(currentUser); isLoggedIn = true; userName = user.name || user.fullname || "User"; } catch(e) {} }
+            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') { isLoggedIn = true; userName = localStorage.getItem('userName') || "User"; }
+            if (isLoggedIn) {
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${userName.charAt(0).toUpperCase()}</div><span>${userName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
+            }
+        }
+        function handleLogout() { localStorage.clear(); window.location.href = 'index.html'; }
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+        window.addEventListener('storage', updateAuthUI);
+    </script>
 </body>
 </html>
-=======
-            <h2 class="section-title">Câu hỏi thường gặp</h2>
-<div class="faq-list">
-    <!-- Câu 1 -->
-    <div class="faq-item">
-        <span>Tôi có cần trả phí để sử dụng DANANG WORK không?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-    
-    <!-- Câu 2 -->
-    <div class="faq-item">
-        <span>Làm thế nào để AI gợi ý việc làm chính xác?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-
-    <!-- Câu 3 -->
-    <div class="faq-item">
-        <span>Tôi có thể ứng tuyển bao nhiêu công việc cùng lúc?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-
-    <!-- Câu 4 -->
-    <div class="faq-item">
-        <span>Làm sao để biết nhà tuyển dụng đã xem hồ sơ của tôi?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-
-    <!-- Câu 5 -->
-    <div class="faq-item">
-        <span>Tôi có thể chỉnh sửa hồ sơ sau khi đã tạo không?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-
-    <!-- Câu 6 -->
-    <div class="faq-item">
-        <span>Làm thế nào để tải lên CV cá nhân?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-
-    <!-- Câu 7 -->
-    <div class="faq-item">
-        <span>Làm thế nào để bảo mật thông tin cá nhân của tôi?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-</div>        </section>
-    </main>
-<script src="auth.js"></script>
-<link rel="stylesheet" href="auth.css">
-</body>
-</html>
->>>>>>> cb92c107390391dbaa1c9671e46a58fd601a12dd

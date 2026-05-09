@@ -83,14 +83,17 @@ a {
 }
 
 .logo-title {
-    font-weight: 700;
-    color: #1e3a8a;
-    font-size: 18px;
-    line-height: 1.2;
+    font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
 }
 
 .logo-slogan {
-    font-size: 11px;
+    font-size: 15px;
     color: var(--text-gray);
 }
 
