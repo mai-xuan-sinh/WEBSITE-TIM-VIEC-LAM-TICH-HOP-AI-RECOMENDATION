@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết công ty - DANANG WORK</title>
+    <link rel="stylesheet" href="style-congty.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <div>
+                <div class="logo-main">DANANG WORK</div>
+                <div class="logo-slogan">Tìm việc thông minh tại Đà Nẵng</div>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html">Việc làm</a>
+                <a href="congty.html" class="active-link">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <a href="taocv.html">Tạo CV</a>
+                <a href="hotro.html">Hỗ trợ</a>
+            </nav>
+            <div class="nav-right">
+                <div id="authButtons">
+                    <a href="#" id="fakeLoginBtn">Đăng nhập</a>
+                    <a href="#" id="fakeRegisterBtn">Đăng ký</a>
+                </div>
+                <div id="userBox"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="detail-container" id="detailContent"></main>
+
+    <script>
+        const companyData = {
+            fpt: {
+                name: "FPT Software", logo: "img/fpt.jpg", location: "Hải Châu, Đà Nẵng", size: "5000+ nhân viên",
+                rating: 4.5, industry: "Công nghệ thông tin",
+                desc: "FPT Software là công ty xuất khẩu dịch vụ phần mềm hàng đầu Đông Nam Á. Tại Đà Nẵng, FPT sở hữu campus FPT Complex hiện đại bậc nhất.",
+                benefits: ["Lương tháng 13 & Thưởng dự án", "Bảo hiểm FPT Care", "Xe đưa đón nhân viên", "Đào tạo chuyên sâu"],
+                contact: { web: "fptsoftware.com", phone: "0236 3958 777", email: "recruitment@fsoft.com.vn" },
+                jobs: [{ title: "Senior React Developer", salary: "25-35 triệu" }, { title: "AI Engineer", salary: "30-45 triệu" }, { title: "Cloud Architect", salary: "35-50 triệu" }]
+            },
+            philong: {
+                name: "PhiLong Technology", logo: "img/philong-logo.jpg", location: "Hải Châu, Đà Nẵng", size: "2000+ nhân viên",
+                rating: 4.5, industry: "Công nghệ thông tin",
+                desc: "Phi Long Technology là một trong những doanh nghiệp CNTT hàng đầu tại miền Trung.",
+                benefits: ["Thưởng doanh số cao", "Môi trường trẻ trung", "Đào tạo kỹ năng liên tục"],
+                contact: { web: "philong.com.vn", phone: "0236 3888 000", email: "tuyendung@philong.com.vn" },
+                jobs: [{ title: "Fullstack Developer", salary: "18-28 triệu" }, { title: "System Admin", salary: "15-22 triệu" }]
+            },
+            enclave: {
+                name: "Enclave Software", logo: "img/images.png", location: "Sơn Trà, Đà Nẵng", size: "300+ nhân viên",
+                rating: 4.5, industry: "Công nghệ thông tin",
+                desc: "Được thành lập từ năm 2007, Enclave là công ty phần mềm lâu đời tại Đà Nẵng.",
+                benefits: ["Lương cạnh tranh", "Giờ làm linh hoạt", "Bữa trưa miễn phí"],
+                contact: { web: "enclave.vn", phone: "0236 3222 333", email: "jobs@enclave.vn" },
+                jobs: [{ title: "Java Developer", salary: "20-30 triệu" }, { title: "QA Engineer", salary: "15-22 triệu" }]
+            },
+            vinpearl: {
+                name: "Vinpearl Resort & Spa", logo: "img/spa.png", location: "Ngũ Hành Sơn", size: "1000+ nhân viên",
+                rating: 4.6, industry: "Du lịch - Khách sạn",
+                desc: "Thuộc tập đoàn Vingroup, Vinpearl Resort & Spa mang đến cơ hội nghề nghiệp tuyệt vời.",
+                benefits: ["Chế độ đãi ngộ Vingroup", "Thưởng Lễ Tết", "Hỗ trợ nhà ở"],
+                contact: { web: "vinpearl.com", phone: "1900 23 23 89", email: "hr.danang@vinpearl.com" },
+                jobs: [{ title: "Lễ tân", salary: "8-12 triệu" }, { title: "Quản lý nhà hàng", salary: "15-22 triệu" }]
+            },
+            intercontinental: {
+                name: "InterContinental Danang", logo: "img/intercontinental.png", location: "Bán đảo Sơn Trà", size: "800+ nhân viên",
+                rating: 4.8, industry: "Du lịch - Khách sạn",
+                desc: "Khu nghỉ dưỡng sang trọng bậc nhất thế giới tại Bán đảo Sơn Trà.",
+                benefits: ["Bảo hiểm quốc tế", "Môi trường tiếng Anh", "Bữa ăn cao cấp"],
+                contact: { web: "danang.intercontinental.com", phone: "0236 393 8888", email: "careers@icdanang.com" },
+                jobs: [{ title: "Butler", salary: "12-18 triệu" }, { title: "Sales Manager", salary: "20-30 triệu" }]
+            },
+            sungroup: {
+                name: "Sun Group", logo: "img/logo-sungroup-2020.jpg", location: "Hải Châu", size: "3000+ nhân viên",
+                rating: 4.7, industry: "Xây dựng - Bất động sản",
+                desc: "Sun Group là tập đoàn kinh tế tư nhân hàng đầu Việt Nam.",
+                benefits: ["Thăng tiến rộng mở", "Dịch vụ nội bộ miễn phí", "Thu nhập cao"],
+                contact: { web: "sungroup.com.vn", phone: "0236 381 9181", email: "tuyendung@sungroup.com.vn" },
+                jobs: [{ title: "Kỹ sư xây dựng", salary: "15-25 triệu" }, { title: "Chuyên viên dự án", salary: "18-28 triệu" }]
+            },
+            trungnam: {
+                name: "Trung Nam Group", logo: "img/logo-trung-nam-group.png", location: "Liên Chiểu", size: "1500+ nhân viên",
+                rating: 4.6, industry: "Xây dựng - Bất động sản",
+                desc: "Tập đoàn Trung Nam tiên phong trong lĩnh vực Năng lượng và Hạ tầng.",
+                benefits: ["Tham gia siêu dự án", "Thưởng dự án", "Đào tạo chuyên sâu"],
+                contact: { web: "trungnamgroup.com.vn", phone: "0236 381 9182", email: "hr@trungnamgroup.com.vn" },
+                jobs: [{ title: "Kỹ sư điện", salary: "12-20 triệu" }, { title: "Quản lý dự án", salary: "20-35 triệu" }]
+            },
+            lottemart: {
+                name: "Lotte Mart", logo: "img/logo-lotte-mart-vector-2.webp", location: "Hải Châu", size: "500+ nhân viên",
+                rating: 4.4, industry: "Kinh doanh - Tài chính",
+                desc: "Lotte Mart là trung tâm thương mại lớn nhất Đà Nẵng.",
+                benefits: ["Mua sắm ưu đãi", "Bảo hiểm đầy đủ", "Cơ hội làm việc tại Hàn Quốc"],
+                contact: { web: "lottemart.com.vn", phone: "0236 368 1666", email: "tuyendung@lotte.vn" },
+                jobs: [{ title: "Nhân viên kinh doanh", salary: "10-15 triệu" }, { title: "Trưởng quầy", salary: "12-18 triệu" }]
+            },
+            agribank: {
+                name: "Agribank", logo: "img/agr.png", location: "Hải Châu", size: "800+ nhân viên",
+                rating: 4.5, industry: "Kinh doanh - Tài chính",
+                desc: "Agribank chi nhánh Đà Nẵng với môi trường làm việc ổn định.",
+                benefits: ["Môi trường ổn định", "Thưởng Lễ Tết", "Lương theo quy định"],
+                contact: { web: "agribank.com.vn", phone: "0236 382 1111", email: "contact@agribank.com.vn" },
+                jobs: [{ title: "Chuyên viên tín dụng", salary: "12-18 triệu" }, { title: "Giao dịch viên", salary: "8-12 triệu" }]
+            },
+            viettel: {
+                name: "Viettel Post", logo: "img/viet.png", location: "Toàn Đà Nẵng", size: "1000+ nhân viên",
+                rating: 4.5, industry: "Logistics - Dịch vụ",
+                desc: "Viettel Post là đơn vị thành viên của Tập đoàn Viettel.",
+                benefits: ["Thu nhập theo năng lực", "Phúc lợi quân đội", "Khám sức khỏe định kỳ"],
+                contact: { web: "viettelpost.com.vn", phone: "1900 8095", email: "tuyendung@viettelpost.com.vn" },
+                jobs: [{ title: "Nhân viên giao nhận", salary: "8-12 triệu" }, { title: "Trưởng kho", salary: "12-18 triệu" }]
+            }
+        };
+
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            let stars = "";
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) stars += "★";
+                else stars += "☆";
+            }
+            return stars;
+        }
+
+        function applyJob(companyName, jobTitle) {
+            alert(`Ứng tuyển thành công!\nCông ty: ${companyName}\nVị trí: ${jobTitle}`);
+        }
+
+        function loadDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const data = companyData[id];
+
+            if (!data) {
+                document.getElementById('detailContent').innerHTML = `<div style="text-align:center;padding:60px"><h2>Không tìm thấy công ty</h2><a href="congty.html">Quay lại</a></div>`;
+                return;
+            }
+
+            const jobsHtml = data.jobs.map(job => `
+                <div class="job-item">
+                    <div><div class="job-title">${job.title}</div><div class="job-salary">💰 ${job.salary}/tháng</div></div>
+                    <button class="btn-apply" onclick="applyJob('${data.name}', '${job.title}')">Ứng tuyển</button>
+                </div>
+            `).join("");
+
+            const html = `
+                <div class="detail-header">
+                    <div class="detail-logo"><img src="${data.logo}" alt="${data.name}" onerror="this.src='https://placehold.co/80?text=Logo'"></div>
+                    <div class="detail-title">
+                        <h1>${data.name}</h1>
+                        <div class="detail-meta">
+                            <span>📍 ${data.location}</span>
+                            <span>👥 ${data.size}</span>
+                            <span>📁 ${data.industry}</span>
+                        </div>
+                        <div class="stars" style="font-size:1rem">${renderStars(data.rating)} ${data.rating}/5</div>
+                        <div class="detail-actions">
+                            <button class="btn-outline" onclick="document.getElementById('review').scrollIntoView({behavior:'smooth'})">Đánh giá công ty</button>
+                            <button class="btn-primary" onclick="applyJob('${data.name}', 'Vị trí phù hợp')">Ứng tuyển ngay</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div>
+                        <div class="info-box">
+                            <h3>Giới thiệu công ty</h3>
+                            <p>${data.desc}</p>
+                        </div>
+                        <div class="info-box">
+                            <h3>Phúc lợi nổi bật</h3>
+                            <div class="benefit-list">${data.benefits.map(b => `<span class="benefit-item">✓ ${b}</span>`).join("")}</div>
+                        </div>
+                        <div class="info-box" id="review">
+                            <h3>Đánh giá từ nhân viên</h3>
+                            <div class="review-card">
+                                <div class="stars">${renderStars(4.5)}</div>
+                                <strong>Nguyễn Văn A</strong> - Nhân viên chính thức
+                                <p style="margin-top:8px;color:#475569">"Môi trường làm việc chuyên nghiệp, đồng nghiệp thân thiện, cơ hội thăng tiến rõ ràng."</p>
+                            </div>
+                            <div class="review-form">
+                                <h4>Gửi đánh giá của bạn</h4>
+                                <textarea rows="3" placeholder="Chia sẻ trải nghiệm làm việc của bạn..."></textarea>
+                                <button onclick="alert('Cảm ơn bạn đã đánh giá!')">Gửi đánh giá</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="info-box">
+                            <h3>Thông tin liên hệ</h3>
+                            <ul class="contact-list">
+                                <li>🌐 ${data.contact.web}</li>
+                                <li>📞 ${data.contact.phone}</li>
+                                <li>✉️ ${data.contact.email}</li>
+                            </ul>
+                        </div>
+                        <div class="info-box">
+                            <h3>Việc làm đang tuyển</h3>
+                            ${jobsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailContent').innerHTML = html;
+        }
+
+        loadDetail();
+
+        // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
+        (function() {
+            const AUTH_KEY = 'isLoggedIn';
+            const DEFAULT_USER = 'Nguyễn Văn A';
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            const loginBtn = document.getElementById('fakeLoginBtn');
+            const registerBtn = document.getElementById('fakeRegisterBtn');
+            
+            function getUserName() {
+                let name = localStorage.getItem('userName');
+                if (!name || name === 'undefined' || name === 'null') {
+                    return DEFAULT_USER;
+                }
+                return name;
+            }
+            
+            function renderUI() {
+                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
+                if (isLoggedIn) {
+                    const userName = getUserName();
+                    authDiv.style.display = 'none';
+                    userDiv.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-avatar">${userName.charAt(0)}</div>
+                            <span>${userName}</span>
+                            <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+                        </div>
+                    `;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            localStorage.setItem(AUTH_KEY, 'false');
+                            localStorage.removeItem('userName');
+                            renderUI();
+                            alert('Đã đăng xuất!');
+                        });
+                    }
+                } else {
+                    authDiv.style.display = 'flex';
+                    userDiv.innerHTML = '';
+                }
+            }
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
+                    renderUI();
+                    alert('Đăng nhập thành công!');
+                });
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
+                    renderUI();
+                    alert('Đăng ký thành công!');
+                });
+            }
+            
+            renderUI();
+        })();
+    </script>
+</body>
+</html>

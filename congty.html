@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danang Work - Top Công ty Hàng Đầu</title>
+    <title>Công ty - DANANG WORK</title>
     <link rel="stylesheet" href="style-congty.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
 
-    <!-- Header -->
     <header class="navbar">
         <div class="container nav-content">
-            <div class="logo-area">
+            <div>
                 <div class="logo-main">DANANG WORK</div>
                 <div class="logo-slogan">Tìm việc thông minh tại Đà Nẵng</div>
             </div>
@@ -26,274 +24,159 @@
                 <a href="hotro.html">Hỗ trợ</a>
             </nav>
             <div class="nav-right">
-  <div id="authButtons">
-    <a href="login.html">Đăng nhập</a>
-    <a href="register.html">Đăng ký</a>
-  </div>
-
-  <div id="userBox"></div>
-</div>
+                <div id="authButtons">
+                    <a href="#" id="fakeLoginBtn">Đăng nhập</a>
+                    <a href="#" id="fakeRegisterBtn">Đăng ký</a>
+                </div>
+                <div id="userBox"></div>
+            </div>
+        </div>
     </header>
 
-    <!-- Banner Section -->
-    <section class="hero-banner">
-        <div class="banner-overlay">
-            <div class="container banner-text">
-                <span class="badge-top"><i class="fa-solid fa-sparkles"></i> Top Công Ty Hàng Đầu Đà Nẵng 2026</span>
-                <h1>Những Công Ty Hàng Đầu <br> <span>Tại Đà Nẵng</span></h1>
-                <p>Khám phá những công ty hàng đầu tại Đà Nẵng trong 5 lĩnh vực, được vinh danh nhờ văn hóa doanh nghiệp xuất sắc, phúc lợi hấp dẫn và môi trường làm việc chuyên nghiệp.</p>
-            </div>
+    <section class="hero">
+        <div class="container">
+            <h1>Top <span>công ty hàng đầu</span> tại Đà Nẵng</h1>
+            <p>Khám phá những nhà tuyển dụng uy tín với môi trường làm việc chuyên nghiệp</p>
         </div>
     </section>
 
-    <main class="container">
-        <!-- Breadcrumb -->
-        <div class="header-tools">
-            <div class="breadcrumb">Trang chủ / <strong>Top công ty</strong></div>
-            <button class="btn-back"><i class="fa-solid fa-house"></i> Quay lại trang chủ</button>
+    <div class="container">
+        <div class="filter-bar">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="it">Công nghệ thông tin</button>
+                <button class="filter-btn" data-filter="tourism">Du lịch - Khách sạn</button>
+                <button class="filter-btn" data-filter="realestate">Xây dựng - Bất động sản</button>
+                <button class="filter-btn" data-filter="finance">Kinh doanh - Tài chính</button>
+                <button class="filter-btn" data-filter="logistics">Logistics - Dịch vụ</button>
+            </div>
         </div>
 
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat-main">
-                <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
-                <div>
-                    <h3>Top Công Ty Hàng Đầu</h3>
-                    <p>Đà Nẵng 2026</p>
+        <div class="company-grid" id="companyGrid"></div>
+    </div>
+
+    <script>
+        const companies = [
+            { id: "fpt", name: "FPT Software", logo: "img/fpt.jpg", location: "Hải Châu, Đà Nẵng", size: "5000+ nhân viên", rating: 4.5, desc: "Phát triển phần mềm chất lượng cao cho thị trường Nhật Bản và Âu Mỹ.", category: "it" },
+            { id: "philong", name: "PhiLong Technology", logo: "img/philong-logo.jpg", location: "Hải Châu, Đà Nẵng", size: "2000+ nhân viên", rating: 4.5, desc: "Môi trường làm việc sáng tạo, tập trung vào các dự án công nghệ mới.", category: "it" },
+            { id: "enclave", name: "Enclave Software", logo: "img/images.png", location: "Sơn Trà, Đà Nẵng", size: "300+ nhân viên", rating: 4.5, desc: "Công ty phần mềm lâu đời với quy trình làm việc chuyên nghiệp.", category: "it" },
+            { id: "vinpearl", name: "Vinpearl Resort & Spa", logo: "img/spa.png", location: "Ngũ Hành Sơn", size: "1000+ nhân viên", rating: 4.6, desc: "Hệ thống nghỉ dưỡng 5 sao đẳng cấp.", category: "tourism" },
+            { id: "intercontinental", name: "InterContinental Danang", logo: "img/intercontinental.png", location: "Bán đảo Sơn Trà", size: "800+ nhân viên", rating: 4.8, desc: "Khu nghỉ dưỡng sang trọng bậc nhất thế giới.", category: "tourism" },
+            { id: "sungroup", name: "Sun Group", logo: "img/logo-sungroup-2020.jpg", location: "Hải Châu", size: "3000+ nhân viên", rating: 4.7, desc: "Chủ đầu tư các dự án lớn tại Đà Nẵng.", category: "realestate" },
+            { id: "trungnam", name: "Trung Nam Group", logo: "img/logo-trung-nam-group.png", location: "Liên Chiểu", size: "1500+ nhân viên", rating: 4.6, desc: "Tập đoàn đa ngành về năng lượng và hạ tầng.", category: "realestate" },
+            { id: "lottemart", name: "Lotte Mart", logo: "img/logo-lotte-mart-vector-2.webp", location: "Hải Châu", size: "500+ nhân viên", rating: 4.4, desc: "Trung tâm thương mại lớn nhất Đà Nẵng.", category: "finance" },
+            { id: "agribank", name: "Agribank", logo: "img/agr.png", location: "Hải Châu", size: "800+ nhân viên", rating: 4.5, desc: "Ngân hàng uy tín với môi trường ổn định.", category: "finance" },
+            { id: "viettel", name: "Viettel Post", logo: "img/viet.png", location: "Toàn Đà Nẵng", size: "1000+ nhân viên", rating: 4.5, desc: "Doanh nghiệp chuyển phát hàng đầu.", category: "logistics" }
+        ];
+
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            let stars = "";
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) stars += "★";
+                else stars += "☆";
+            }
+            return stars;
+        }
+
+        function renderCompanies(filter = "all") {
+            const grid = document.getElementById("companyGrid");
+            const filtered = filter === "all" ? companies : companies.filter(c => c.category === filter);
+            grid.innerHTML = filtered.map(company => `
+                <div class="company-card">
+                    <div class="card-top">
+                        <div class="company-logo"><img src="${company.logo}" alt="${company.name}" onerror="this.src='https://placehold.co/50?text=Logo'"></div>
+                        <div>
+                            <div class="company-name">${company.name}</div>
+                            <div class="company-info">${company.location} | ${company.size}</div>
+                            <div class="stars">${renderStars(company.rating)} ${company.rating}/5</div>
+                        </div>
+                    </div>
+                    <div class="company-desc">${company.desc}</div>
+                    <div class="card-buttons">
+                        <button class="btn-outline" onclick="location.href='chitiet-congty.html?id=${company.id}#review'">Đánh giá</button>
+                        <button class="btn-primary" onclick="location.href='chitiet-congty.html?id=${company.id}'">Xem chi tiết</button>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-item">
-                <strong>95</strong>
-                <span>Công ty</span>
-            </div>
-            <div class="stat-item">
-                <strong>127</strong>
-                <span>Việc làm</span>
-            </div>
-            <div class="stat-item">
-                <strong>14366</strong>
-                <span>Đánh giá</span>
-            </div>
-            <div class="stat-trust">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Được tin tưởng bởi 5000+ ứng viên
-            </div>
-        </div>
+            `).join("");
+        }
 
-        <!-- Industry Filters -->
-        <div class="filter-tabs">
-            <button class="filter-btn active"><i class="fa-solid fa-building"></i> Tất cả</button>
-            <button class="filter-btn"><i class="fa-solid fa-laptop-code"></i> Công nghệ thông tin</button>
-            <button class="filter-btn"><i class="fa-solid fa-hotel"></i> Du lịch - Khách sạn</button>
-            <button class="filter-btn"><i class="fa-solid fa-helmet-safety"></i> Xây dựng - Bất động sản</button>
-            <button class="filter-btn"><i class="fa-solid fa-cart-shopping"></i> Kinh doanh - Bán lẻ</button>
-            <button class="filter-btn"><i class="fa-solid fa-truck-fast"></i> Dịch vụ - Logistics</button>
-        </div>
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                filterBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                renderCompanies(btn.getAttribute("data-filter"));
+            });
+        });
+        renderCompanies();
 
-       <!-- Company Cards List - Đã bổ sung thêm hơn 10 thẻ -->
-        <div class="company-list">
+        // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
+        (function() {
+            const AUTH_KEY = 'isLoggedIn';
+            const DEFAULT_USER = 'Nguyễn Văn A';
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            const loginBtn = document.getElementById('fakeLoginBtn');
+            const registerBtn = document.getElementById('fakeRegisterBtn');
             
-            <!-- 1. FPT Software (IT) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/FPT_Software_logo.png" alt="FPT"></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>FPT Software</h3> <span class="tag-featured">Nổi bật</span></div>
-                        <div class="meta-row">
-                            <span><i class="fa-solid fa-location-dot"></i> Hải Châu</span>
-                            <span><i class="fa-solid fa-users"></i> 5000+ nhân viên</span>
+            function getUserName() {
+                let name = localStorage.getItem('userName');
+                if (!name || name === 'undefined' || name === 'null' || name === '') {
+                    return DEFAULT_USER;
+                }
+                return name;
+            }
+            
+            function renderUI() {
+                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
+                if (isLoggedIn) {
+                    const userName = getUserName();
+                    authDiv.style.display = 'none';
+                    userDiv.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-avatar">${userName.charAt(0)}</div>
+                            <span>${userName}</span>
+                            <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
                         </div>
-                        <div class="rating-row">
-                            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <strong>4.5</strong></div>
-                            <span class="recommend"><i class="fa-solid fa-arrow-trend-up"></i> 85% khuyến khích</span>
-                        </div>
-                    </div>
-                    <div class="card-actions-top"><i class="fa-regular fa-heart"></i> <i class="fa-solid fa-share-nodes"></i></div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Phát triển phần mềm chất lượng cao cho thị trường Nhật Bản và Âu Mỹ.</p>
-                    <div class="benefits">
-                        <div class="benefit-tags"><span>Lương tháng 13</span> <span>Bảo hiểm FPT Care</span> <span>Xe đưa đón</span></div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết <i class="fa-solid fa-chevron-down"></i></a>
-                    <div class="footer-btns">
-                        <button class="btn-review">Đánh giá</button>
-                        <button class="btn-jobs">25 việc làm</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Sun Asterisk (IT) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo orange">SUN</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Sun* (Sun Asterisk)</h3> <span class="tag-featured">Hot</span></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Hải Châu</span> <span><i class="fa-solid fa-users"></i> 2000+ nhân viên</span></div>
-                        <div class="rating-row"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> <strong>5.0</strong></div></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Môi trường làm việc sáng tạo, tập trung vào các dự án Startup và công nghệ mới.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">12 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 3. Enclave (IT) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo">EN</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Enclave Software</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Sơn Trà</span> <span><i class="fa-solid fa-users"></i> 300+ nhân viên</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Công ty phần mềm lâu đời với quy trình làm việc chuyên nghiệp chuẩn quốc tế.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">5 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 4. Vinpearl Đà Nẵng (Du lịch) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo" style="color: #d4af37">VIN</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Vinpearl Resort & Spa</h3> <span class="tag-featured">Top đầu</span></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Ngũ Hành Sơn</span> <span><i class="fa-solid fa-hotel"></i> Du lịch - Khách sạn</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Hệ thống nghỉ dưỡng 5 sao đẳng cấp. Cơ hội thăng tiến rộng mở trong tập đoàn Vingroup.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">15 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 5. InterContinental (Du lịch) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo">IC</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>InterContinental Danang</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Bán đảo Sơn Trà</span> <span><i class="fa-solid fa-star"></i> 5 sao Luxury</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Khu nghỉ dưỡng sang trọng bậc nhất thế giới với môi trường làm việc chuyên nghiệp.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">8 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 6. Sun Group (Xây dựng/BĐS) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo orange">SUN</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Tập đoàn Sun Group</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Hải Châu</span> <span><i class="fa-solid fa-building"></i> Bất động sản</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Chủ đầu tư các dự án nghìn tỷ: Bà Nà Hills, Cầu Vàng, Asia Park.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">20 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 7. Trung Nam Group (Xây dựng/Năng lượng) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo" style="color: #0056b3">TN</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Trung Nam Group</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Liên Chiểu</span> <span><i class="fa-solid fa-bolt"></i> Năng lượng & Hạ tầng</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Tập đoàn đa ngành hàng đầu về năng lượng tái tạo và hạ tầng kỹ thuật.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">6 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 8. Lotte Mart (Bán lẻ) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo" style="color: #e60012">LOTTE</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Lotte Mart Đà Nẵng</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Hải Châu</span> <span><i class="fa-solid fa-cart-shopping"></i> Bán lẻ</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Môi trường làm việc năng động tại một trong những siêu thị lớn nhất Đà Nẵng.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">10 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 9. Viettel Post (Logistics) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo" style="color: #ee0000">VT</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Viettel Post Đà Nẵng</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Toàn Đà Nẵng</span> <span><i class="fa-solid fa-truck"></i> Logistics</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Doanh nghiệp chuyển phát quân đội với chế độ đãi ngộ và lộ trình thăng tiến tốt.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">30 việc làm</button></div>
-                </div>
-            </div>
-
-            <!-- 10. Agribank (Tài chính) -->
-            <div class="company-card">
-                <div class="card-header">
-                    <div class="comp-logo-box"><span class="text-logo" style="color: #007d32">AGRI</span></div>
-                    <div class="comp-info">
-                        <div class="title-row"><h3>Agribank Đà Nẵng</h3></div>
-                        <div class="meta-row"><span><i class="fa-solid fa-location-dot"></i> Hải Châu</span> <span><i class="fa-solid fa-money-check-dollar"></i> Ngân hàng</span></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description">Môi trường làm việc ổn định, phúc lợi và thưởng cuối năm hấp dẫn.</p>
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="view-detail">Xem chi tiết</a>
-                    <div class="footer-btns"><button class="btn-review">Đánh giá</button> <button class="btn-jobs">4 việc làm</button></div>
-                </div>
-            </div>
-
-        </div>
-
-            <!-- Bạn có thể copy thêm nhiều thẻ ở đây -->
-
-        </div>
-    </main>
-<script src="auth.js"></script>
-<link rel="stylesheet" href="auth.css">
+                    `;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            localStorage.setItem(AUTH_KEY, 'false');
+                            localStorage.removeItem('userName');
+                            renderUI();
+                            alert('Đã đăng xuất!');
+                        });
+                    }
+                } else {
+                    authDiv.style.display = 'flex';
+                    userDiv.innerHTML = '';
+                }
+            }
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
+                    renderUI();
+                    alert('Đăng nhập thành công!');
+                });
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
+                    renderUI();
+                    alert('Đăng ký thành công!');
+                });
+            }
+            
+            renderUI();
+        })();
+    </script>
 </body>
 </html>

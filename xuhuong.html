@@ -10,6 +10,10 @@
 </head>
 <body>
 
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-main">DANANG WORK</span>
+            <div class="logo-sub">🔍 Tìm việc thông minh tại Đà Nẵng</div>
     <!-- NAVBAR (Nền trắng, Logo xanh) -->
     <nav class="navbar">
         <div class="logo">
@@ -25,6 +29,15 @@
             <li><a href="taocv.html">Tạo CV</a></li>
             <li><a href="hotro.html">Hỗ trợ</a></li>
         </ul>
+        <div class="nav-right">
+            <div id="authButtons">
+                <a href="#" id="fakeLoginBtn">Đăng nhập</a>
+                <a href="#" id="fakeRegisterBtn">Đăng ký</a>
+            </div>
+            <div id="userBox"></div>
+        </div>
+    </nav>
+
            <div class="nav-right">
   <div id="authButtons">
     <a href="login.html">Đăng nhập</a>
@@ -45,6 +58,11 @@
             </div>
             <h1>Thị trường lao động <br> <span>Đà Nẵng 2026</span></h1>
             <p>Phân tích chuyên sâu về xu hướng tuyển dụng, mức lương và kỹ năng hot nhất tại thành phố đáng sống nhất Việt Nam</p>
+
+            <div class="year-selector">
+                <span>2024</span><span>2025</span><span class="active">2026</span>
+                <span>2027</span><span>2028</span><span>2029</span><span>2030</span>
+
             
             <div class="year-selector">
                 <span>2024</span>
@@ -59,6 +77,28 @@
     </header>
 
     <main class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header"><div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div><span class="percent blue-text">+32%</span></div>
+                <h2>121+</h2><p>Việc làm IT</p><div class="progress-bar"><div class="fill blue-bar"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div><span class="percent green-text">+18%</span></div>
+                <h2>50+</h2><p>Công ty mới</p><div class="progress-bar"><div class="fill green-bar"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div><span class="percent purple-text">+45%</span></div>
+                <h2>5,000+</h2><p>Ứng viên</p><div class="progress-bar"><div class="fill purple-bar"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div><span class="percent orange-text">+15%</span></div>
+                <h2>15.2M</h2><p>Lương TB (VNĐ)</p><div class="progress-bar"><div class="fill orange-bar"></div></div>
+            </div>
+        </div>
+
+        <div class="tabs-nav">
+            <button class="tab-btn active"><i class="fa-solid fa-chart-simple"></i> Tổng quan</button>
+
         <!-- 4 THẺ THỐNG KÊ (Đè lên banner) -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -111,6 +151,85 @@
             <button class="tab-btn"><i class="fa-solid fa-rocket"></i> Dự báo 2030</button>
         </div>
 
+        <div class="industry-grid">
+            <div class="industry-card border-blue">
+                <div class="ind-header"><h3>Công nghệ thông tin</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +32%</span></div>
+                <p>AI, Blockchain, Cloud Computing đang bùng nổ tại Đà Nẵng</p>
+                <div class="ind-footer"><span>Việc làm</span><strong>450+</strong></div>
+            </div>
+            <div class="industry-card border-green">
+                <div class="ind-header"><h3>Du lịch - Khách sạn</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +28%</span></div>
+                <p>Phục hồi mạnh mẽ, nhu cầu nhân sự cao cấp tăng đột biến</p>
+                <div class="ind-footer"><span>Việc làm</span><strong>380+</strong></div>
+            </div>
+        </div>
+
+        <div class="highlight-banner">
+            <div class="h-left"><div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="h-text"><h3>Xu hướng 2026</h3><p>Chuyển đổi số & Kinh tế xanh</p></div></div>
+            <div class="h-right"><h3>+21%</h3><p>so với 2025</p></div>
+        </div>
+    </main>
+
+    <script>
+        // Demo chức năng Login/Logout để bảo vệ
+        (function() {
+            const AUTH_KEY = 'isLoggedIn';
+            const USER_NAME = 'Nguyễn Văn A';
+            
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            const fakeLoginBtn = document.getElementById('fakeLoginBtn');
+            const fakeRegisterBtn = document.getElementById('fakeRegisterBtn');
+            
+            // Hàm render giao diện
+            function renderUI() {
+                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
+                if (isLoggedIn) {
+                    // Hiển thị user info
+                    authDiv.style.display = 'none';
+                    userDiv.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-avatar">A</div>
+                            <span class="user-name">${USER_NAME}</span>
+                            <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+                        </div>
+                    `;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            localStorage.setItem(AUTH_KEY, 'false');
+                            renderUI();
+                        });
+                    }
+                } else {
+                    authDiv.style.display = 'flex';
+                    userDiv.innerHTML = '';
+                }
+            }
+            
+            // Fake login
+            if (fakeLoginBtn) {
+                fakeLoginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    renderUI();
+                });
+            }
+            if (fakeRegisterBtn) {
+                fakeRegisterBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Giả lập đăng ký và tự động đăng nhập
+                    localStorage.setItem(AUTH_KEY, 'true');
+                    renderUI();
+                    alert('Đăng ký thành công! (Demo)');
+                });
+            }
+            
+            renderUI();
+        })();
+    </script>
+
         <!-- PHÂN TÍCH NGÀNH -->
         <div class="industry-grid">
             <div class="industry-card border-blue">
@@ -155,5 +274,6 @@
     </main>
 <script src="auth.js"></script>
 <link rel="stylesheet" href="auth.css">
+
 </body>
 </html>
