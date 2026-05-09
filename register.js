@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const userTypeCards = document.querySelectorAll(".type-card");
@@ -322,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-=======
+
 // TYPE SWITCH
 const typeCards = document.querySelectorAll('.type-card');
 const employerFields = document.getElementById('employerFields');
@@ -456,4 +455,3 @@ const confirmPassword = document.getElementById("confirmPassword").value.trim();
   // RESET FORM
   window.location.href = "login.html";
 };
->>>>>>> 2e662051b06bc1745440a7d62af7169b02d1c39e

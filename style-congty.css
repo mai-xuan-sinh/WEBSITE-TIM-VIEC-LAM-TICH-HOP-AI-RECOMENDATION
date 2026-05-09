@@ -1,5 +1,4 @@
 :root {
-<<<<<<< HEAD
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
     --gray-50: #f8fafc;
@@ -418,13 +417,7 @@ body {
         flex-direction: column;
         text-align: center;
     }
-=======
-    --primary: #2c56d6;
-    --dark-blue: #1c2e5e;
-    --success: #38a169;
-    --grey: #718096;
-    --light-bg: #f7fafc;
-    --border: #edf2f7;
+
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -612,5 +605,4 @@ body { background-color: #f4f7fe; color: #333; }
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(27,107,135,0.4);
   opacity: 0.95;
->>>>>>> 2e662051b06bc1745440a7d62af7169b02d1c39e
 }
