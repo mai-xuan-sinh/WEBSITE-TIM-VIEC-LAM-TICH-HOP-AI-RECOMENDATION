@@ -6,6 +6,332 @@
     <title>Chi tiết công ty - DANANG WORK</title>
     <link rel="stylesheet" href="style-congty.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* ===== FIX THÊM CHO TRANG CHI TIẾT ===== */
+        .detail-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+        
+        .detail-header {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 35px;
+        }
+        
+        .detail-logo {
+            width: 120px;
+            height: 120px;
+            background: #f1f5f9;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .detail-logo img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+        
+        .detail-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+        
+        .detail-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .detail-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 35px;
+        }
+        
+        .info-box {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2563eb;
+            display: inline-block;
+        }
+        
+        .benefit-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .benefit-item {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+        
+        .contact-list {
+            list-style: none;
+        }
+        
+        .contact-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .job-item {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: 0.3s;
+        }
+        
+        .job-item:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.1);
+        }
+        
+        .job-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+        
+        .job-salary {
+            font-size: 0.8rem;
+            color: #16a34a;
+            margin-top: 4px;
+        }
+        
+        .btn-apply {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+        }
+        
+        .review-card {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .review-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .review-form button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            color: #2563eb;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .detail-container {
+                padding: 24px;
+                margin: 20px;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .detail-meta {
+                justify-content: center;
+            }
+            .detail-actions {
+                justify-content: center;
+            }
+            .job-item {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+        
+        /* Fix navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(226,232,240,0.7);
+        }
+        
+        .nav-content {
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: nowrap;
+        }
+        
+        @media (max-width: 1100px) {
+            .nav-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 16px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 6px 15px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        
+        #userBox {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -124,8 +450,7 @@
             const fullStars = Math.floor(rating);
             let stars = "";
             for (let i = 1; i <= 5; i++) {
-                if (i <= fullStars) stars += "★";
-                else stars += "☆";
+                stars += i <= fullStars ? "★" : "☆";
             }
             return stars;
         }
@@ -146,7 +471,10 @@
 
             const jobsHtml = data.jobs.map(job => `
                 <div class="job-item">
-                    <div><div class="job-title">${job.title}</div><div class="job-salary">💰 ${job.salary}/tháng</div></div>
+                    <div>
+                        <div class="job-title">${job.title}</div>
+                        <div class="job-salary">💰 ${job.salary}/tháng</div>
+                    </div>
                     <button class="btn-apply" onclick="applyJob('${data.name}', '${job.title}')">Ứng tuyển</button>
                 </div>
             `).join("");
@@ -157,14 +485,14 @@
                     <div class="detail-title">
                         <h1>${data.name}</h1>
                         <div class="detail-meta">
-                            <span>📍 ${data.location}</span>
-                            <span>👥 ${data.size}</span>
-                            <span>📁 ${data.industry}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>
+                            <span><i class="fas fa-users"></i> ${data.size}</span>
+                            <span><i class="fas fa-briefcase"></i> ${data.industry}</span>
                         </div>
                         <div class="stars" style="font-size:1rem">${renderStars(data.rating)} ${data.rating}/5</div>
                         <div class="detail-actions">
-                            <button class="btn-outline" onclick="document.getElementById('review').scrollIntoView({behavior:'smooth'})">Đánh giá công ty</button>
-                            <button class="btn-primary" onclick="applyJob('${data.name}', 'Vị trí phù hợp')">Ứng tuyển ngay</button>
+                            <button class="btn-outline" onclick="document.getElementById('review').scrollIntoView({behavior:'smooth'})"><i class="fas fa-star"></i> Đánh giá công ty</button>
+                            <button class="btn-primary" onclick="applyJob('${data.name}', 'Vị trí phù hợp')"><i class="fas fa-paper-plane"></i> Ứng tuyển ngay</button>
                         </div>
                     </div>
                 </div>
@@ -172,38 +500,38 @@
                 <div class="detail-grid">
                     <div>
                         <div class="info-box">
-                            <h3>Giới thiệu công ty</h3>
+                            <h3><i class="fas fa-info-circle"></i> Giới thiệu công ty</h3>
                             <p>${data.desc}</p>
                         </div>
                         <div class="info-box">
-                            <h3>Phúc lợi nổi bật</h3>
-                            <div class="benefit-list">${data.benefits.map(b => `<span class="benefit-item">✓ ${b}</span>`).join("")}</div>
+                            <h3><i class="fas fa-gift"></i> Phúc lợi nổi bật</h3>
+                            <div class="benefit-list">${data.benefits.map(b => `<span class="benefit-item"><i class="fas fa-check-circle"></i> ${b}</span>`).join("")}</div>
                         </div>
                         <div class="info-box" id="review">
-                            <h3>Đánh giá từ nhân viên</h3>
+                            <h3><i class="fas fa-comments"></i> Đánh giá từ nhân viên</h3>
                             <div class="review-card">
                                 <div class="stars">${renderStars(4.5)}</div>
-                                <strong>Nguyễn Văn A</strong> - Nhân viên chính thức
+                                <strong><i class="fas fa-user-circle"></i> Nguyễn Văn A</strong> - Nhân viên chính thức
                                 <p style="margin-top:8px;color:#475569">"Môi trường làm việc chuyên nghiệp, đồng nghiệp thân thiện, cơ hội thăng tiến rõ ràng."</p>
                             </div>
                             <div class="review-form">
-                                <h4>Gửi đánh giá của bạn</h4>
+                                <h4><i class="fas fa-edit"></i> Gửi đánh giá của bạn</h4>
                                 <textarea rows="3" placeholder="Chia sẻ trải nghiệm làm việc của bạn..."></textarea>
-                                <button onclick="alert('Cảm ơn bạn đã đánh giá!')">Gửi đánh giá</button>
+                                <button onclick="alert('Cảm ơn bạn đã đánh giá!')"><i class="fas fa-paper-plane"></i> Gửi đánh giá</button>
                             </div>
                         </div>
                     </div>
                     <div>
                         <div class="info-box">
-                            <h3>Thông tin liên hệ</h3>
+                            <h3><i class="fas fa-address-card"></i> Thông tin liên hệ</h3>
                             <ul class="contact-list">
-                                <li>🌐 ${data.contact.web}</li>
-                                <li>📞 ${data.contact.phone}</li>
-                                <li>✉️ ${data.contact.email}</li>
+                                <li><i class="fas fa-globe"></i> ${data.contact.web}</li>
+                                <li><i class="fas fa-phone-alt"></i> ${data.contact.phone}</li>
+                                <li><i class="fas fa-envelope"></i> ${data.contact.email}</li>
                             </ul>
                         </div>
                         <div class="info-box">
-                            <h3>Việc làm đang tuyển</h3>
+                            <h3><i class="fas fa-briefcase"></i> Việc làm đang tuyển</h3>
                             ${jobsHtml}
                         </div>
                     </div>
@@ -214,7 +542,7 @@
 
         loadDetail();
 
-        // ========== ĐỒNG BỘ ĐĂNG NHẬP VỚI HỆ THỐNG CHÍNH ==========
+        // ========== ĐỒNG BỘ ĐĂNG NHẬP ==========
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
@@ -240,28 +568,27 @@
             
             if (isLoggedIn && authDiv && userDiv) {
                 authDiv.style.display = 'none';
-                userDiv.style.display = 'flex';
+                userDiv.style.display = 'block';
                 userDiv.innerHTML = `
                     <div class="user-info">
                         <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
                         <span>${userName}</span>
-                        <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
                     </div>
                 `;
-                const logoutBtn = document.getElementById('logoutBtn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', () => {
-                        localStorage.removeItem('currentUser');
-                        localStorage.removeItem('isLoggedIn');
-                        localStorage.removeItem('userName');
-                        window.location.href = 'index.html';
-                    });
-                }
             } else if (authDiv && userDiv) {
                 authDiv.style.display = 'flex';
                 userDiv.style.display = 'none';
                 userDiv.innerHTML = '';
             }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.href = 'index.html';
         }
         
         updateAuthUI();

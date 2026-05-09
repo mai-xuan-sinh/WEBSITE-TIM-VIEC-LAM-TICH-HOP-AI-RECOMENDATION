@@ -8,117 +8,203 @@
 
     <link rel="stylesheet" href="taocv.css">
     <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* FIX NAVBAR - THÊM STYLE ĐỒNG BỘ */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(18px);
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
 
-    <!-- FONT AWESOME -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            min-height: 70px;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px;
+            flex-wrap: nowrap;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: nowrap;
+        }
+
+        .nav-links a {
+            position: relative;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            transition: 0.25s;
+            text-decoration: none;
+            white-space: nowrap;
+            padding: 8px 12px;
+            border-radius: 30px;
+        }
+
+        .nav-links a:hover {
+            background: #f1f5f9;
+            color: #0ea5e9;
+        }
+
+        .nav-links a.active {
+            color: #0ea5e9 !important;
+            background: #eff6ff;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+        }
+
+        #authButtons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        #authButtons a {
+            white-space: nowrap;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #authButtons a:first-child {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        #authButtons a:last-child {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        #userBox {
+            display: none;
+        }
+
+        @media (max-width: 1100px) {
+            .header-flex {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links a {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .logo-area h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Ẩn navbar cũ trong taocv.css */
+        .navbar {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- =========================
-         NAVBAR
-    ========================== -->
-    <header class="navbar">
-
-        <div class="container nav-container">
-
-            <!-- LOGO -->
-            <div class="logo">
-
-                <i class="fa-solid fa-briefcase logo-icon"></i>
-
-                <div class="logo-text">
-
-                    <span class="brand">
-                        DANANG WORK
-                    </span>
-
-                    <span class="slogan">
-                        Tìm việc thông minh tại Đà Nẵng
-                    </span>
-
-                </div>
-
+    <!-- HEADER GIỐNG TRANG CHỦ -->
+    <div class="top-header">
+        <div class="container header-flex">
+            <div class="logo-area">
+                <h1>DANANG WORK</h1>
             </div>
-
-            <!-- MENU -->
-            <nav class="nav-links">
-
-                <a href="index.html">
-                    Trang chủ
-                </a>
-
-                <a href="trangvieclam.html">
-                    Việc làm
-                </a>
-
-                <a href="congty.html">
-                    Công ty
-                </a>
-
-                <a href="xuhuong.html">
-                    Xu hướng
-                </a>
-
-                <a href="huongdan.html">
-                    Hướng dẫn
-                </a>
-
-                <!-- DROPDOWN -->
-                <div class="nav-dropdown">
-
-                    <a href="taocv.html"
-                        class="active dropdown-toggle">
-
-                        Tạo CV
-
-                        <i class="fa-solid fa-chevron-down"></i>
-
-                    </a>
-
-                    <div class="dropdown-menu">
-
-                        <a href="luucv.html">
-
-                            <i class="fa-solid fa-folder-open"></i>
-
-                            Lưu CV
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-                <a href="hotro.html">
-                    Hỗ trợ
-                </a>
-
-            </nav>
-
-            <!-- AUTH -->
+            <div class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html">Việc làm</a>
+                <a href="congty.html">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <a href="taocv.html" class="active">Tạo CV</a>
+                <a href="hotro.html">Hỗ trợ</a>
+            </div>
             <div class="nav-right">
-
-                <div id="authButtons">
-
-                    <a href="login.html">
-                        Đăng nhập
-                    </a>
-
-                    <a href="register.html">
-                        Đăng ký
-                    </a>
-
+                <div id="authButtons" style="display: flex; gap: 12px;">
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
                 </div>
-
-                <div id="userBox"></div>
-
+                <div id="userBox" style="display: none;"></div>
             </div>
-
         </div>
-
-    </header>
+    </div>
 
     <!-- =========================
          HERO
@@ -159,11 +245,8 @@
                     Xem mẫu theo phong cách
                 </button>
 
-                <a href="huongdan-cv.html"
-                    class="btn-glass btn-link">
-
+                <a href="huongdan-cv.html" class="btn-glass btn-link">
                     Hướng dẫn viết CV
-
                 </a>
 
             </div>
@@ -223,8 +306,6 @@
 
                     <div class="cv-info">
 
-                        <h3>Minimal 1</h3>
-
                         <h3>Mẫu 1</h3>
 
                         <p class="cv-desc">
@@ -238,16 +319,12 @@
                         <div class="cv-tags">
 
                             <span>Corporate</span>
-
                             <span>Business</span>
 
                         </div>
 
-                        <button type="button"
-                            class="btn-use-template secondary">
-
+                        <button type="button" class="btn-use-template secondary">
                             Dùng mẫu
-
                         </button>
 
                     </div>
@@ -264,8 +341,6 @@
                     </div>
 
                     <div class="cv-info">
-
-                        <h3>Minimal 2</h3>
 
                         <h3>Mẫu 2</h3>
 
@@ -280,16 +355,12 @@
                         <div class="cv-tags">
 
                             <span>HR</span>
-
                             <span>Office</span>
 
                         </div>
 
-                        <button type="button"
-                            class="btn-use-template secondary">
-
+                        <button type="button" class="btn-use-template secondary">
                             Dùng mẫu
-
                         </button>
 
                     </div>
@@ -307,8 +378,6 @@
 
                     <div class="cv-info">
 
-                        <h3>Minimal 3</h3>
-
                         <h3>Mẫu 3</h3>
 
                         <p class="cv-desc">
@@ -322,16 +391,12 @@
                         <div class="cv-tags">
 
                             <span>Manager</span>
-
                             <span>Leader</span>
 
                         </div>
 
-                        <button type="button"
-                            class="btn-use-template secondary">
-
+                        <button type="button" class="btn-use-template secondary">
                             Dùng mẫu
-
                         </button>
 
                     </div>
@@ -387,8 +452,6 @@
 
                     <div class="cv-info">
 
-                        <h3>Modern 1</h3>
-
                         <h3>Mẫu 4</h3>
 
                         <p class="cv-desc">
@@ -402,16 +465,82 @@
                         <div class="cv-tags">
 
                             <span>Modern</span>
-
                             <span>Professional</span>
 
                         </div>
 
-                        <button type="button"
-                            class="btn-use-template secondary">
-
+                        <button type="button" class="btn-use-template secondary">
                             Dùng mẫu
+                        </button>
 
+                    </div>
+
+                </div>
+
+                <div class="cv-card">
+
+                    <div class="cv-thumb">
+
+                        <div class="cv-image-placeholder"></div>
+
+                    </div>
+
+                    <div class="cv-info">
+
+                        <h3>Mẫu 5</h3>
+
+                        <p class="cv-desc">
+                            Hiện đại - Năng động
+                        </p>
+
+                        <p class="cv-detail">
+                            Phong cách trẻ trung cho designer
+                        </p>
+
+                        <div class="cv-tags">
+
+                            <span>Creative</span>
+                            <span>Modern</span>
+
+                        </div>
+
+                        <button type="button" class="btn-use-template secondary">
+                            Dùng mẫu
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="cv-card">
+
+                    <div class="cv-thumb">
+
+                        <div class="cv-image-placeholder"></div>
+
+                    </div>
+
+                    <div class="cv-info">
+
+                        <h3>Mẫu 6</h3>
+
+                        <p class="cv-desc">
+                            Hiện đại - Tối ưu
+                        </p>
+
+                        <p class="cv-detail">
+                            Tập trung kỹ năng và kinh nghiệm
+                        </p>
+
+                        <div class="cv-tags">
+
+                            <span>Skill</span>
+                            <span>Experience</span>
+
+                        </div>
+
+                        <button type="button" class="btn-use-template secondary">
+                            Dùng mẫu
                         </button>
 
                     </div>
@@ -422,194 +551,336 @@
 
         </div>
 
-    </main>
+        <!-- =========================
+             PROFESSIONAL
+        ========================== -->
+        <div class="cv-section">
 
-    <!-- =========================
-         POPUP
-    ========================== -->
-    <div class="cv-popup" id="cvPopup">
+            <div class="section-title">
 
-        <div class="cv-popup-content">
+                <div class="title-left">
 
-            <span class="close-popup"
-                onclick="closeCVPopup()">
+                    <div class="title-icon bg-dark-blue">
 
-                <i class="fa-solid fa-xmark"></i>
+                        <i class="fa-solid fa-shield"></i>
 
-            </span>
+                    </div>
 
-            <div class="popup-header">
+                    <div class="title-text">
 
-                <h2 id="popupTitle">
-                    Tạo CV
-                </h2>
+                        <h2>
+                            Phong cách Chuyên nghiệp
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <i class="fa-solid fa-chevron-down collapse-icon"></i>
 
             </div>
 
-            <!-- FORM -->
-            <form class="cv-form template-form"
-                id="minimalForm">
+            <div class="cv-grid">
 
-                <div class="form-group">
+                <div class="cv-card">
 
-                    <label>Họ và tên</label>
+                    <div class="cv-thumb">
 
-                    <input type="text"
-                        placeholder="Nguyễn Văn A">
+                        <div class="cv-image-placeholder"></div>
 
-                </div>
+                    </div>
 
-                <div class="form-group">
+                    <div class="cv-info">
 
-                    <label>Email</label>
+                        <h3>Mẫu 7</h3>
 
-                    <input type="email"
-                        placeholder="example@gmail.com">
+                        <p class="cv-desc">
+                            Corporate - Doanh nghiệp
+                        </p>
 
-                </div>
+                        <p class="cv-detail">
+                            Thiết kế phù hợp môi trường corporate
+                        </p>
 
-                <div class="form-group">
+                        <div class="cv-tags">
 
-                    <label>Số điện thoại</label>
+                            <span>Business</span>
+                            <span>Corporate</span>
 
-                    <input type="text"
-                        placeholder="0123456789">
+                        </div>
 
-                </div>
+                        <button type="button" class="btn-use-template secondary">
+                            Dùng mẫu
+                        </button>
 
-                <div class="form-group">
-
-                    <label>Giới thiệu</label>
-
-                    <textarea rows="4"></textarea>
+                    </div>
 
                 </div>
 
-                <button type="submit"
-                    class="btn-create-cv">
+                <div class="cv-card">
 
-                    Tạo CV
+                    <div class="cv-thumb">
 
-                </button>
+                        <div class="cv-image-placeholder"></div>
 
-            </form>
+                    </div>
+
+                    <div class="cv-info">
+
+                        <h3>Mẫu 8</h3>
+
+                        <p class="cv-desc">
+                            Executive - Cấp cao
+                        </p>
+
+                        <p class="cv-detail">
+                            Sang trọng dành cho quản lý cấp cao
+                        </p>
+
+                        <div class="cv-tags">
+
+                            <span>Executive</span>
+                            <span>Manager</span>
+
+                        </div>
+
+                        <button type="button" class="btn-use-template secondary">
+                            Dùng mẫu
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="cv-card">
+
+                    <div class="cv-thumb">
+
+                        <div class="cv-image-placeholder"></div>
+
+                    </div>
+
+                    <div class="cv-info">
+
+                        <h3>Mẫu 9</h3>
+
+                        <p class="cv-desc">
+                            Academic - Học thuật
+                        </p>
+
+                        <p class="cv-detail">
+                            Dành cho giảng viên, nghiên cứu
+                        </p>
+
+                        <div class="cv-tags">
+
+                            <span>Academic</span>
+                            <span>Research</span>
+
+                        </div>
+
+                        <button type="button" class="btn-use-template secondary">
+                            Dùng mẫu
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
+        <!-- Footer Summary Box -->
+        <div class="summary-box">
+            <div class="summary-header">
+                <div class="summary-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3>Tạo CV có gì đặc biệt</h3>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item"><strong>Đa dạng mẫu mã, phong cách</strong><p>Các mẫu CV thiết kế rất đa dạng kiểu mẫu, phù hợp với mọi đối tượng</p></div>
+                <div class="summary-item"><strong>Tạo CV thật dễ dàng, tiện lợi</strong><p>Quá trình tạo CV Online chỉ mất khoảng 5 phút, dễ dàng thao tác kể cả với điện thoại.</p></div>
+                <div class="summary-item"><strong>Trình tạo CV miễn phí 100%</strong><p>Trình tạo CV là hoàn toàn miễn phí, từ việc đăng ký đến tạo và tải CV xin việc.</p></div>
+                <div class="summary-item"><strong>Tạo CV dễ dàng hơn với khung hướng dẫn chi tiết</strong><p>Dễ dàng hơn với khung hướng dẫn chi tiết, tự động góp ý, báo lỗi với thuật toán thông minh.</p></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- POPUP CV -->
+    <div class="cv-popup" id="cvPopup">
+        <div class="cv-popup-content">
+            <span class="close-popup" onclick="closeCVPopup()">
+                <i class="fa-solid fa-xmark"></i>
+            </span>
+            <div class="popup-header">
+                <h2 id="popupTitle">Tạo CV</h2>
+            </div>
+
+            <form class="cv-form template-form" id="minimalForm">
+                <div class="form-group"><label>Họ và tên</label><input type="text" placeholder="Nguyễn Văn A"></div>
+                <div class="form-group"><label>Vị trí ứng tuyển</label><input type="text" placeholder="Frontend Developer"></div>
+                <div class="form-group"><label>Email</label><input type="email" placeholder="example@gmail.com"></div>
+                <div class="form-group"><label>Số điện thoại</label><input type="text" placeholder="0123456789"></div>
+                <div class="form-group"><label>Địa chỉ</label><input type="text" placeholder="Đà Nẵng"></div>
+                <div class="form-group"><label>Giới thiệu</label><textarea rows="4"></textarea></div>
+                <div class="form-group"><label>Kỹ năng</label><textarea rows="3" placeholder="HTML, CSS, JavaScript..."></textarea></div>
+                <div class="form-group"><label>Kinh nghiệm</label><textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea></div>
+                <div class="form-group"><label>Học vấn</label><textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea></div>
+                <button class="btn-create-cv">Tạo CV</button>
+            </form>
+
+            <form class="cv-form template-form" id="modernForm" style="display: none;">
+                <div class="form-group"><label>Họ và tên</label><input type="text" placeholder="Nguyễn Văn A"></div>
+                <div class="form-group"><label>Vị trí ứng tuyển</label><input type="text" placeholder="UI/UX Designer"></div>
+                <div class="form-group"><label>Email</label><input type="email" placeholder="example@gmail.com"></div>
+                <div class="form-group"><label>Số điện thoại</label><input type="text" placeholder="0123456789"></div>
+                <div class="form-group"><label>Địa chỉ</label><input type="text" placeholder="Đà Nẵng"></div>
+                <div class="form-group"><label>Giới thiệu</label><textarea rows="4"></textarea></div>
+                <div class="form-group"><label>Kỹ năng</label><textarea rows="3" placeholder="Figma, Adobe XD, Photoshop..."></textarea></div>
+                <div class="form-group"><label>Kinh nghiệm</label><textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea></div>
+                <div class="form-group"><label>Học vấn</label><textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea></div>
+                <button class="btn-create-cv">Tạo CV</button>
+            </form>
+
+            <form class="cv-form template-form" id="professionalForm" style="display: none;">
+                <div class="form-group"><label>Họ và tên</label><input type="text" placeholder="Nguyễn Văn A"></div>
+                <div class="form-group"><label>Vị trí ứng tuyển</label><input type="text" placeholder="Project Manager"></div>
+                <div class="form-group"><label>Email</label><input type="email" placeholder="example@gmail.com"></div>
+                <div class="form-group"><label>Số điện thoại</label><input type="text" placeholder="0123456789"></div>
+                <div class="form-group"><label>Địa chỉ</label><input type="text" placeholder="Đà Nẵng"></div>
+                <div class="form-group"><label>Giới thiệu</label><textarea rows="4"></textarea></div>
+                <div class="form-group"><label>Kỹ năng</label><textarea rows="3" placeholder="PMP, Agile, Scrum..."></textarea></div>
+                <div class="form-group"><label>Kinh nghiệm</label><textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea></div>
+                <div class="form-group"><label>Học vấn</label><textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea></div>
+                <button class="btn-create-cv">Tạo CV</button>
+            </form>
+
+        </div>
     </div>
 
-    <!-- =========================
-         SCRIPT
-    ========================== -->
     <script>
-
-        const popup =
-            document.getElementById("cvPopup");
-
-        const form =
-            document.getElementById("minimalForm");
-
-        const popupTitle =
-            document.getElementById("popupTitle");
-
-        const buttons =
-            document.querySelectorAll(".btn-use-template");
+        const popup = document.getElementById("cvPopup");
+        const minimalForm = document.getElementById("minimalForm");
+        const modernForm = document.getElementById("modernForm");
+        const professionalForm = document.getElementById("professionalForm");
+        const popupTitle = document.getElementById("popupTitle");
 
         let currentTemplate = "";
 
-        form.style.display = "none";
-
+        const buttons = document.querySelectorAll(".btn-use-template");
         buttons.forEach(button => {
-
-            button.addEventListener("click", function () {
-
-                const cardTitle =
-                    this.closest(".cv-card")
-                        .querySelector("h3")
-                        .innerText;
-
+            button.addEventListener("click", function() {
+                const cardTitle = this.closest(".cv-card").querySelector("h3").innerText;
                 currentTemplate = cardTitle;
-
                 popup.classList.add("active");
-
-                popupTitle.innerText =
-                    cardTitle;
-
-                form.style.display = "grid";
-
+                
+                minimalForm.style.display = "none";
+                modernForm.style.display = "none";
+                professionalForm.style.display = "none";
+                
+                if (cardTitle === "Mẫu 1" || cardTitle === "Mẫu 2" || cardTitle === "Mẫu 3") {
+                    popupTitle.innerText = "CV Phong Cách Tối Giản";
+                    minimalForm.style.display = "grid";
+                } else if (cardTitle === "Mẫu 4" || cardTitle === "Mẫu 5" || cardTitle === "Mẫu 6") {
+                    popupTitle.innerText = "CV Phong Cách Hiện Đại";
+                    modernForm.style.display = "grid";
+                } else {
+                    popupTitle.innerText = "CV Phong Cách Chuyên Nghiệp";
+                    professionalForm.style.display = "grid";
+                }
             });
-
         });
 
         function closeCVPopup() {
-
             popup.classList.remove("active");
-
         }
 
-        window.addEventListener("click", function (e) {
-
+        window.addEventListener("click", function(e) {
             if (e.target === popup) {
-
                 popup.classList.remove("active");
-
             }
-
         });
 
-        /* SAVE CV */
-
-        form.addEventListener("submit", function (e) {
-
-            e.preventDefault();
-
-            const inputs =
-                form.querySelectorAll("input");
-
-            const textareas =
-                form.querySelectorAll("textarea");
-
-            const cvData = {
-
-                template: currentTemplate,
-
-                fullName: inputs[0].value,
-
-                email: inputs[1].value,
-
-                phone: inputs[2].value,
-
-                intro: textareas[0].value,
-
-                createdAt:
-                    new Date().toLocaleString()
-
-            };
-
-            let savedCVs =
-                JSON.parse(
-                    localStorage.getItem("savedCVs")
-                ) || [];
-
-            savedCVs.push(cvData);
-
-            localStorage.setItem(
-                "savedCVs",
-                JSON.stringify(savedCVs)
-            );
-
-            alert("Tạo CV thành công!");
-
-            popup.classList.remove("active");
-
-            window.location.href =
-                "luucv.html";
-
+        const forms = document.querySelectorAll(".template-form");
+        forms.forEach(form => {
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const inputs = form.querySelectorAll("input, textarea");
+                const cvData = {
+                    template: currentTemplate,
+                    fullName: inputs[0]?.value || "",
+                    position: inputs[1]?.value || "",
+                    email: inputs[2]?.value || "",
+                    phone: inputs[3]?.value || "",
+                    address: inputs[4]?.value || "",
+                    intro: inputs[5]?.value || "",
+                    skills: inputs[6]?.value || "",
+                    experience: inputs[7]?.value || "",
+                    education: inputs[8]?.value || "",
+                    createdAt: new Date().toLocaleString()
+                };
+                let savedCVs = JSON.parse(localStorage.getItem("savedCVs")) || [];
+                savedCVs.push(cvData);
+                localStorage.setItem("savedCVs", JSON.stringify(savedCVs));
+                alert("Tạo CV thành công!");
+                window.location.href = "luucv.html";
+            });
         });
 
+        // ===== AUTH UI =====
+        function updateAuthUI() {
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            if (!authDiv || !userDiv) return;
+            
+            let currentUser = localStorage.getItem('currentUser');
+            let isLoggedIn = false;
+            let userName = "";
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    isLoggedIn = true;
+                    userName = user.name || user.fullname || user.email?.split('@')[0] || "User";
+                } catch(e) {
+                    isLoggedIn = false;
+                }
+            }
+            
+            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
+                isLoggedIn = true;
+                userName = localStorage.getItem('userName') || "User";
+            }
+            
+            if (isLoggedIn) {
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name">${userName}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>
+                `;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
+            }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.href = 'index.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+        window.addEventListener('storage', updateAuthUI);
     </script>
-
-    <script src="auth.js"></script>
 
 </body>
 

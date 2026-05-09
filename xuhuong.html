@@ -5,10 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xu hướng thị trường lao động Đà Nẵng 2026</title>
-    <link rel="stylesheet" href="xuhuong.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="xuhuong.css">
 </head>
-
 <body>
 
     <!-- HEADER GIỐNG TRANG CHỦ -->
@@ -36,45 +35,71 @@
         </div>
     </div>
 
+    <!-- HERO SECTION -->
     <header class="hero-section">
         <div class="overlay"></div>
         <div class="hero-content">
-            <div class="report-badge"><i class="fa-solid fa-trophy"></i> Báo cáo thường niên 2026</div>
+            <div class="report-badge">
+                <i class="fa-solid fa-trophy"></i> Báo cáo thường niên 2026
+            </div>
             <h1>Thị trường lao động <br> <span>Đà Nẵng 2026</span></h1>
             <p>Phân tích chuyên sâu về xu hướng tuyển dụng, mức lương và kỹ năng hot nhất tại thành phố đáng sống nhất Việt Nam</p>
             <div class="year-selector">
-                <span data-year="2024">2024</span><span data-year="2025">2025</span>
+                <span data-year="2024">2024</span>
+                <span data-year="2025">2025</span>
                 <span data-year="2026" class="active">2026</span>
-                <span data-year="2027">2027</span><span data-year="2028">2028</span>
-                <span data-year="2029">2029</span><span data-year="2030">2030</span>
+                <span data-year="2027">2027</span>
+                <span data-year="2028">2028</span>
+                <span data-year="2029">2029</span>
+                <span data-year="2030">2030</span>
             </div>
         </div>
     </header>
 
+    <!-- MAIN CONTENT -->
     <main class="container">
+
+        <!-- STATS GRID -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-header"><div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div><span class="percent blue-text" id="job-growth">+32%</span></div>
-                <h2 id="stat-job">121+</h2><p>Việc làm IT</p>
+                <div class="stat-header">
+                    <div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div>
+                    <span class="percent blue-text" id="job-growth">+32%</span>
+                </div>
+                <h2 id="stat-job">121+</h2>
+                <p>Việc làm IT</p>
                 <div class="progress-bar"><div class="fill blue-bar" style="width:40%"></div></div>
             </div>
             <div class="stat-card">
-                <div class="stat-header"><div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div><span class="percent green-text" id="comp-growth">+18%</span></div>
-                <h2 id="stat-comp">50+</h2><p>Công ty mới</p>
+                <div class="stat-header">
+                    <div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div>
+                    <span class="percent green-text" id="comp-growth">+18%</span>
+                </div>
+                <h2 id="stat-comp">50+</h2>
+                <p>Công ty mới</p>
                 <div class="progress-bar"><div class="fill green-bar" style="width:60%"></div></div>
             </div>
             <div class="stat-card">
-                <div class="stat-header"><div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div><span class="percent purple-text" id="cand-growth">+45%</span></div>
-                <h2 id="stat-cand">5,000+</h2><p>Ứng viên</p>
+                <div class="stat-header">
+                    <div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div>
+                    <span class="percent purple-text" id="cand-growth">+45%</span>
+                </div>
+                <h2 id="stat-cand">5,000+</h2>
+                <p>Ứng viên</p>
                 <div class="progress-bar"><div class="fill purple-bar" style="width:80%"></div></div>
             </div>
             <div class="stat-card">
-                <div class="stat-header"><div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div><span class="percent orange-text" id="sal-growth">+15%</span></div>
-                <h2 id="stat-sal">15.2M</h2><p>Lương trung bình</p>
+                <div class="stat-header">
+                    <div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div>
+                    <span class="percent orange-text" id="sal-growth">+15%</span>
+                </div>
+                <h2 id="stat-sal">15.2M</h2>
+                <p>Lương trung bình</p>
                 <div class="progress-bar"><div class="fill orange-bar" style="width:35%"></div></div>
             </div>
         </div>
 
+        <!-- TABS -->
         <div class="tabs-nav">
             <button class="tab-btn active" data-tab="overview"><i class="fa-solid fa-chart-simple"></i> Tổng quan</button>
             <button class="tab-btn" data-tab="industry"><i class="fa-solid fa-desktop"></i> Phân tích ngành</button>
@@ -83,198 +108,333 @@
             <button class="tab-btn" data-tab="forecast"><i class="fa-solid fa-rocket"></i> Dự báo 2030</button>
         </div>
 
-        <div id="tab-overview" class="tab-content active"><div class="industry-grid" id="industryGrid"></div></div>
-        <div id="tab-industry" class="tab-content"><div class="industry-detail" style="padding:30px;background:white;border-radius:20px;"><h3>Phân tích chi tiết theo ngành</h3><p>Dữ liệu đang được cập nhật...</p></div></div>
-        <div id="tab-salary" class="tab-content"><div class="salary-detail" style="padding:30px;background:white;border-radius:20px;"><h3>Bảng lương theo ngành nghề</h3><p>Dữ liệu đang được cập nhật...</p></div></div>
-        <div id="tab-skills" class="tab-content"><div class="skills-detail" style="padding:30px;background:white;border-radius:20px;"><h3>Top kỹ năng được nhà tuyển dụng quan tâm</h3><p>Dữ liệu đang được cập nhật...</p></div></div>
-        <div id="tab-forecast" class="tab-content"><div class="forecast-detail" style="padding:30px;background:white;border-radius:20px;"><h3>Dự báo thị trường lao động 2030</h3><p>Dữ liệu đang được cập nhật...</p></div></div>
-
-        <div class="highlight-banner">
-            <div class="h-left"><div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <div class="h-text"><h3 id="banner-title">Xu hướng 2026</h3><p id="banner-sub">Chuyển đổi số & Kinh tế xanh</p></div></div>
-            <div class="h-right"><h3 id="banner-pct">+21%</h3><p id="banner-comp">so với năm 2025</p></div>
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tab-overview" class="tab-content active">
+            <div class="industry-grid" id="industryGrid"></div>
         </div>
+
+        <!-- TAB 2: PHÂN TÍCH NGÀNH -->
+        <div id="tab-industry" class="tab-content">
+            <div class="industry-detail-grid">
+                <div class="industry-detail-card">
+                    <h3><i class="fa-solid fa-laptop-code"></i> Công nghệ thông tin</h3>
+                    <div class="industry-stats">
+                        <div class="stat-badge"><div class="number">450+</div><div class="label">Việc làm</div></div>
+                        <div class="stat-badge"><div class="number">35%</div><div class="label">Tăng trưởng</div></div>
+                        <div class="stat-badge"><div class="number">28</div><div class="label">Tuổi TB</div></div>
+                    </div>
+                    <p><strong>Xu hướng nổi bật:</strong> AI, Blockchain, Cloud Computing, IoT, Cybersecurity là những lĩnh vực được tuyển dụng nhiều nhất trong năm 2026.</p>
+                    <p style="margin-top: 12px;"><strong>Nhu cầu nhân sự:</strong> Các công ty đang mở rộng quy mô, đặc biệt là các vị trí Senior và Leader.</p>
+                </div>
+                <div class="industry-detail-card">
+                    <h3><i class="fa-solid fa-hotel"></i> Du lịch - Khách sạn</h3>
+                    <div class="industry-stats">
+                        <div class="stat-badge"><div class="number">380+</div><div class="label">Việc làm</div></div>
+                        <div class="stat-badge"><div class="number">28%</div><div class="label">Tăng trưởng</div></div>
+                        <div class="stat-badge"><div class="number">30</div><div class="label">Tuổi TB</div></div>
+                    </div>
+                    <p><strong>Xu hướng nổi bật:</strong> Phục hồi mạnh mẽ sau đại dịch, nhu cầu nhân sự cao cấp tăng đột biến, đặc biệt là các Resort 5 sao.</p>
+                    <p style="margin-top: 12px;"><strong>Nhu cầu nhân sự:</strong> Lễ tân, quản lý nhà hàng, hướng dẫn viên đa ngôn ngữ.</p>
+                </div>
+                <div class="industry-detail-card">
+                    <h3><i class="fa-solid fa-helmet-safety"></i> Xây dựng - Bất động sản</h3>
+                    <div class="industry-stats">
+                        <div class="stat-badge"><div class="number">210+</div><div class="label">Việc làm</div></div>
+                        <div class="stat-badge"><div class="number">20%</div><div class="label">Tăng trưởng</div></div>
+                        <div class="stat-badge"><div class="number">35</div><div class="label">Tuổi TB</div></div>
+                    </div>
+                    <p><strong>Xu hướng nổi bật:</strong> Phát triển các dự án đô thị thông minh, khu công nghiệp mới tại Đà Nẵng.</p>
+                    <p style="margin-top: 12px;"><strong>Nhu cầu nhân sự:</strong> Kỹ sư xây dựng, kiến trúc sư, quản lý dự án, nhân viên kinh doanh BĐS.</p>
+                </div>
+                <div class="industry-detail-card">
+                    <h3><i class="fa-solid fa-cart-shopping"></i> Kinh doanh - Bán lẻ</h3>
+                    <div class="industry-stats">
+                        <div class="stat-badge"><div class="number">180+</div><div class="label">Việc làm</div></div>
+                        <div class="stat-badge"><div class="number">15%</div><div class="label">Tăng trưởng</div></div>
+                        <div class="stat-badge"><div class="number">28</div><div class="label">Tuổi TB</div></div>
+                    </div>
+                    <p><strong>Xu hướng nổi bật:</strong> Thương mại điện tử bùng nổ, nhiều trung tâm thương mại mới khai trương.</p>
+                    <p style="margin-top: 12px;"><strong>Nhu cầu nhân sự:</strong> Nhân viên kinh doanh, marketing online, quản lý chuỗi cửa hàng.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LƯƠNG & ĐÃI NGỘ -->
+        <div id="tab-salary" class="tab-content">
+            <div class="salary-table">
+                <table>
+                    <thead>
+                        <tr><th>Ngành nghề</th><th>Mới ra trường</th><th>Có kinh nghiệm (2-3 năm)</th><th>Cấp cao (5+ năm)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Công nghệ thông tin</strong></td><td>8-12 triệu</td><td>15-25 triệu</td><td>30-50 triệu</td></tr>
+                        <tr><td><strong>Du lịch - Khách sạn</strong></td><td>6-9 triệu</td><td>10-18 triệu</td><td>20-35 triệu</td></tr>
+                        <tr><td><strong>Xây dựng - Bất động sản</strong></td><td>7-10 triệu</td><td>12-20 triệu</td><td>25-40 triệu</td></tr>
+                        <tr><td><strong>Kinh doanh - Bán lẻ</strong></td><td>6-8 triệu + hoa hồng</td><td>10-18 triệu + KPI</td><td>20-35 triệu</td></tr>
+                        <tr><td><strong>Logistics - Dịch vụ</strong></td><td>7-10 triệu</td><td>12-20 triệu</td><td>22-35 triệu</td></tr>
+                        <tr><td><strong>Tài chính - Ngân hàng</strong></td><td>8-12 triệu</td><td>15-25 triệu</td><td>30-50 triệu</td></tr>
+                        <tr><td><strong>Marketing - Truyền thông</strong></td><td>7-10 triệu</td><td>12-22 triệu</td><td>25-40 triệu</td></tr>
+                        <tr><td><strong>Thiết kế - Sáng tạo</strong></td><td>6-9 triệu</td><td>10-18 triệu</td><td>20-35 triệu</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 24px; padding: 20px; background: #f1f5f9; border-radius: 16px;">
+                <h4 style="margin-bottom: 12px;"><i class="fa-solid fa-chart-line"></i> Phân tích xu hướng lương 2026</h4>
+                <p>• Mức lương trung bình tại Đà Nẵng tăng <strong>15%</strong> so với năm 2025, đạt mức 15.2 triệu/tháng.</p>
+                <p>• Ngành IT tiếp tục dẫn đầu với mức lương cao nhất, đặc biệt các vị trí AI Engineer, Cloud Architect.</p>
+                <p>• Ngành Du lịch - Khách sạn phục hồi mạnh, mức lương tăng 28% so với năm trước.</p>
+            </div>
+        </div>
+
+        <!-- TAB 4: KỸ NĂNG HOT -->
+        <div id="tab-skills" class="tab-content">
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3><i class="fa-solid fa-code"></i> Kỹ năng công nghệ</h3>
+                    <div class="skill-list">
+                        <div class="skill-item"><span class="skill-name">ReactJS/NextJS</span><div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div><span class="skill-percent">85%</span></div>
+                        <div class="skill-item"><span class="skill-name">Node.js/Python</span><div class="skill-bar"><div class="skill-fill" style="width: 78%"></div></div><span class="skill-percent">78%</span></div>
+                        <div class="skill-item"><span class="skill-name">AI/Machine Learning</span><div class="skill-bar"><div class="skill-fill" style="width: 72%"></div></div><span class="skill-percent">72%</span></div>
+                        <div class="skill-item"><span class="skill-name">Cloud (AWS/Azure)</span><div class="skill-bar"><div class="skill-fill" style="width: 68%"></div></div><span class="skill-percent">68%</span></div>
+                        <div class="skill-item"><span class="skill-name">SQL/NoSQL</span><div class="skill-bar"><div class="skill-fill" style="width: 75%"></div></div><span class="skill-percent">75%</span></div>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fa-solid fa-language"></i> Kỹ năng mềm</h3>
+                    <div class="skill-list">
+                        <div class="skill-item"><span class="skill-name">Tiếng Anh (IELTS 6.5+)</span><div class="skill-bar"><div class="skill-fill" style="width: 80%"></div></div><span class="skill-percent">80%</span></div>
+                        <div class="skill-item"><span class="skill-name">Giao tiếp & Thuyết trình</span><div class="skill-bar"><div class="skill-fill" style="width: 75%"></div></div><span class="skill-percent">75%</span></div>
+                        <div class="skill-item"><span class="skill-name">Làm việc nhóm</span><div class="skill-bar"><div class="skill-fill" style="width: 88%"></div></div><span class="skill-percent">88%</span></div>
+                        <div class="skill-item"><span class="skill-name">Quản lý thời gian</span><div class="skill-bar"><div class="skill-fill" style="width: 82%"></div></div><span class="skill-percent">82%</span></div>
+                        <div class="skill-item"><span class="skill-name">Tư duy phản biện</span><div class="skill-bar"><div class="skill-fill" style="width: 78%"></div></div><span class="skill-percent">78%</span></div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #eff6ff, #fff); border-radius: 16px; border: 1px solid #dbeafe;">
+                <h4 style="margin-bottom: 12px;"><i class="fa-solid fa-star"></i> Lời khuyên từ chuyên gia</h4>
+                <p>➜ Kết hợp kỹ năng công nghệ với ngoại ngữ sẽ giúp bạn nổi bật hơn trong mắt nhà tuyển dụng.</p>
+                <p>➜ Các khóa học chứng chỉ quốc tế (AWS, Google Cloud, IELTS) được đánh giá cao.</p>
+                <p>➜ Khả năng tự học và cập nhật công nghệ mới là yếu tố quan trọng để phát triển sự nghiệp.</p>
+            </div>
+        </div>
+
+        <!-- TAB 5: DỰ BÁO 2030 -->
+        <div id="tab-forecast" class="tab-content">
+            <div class="forecast-grid">
+                <div class="forecast-card">
+                    <div class="forecast-icon"><i class="fa-solid fa-robot"></i></div>
+                    <h3>Tự động hóa & AI</h3>
+                    <div class="forecast-number">45%</div>
+                    <p>công việc sẽ được hỗ trợ bởi AI và tự động hóa</p>
+                    <span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> Tăng 200% so với 2026</span>
+                </div>
+                <div class="forecast-card">
+                    <div class="forecast-icon"><i class="fa-solid fa-globe"></i></div>
+                    <h3>Việc làm từ xa</h3>
+                    <div class="forecast-number">60%</div>
+                    <p>doanh nghiệp áp dụng mô hình hybrid/remote</p>
+                    <span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> Tăng 50% so với 2026</span>
+                </div>
+                <div class="forecast-card">
+                    <div class="forecast-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <h3>Kinh tế xanh</h3>
+                    <div class="forecast-number">25,000+</div>
+                    <p>việc làm mới trong lĩnh vực năng lượng tái tạo</p>
+                    <span class="trend-up"><i class="fa-solid fa-arrow-trend-up"></i> Tăng trưởng 300%</span>
+                </div>
+            </div>
+            <div style="margin-top: 24px; padding: 24px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px; color: white;">
+                <h4 style="margin-bottom: 16px;"><i class="fa-solid fa-chart-line"></i> Dự báo tổng quan 2030</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; text-align: center;">
+                    <div><div style="font-size: 32px; font-weight: 800;">190,000+</div><div style="opacity: 0.8;">Việc làm</div></div>
+                    <div><div style="font-size: 32px; font-weight: 800;">8,500+</div><div style="opacity: 0.8;">Công ty</div></div>
+                    <div><div style="font-size: 32px; font-weight: 800;">21.5M</div><div style="opacity: 0.8;">Lương trung bình</div></div>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <p>➜ Đà Nẵng sẽ trở thành trung tâm công nghệ và khởi nghiệp hàng đầu Đông Nam Á</p>
+                    <p>➜ Nhu cầu nhân lực chất lượng cao trong lĩnh vực AI, Blockchain, Kinh tế xanh tăng đột biến</p>
+                    <p>➜ Mức lương trung bình dự kiến tăng 30-40% so với 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HIGHLIGHT BANNER -->
+        <div class="highlight-banner">
+            <div class="h-left">
+                <div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="h-text">
+                    <h3 id="banner-title">Xu hướng 2026</h3>
+                    <p id="banner-sub">Chuyển đổi số & Kinh tế xanh</p>
+                </div>
+            </div>
+            <div class="h-right">
+                <h3 id="banner-pct">+21%</h3>
+                <p id="banner-comp">so với năm 2025</p>
+            </div>
+        </div>
+
     </main>
 
-    <style>
-        .top-header {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            backdrop-filter: blur(18px);
-            background: rgba(255,255,255,0.82);
-            border-bottom: 1px solid rgba(226,232,240,0.8);
-        }
-        .header-flex {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            min-height: 84px;
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-        .logo-area h1 {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-        }
-        .nav-links a {
-            position: relative;
-            font-size: 15px;
-            font-weight: 700;
-            color: #334155;
-            transition: 0.25s;
-            text-decoration: none;
-        }
-        .nav-links a::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: -8px;
-            width: 0%;
-            height: 3px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-            transition: 0.3s;
-        }
-        .nav-links a:hover {
-            color: #0ea5e9;
-        }
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        .nav-links a.active {
-            color: #0ea5e9 !important;
-        }
-        .nav-links a.active::after {
-            width: 100%;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f1f5f9;
-            padding: 6px 15px;
-            border-radius: 40px;
-            border: 1px solid #e2e8f0;
-        }
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .logout-btn:hover {
-            background: #dc2626;
-        }
-        #userBox {
-            display: none;
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
-
     <script>
+        // ===== DỮ LIỆU THEO NĂM =====
         const yearlyData = {
-            "2026": { stats: { job: "121,000+", comp: "5,200+", cand: "45,000+", sal: "15.2M", jobGrowth: "+32%", compGrowth: "+18%", candGrowth: "+45%", salGrowth: "+15%" }, industries: [{ name: "Công nghệ thông tin", jobs: "32k", growth: "+35%" }, { name: "Du lịch - Khách sạn", jobs: "27k", growth: "+28%" }, { name: "Xây dựng - BĐS", jobs: "21k", growth: "+20%" }, { name: "Kinh doanh - Bán lẻ", jobs: "18k", growth: "+15%" }], banner: { title: "Xu hướng 2026", sub: "Chuyển đổi số & Kinh tế xanh", pct: "+21%" } },
-            "2025": { stats: { job: "110,000+", comp: "4,800+", cand: "40,000+", sal: "14.2M", jobGrowth: "+22%", compGrowth: "+14%", candGrowth: "+32%", salGrowth: "+10%" }, industries: [{ name: "Công nghệ thông tin", jobs: "28k", growth: "+25%" }, { name: "Du lịch - Khách sạn", jobs: "22k", growth: "+20%" }, { name: "Xây dựng - BĐS", jobs: "19k", growth: "+15%" }, { name: "Kinh doanh - Bán lẻ", jobs: "16k", growth: "+12%" }], banner: { title: "Xu hướng 2025", sub: "Tăng trưởng ổn định", pct: "+18%" } },
-            "2024": { stats: { job: "98,000+", comp: "4,100+", cand: "35,000+", sal: "13.5M", jobGrowth: "+18%", compGrowth: "+10%", candGrowth: "+25%", salGrowth: "+8%" }, industries: [{ name: "Công nghệ thông tin", jobs: "25k", growth: "+20%" }, { name: "Du lịch - Khách sạn", jobs: "18k", growth: "+15%" }, { name: "Xây dựng - BĐS", jobs: "17k", growth: "+10%" }, { name: "Kinh doanh - Bán lẻ", jobs: "15k", growth: "+8%" }], banner: { title: "Xu hướng 2024", sub: "Phục hồi sau đại dịch", pct: "+15%" } }
+            "2026": { 
+                stats: { job: "121,000+", comp: "5,200+", cand: "45,000+", sal: "15.2M", 
+                         jobGrowth: "+32%", compGrowth: "+18%", candGrowth: "+45%", salGrowth: "+15%" },
+                industries: [
+                    { name: "Công nghệ thông tin", jobs: "32k", growth: "+35%" },
+                    { name: "Du lịch - Khách sạn", jobs: "27k", growth: "+28%" },
+                    { name: "Xây dựng - BĐS", jobs: "21k", growth: "+20%" },
+                    { name: "Kinh doanh - Bán lẻ", jobs: "18k", growth: "+15%" },
+                    { name: "Logistics", jobs: "12k", growth: "+12%" },
+                    { name: "Tài chính - Ngân hàng", jobs: "15k", growth: "+18%" }
+                ],
+                banner: { title: "Xu hướng 2026", sub: "Chuyển đổi số & Kinh tế xanh", pct: "+21%" }
+            },
+            "2025": { 
+                stats: { job: "110,000+", comp: "4,800+", cand: "40,000+", sal: "14.2M",
+                         jobGrowth: "+22%", compGrowth: "+14%", candGrowth: "+32%", salGrowth: "+10%" },
+                industries: [
+                    { name: "Công nghệ thông tin", jobs: "28k", growth: "+25%" },
+                    { name: "Du lịch - Khách sạn", jobs: "22k", growth: "+20%" },
+                    { name: "Xây dựng - BĐS", jobs: "19k", growth: "+15%" },
+                    { name: "Kinh doanh - Bán lẻ", jobs: "16k", growth: "+12%" }
+                ],
+                banner: { title: "Xu hướng 2025", sub: "Tăng trưởng ổn định", pct: "+18%" }
+            },
+            "2024": { 
+                stats: { job: "98,000+", comp: "4,100+", cand: "35,000+", sal: "13.5M",
+                         jobGrowth: "+18%", compGrowth: "+10%", candGrowth: "+25%", salGrowth: "+8%" },
+                industries: [
+                    { name: "Công nghệ thông tin", jobs: "25k", growth: "+20%" },
+                    { name: "Du lịch - Khách sạn", jobs: "18k", growth: "+15%" },
+                    { name: "Xây dựng - BĐS", jobs: "17k", growth: "+10%" },
+                    { name: "Kinh doanh - Bán lẻ", jobs: "15k", growth: "+8%" }
+                ],
+                banner: { title: "Xu hướng 2024", sub: "Phục hồi sau đại dịch", pct: "+15%" }
+            }
         };
 
         function renderIndustries(industries) {
             const grid = document.getElementById("industryGrid");
             if (!grid) return;
-            grid.innerHTML = industries.map(ind => `<div class="industry-card ${ind.name.includes("Công nghệ") ? 'border-blue' : 'border-green'}"><div class="ind-header"><h3>${ind.name}</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> ${ind.growth}</span></div><div class="ind-footer"><span>Việc làm</span><strong>${ind.jobs}</strong></div></div>`).join("");
+            
+            grid.innerHTML = industries.map(ind => `
+                <div class="industry-card ${ind.name.includes("Công nghệ") ? 'border-blue' : 'border-green'}">
+                    <div class="ind-header">
+                        <h3>${ind.name}</h3>
+                        <span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> ${ind.growth}</span>
+                    </div>
+                    <div class="ind-footer">
+                        <span>Việc làm</span>
+                        <strong>${ind.jobs}</strong>
+                    </div>
+                </div>
+            `).join("");
         }
 
         function updateByYear(year) {
             const data = yearlyData[year];
             if (!data) return;
+
             document.getElementById("stat-job").textContent = data.stats.job;
             document.getElementById("stat-comp").textContent = data.stats.comp;
             document.getElementById("stat-cand").textContent = data.stats.cand;
             document.getElementById("stat-sal").textContent = data.stats.sal;
+            
             document.getElementById("job-growth").textContent = data.stats.jobGrowth;
             document.getElementById("comp-growth").textContent = data.stats.compGrowth;
             document.getElementById("cand-growth").textContent = data.stats.candGrowth;
             document.getElementById("sal-growth").textContent = data.stats.salGrowth;
+            
             renderIndustries(data.industries);
+            
             document.getElementById("banner-title").textContent = data.banner.title;
             document.getElementById("banner-sub").textContent = data.banner.sub;
             document.getElementById("banner-pct").textContent = data.banner.pct;
-            document.querySelector(".hero-content h1 span").textContent = `Đà Nẵng ${year}`;
+            
+            const heroSpan = document.querySelector(".hero-content h1 span");
+            if (heroSpan) heroSpan.textContent = `Đà Nẵng ${year}`;
         }
 
-        document.querySelectorAll(".year-selector span").forEach(span => {
+        // Year selector
+        const yearSpans = document.querySelectorAll(".year-selector span");
+        yearSpans.forEach(span => {
             span.addEventListener("click", () => {
-                document.querySelectorAll(".year-selector span").forEach(s => s.classList.remove("active"));
+                yearSpans.forEach(s => s.classList.remove("active"));
                 span.classList.add("active");
                 updateByYear(span.textContent);
             });
         });
 
-        document.querySelectorAll(".tab-btn").forEach(btn => {
+        // Tab switching
+        const tabBtns = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+        
+        tabBtns.forEach(btn => {
             btn.addEventListener("click", () => {
-                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-                document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+                tabBtns.forEach(b => b.classList.remove("active"));
+                tabContents.forEach(c => c.classList.remove("active"));
                 btn.classList.add("active");
                 const tabId = `tab-${btn.getAttribute("data-tab")}`;
-                document.getElementById(tabId)?.classList.add("active");
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) activeTab.classList.add("active");
             });
         });
 
+        // Khởi tạo dữ liệu mặc định
         updateByYear("2026");
 
+        // ===== AUTH UI =====
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
             if (!authDiv || !userDiv) return;
+            
             let currentUser = localStorage.getItem('currentUser');
             let isLoggedIn = false;
             let userName = "";
-            if (currentUser) { try { const user = JSON.parse(currentUser); isLoggedIn = true; userName = user.name || user.fullname || "User"; } catch(e) {} }
-            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') { isLoggedIn = true; userName = localStorage.getItem('userName') || "User"; }
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    isLoggedIn = true;
+                    userName = user.name || user.fullname || user.email?.split('@')[0] || "User";
+                } catch(e) {
+                    isLoggedIn = false;
+                }
+            }
+            
+            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
+                isLoggedIn = true;
+                userName = localStorage.getItem('userName') || "User";
+            }
+            
             if (isLoggedIn) {
                 authDiv.style.display = 'none';
                 userDiv.style.display = 'block';
-                userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${userName.charAt(0).toUpperCase()}</div><span class="user-name">${userName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name">${userName}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>
+                `;
             } else {
                 authDiv.style.display = 'flex';
                 userDiv.style.display = 'none';
                 userDiv.innerHTML = '';
             }
         }
-        function handleLogout() { localStorage.clear(); window.location.reload(); }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.href = 'index.html';
+        }
+        
         document.addEventListener('DOMContentLoaded', updateAuthUI);
         window.addEventListener('storage', updateAuthUI);
     </script>
