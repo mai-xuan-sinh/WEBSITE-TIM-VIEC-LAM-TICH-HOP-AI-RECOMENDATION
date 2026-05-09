@@ -1,0 +1,420 @@
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --white: #ffffff;
+    --success: #16a34a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.logo-main {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+.logo-slogan {
+    font-size: 0.7rem;
+    color: #f59e0b;
+}
+.nav-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.nav-links a {
+    text-decoration: none;
+    color: var(--gray-600);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+.nav-links a:hover {
+    background: var(--gray-100);
+}
+.nav-links a.active-link {
+    background: var(--primary);
+    color: white;
+}
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+#authButtons {
+    display: flex;
+    gap: 8px;
+}
+#authButtons a {
+    padding: 8px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+#authButtons a:first-child {
+    color: var(--primary);
+    background: #eff6ff;
+}
+#authButtons a:last-child {
+    background: var(--primary);
+    color: white;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gray-100);
+    padding: 6px 12px;
+    border-radius: 40px;
+}
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+/* ===== HERO ===== */
+.hero {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: white;
+    text-align: center;
+    padding: 50px 24px;
+}
+.hero h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+}
+.hero h1 span {
+    color: #fbbf24;
+}
+.hero p {
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.8;
+}
+
+/* ===== FILTER BUTTONS ===== */
+.filter-bar {
+    margin: 32px 0 24px;
+}
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.filter-btn {
+    background: white;
+    border: 1px solid var(--gray-200);
+    padding: 8px 20px;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.filter-btn:hover {
+    border-color: var(--primary);
+}
+.filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* ===== COMPANY GRID ===== */
+.company-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin: 32px 0;
+}
+.company-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: 0.2s;
+    border: 1px solid var(--gray-200);
+}
+.company-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+.card-top {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.company-logo {
+    width: 60px;
+    height: 60px;
+    background: var(--gray-100);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.company-logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+.company-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.company-info {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+}
+.stars {
+    color: #fbbf24;
+    font-size: 0.85rem;
+}
+.company-desc {
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    margin: 12px 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+}
+.card-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--gray-300);
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    flex: 1;
+}
+.btn-outline:hover {
+    background: var(--gray-100);
+}
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    flex: 1;
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+/* ===== DETAIL PAGE ===== */
+.detail-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+}
+.detail-header {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 30px;
+}
+.detail-logo {
+    width: 100px;
+    height: 100px;
+    background: var(--gray-100);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.detail-logo img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+.detail-title h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+.detail-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+.detail-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+.info-box {
+    background: var(--gray-50);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+.info-box h3 {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary);
+    display: inline-block;
+}
+.benefit-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.benefit-item {
+    background: white;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    border: 1px solid var(--gray-200);
+}
+.contact-list {
+    list-style: none;
+}
+.contact-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+.job-item {
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--gray-200);
+}
+.job-title {
+    font-weight: 700;
+}
+.job-salary {
+    font-size: 0.8rem;
+    color: var(--success);
+}
+.btn-apply {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.review-card {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--gray-200);
+}
+.review-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    margin: 10px 0;
+    font-family: inherit;
+}
+.review-form button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .detail-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .company-grid {
+        grid-template-columns: 1fr;
+    }
+    .nav-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
