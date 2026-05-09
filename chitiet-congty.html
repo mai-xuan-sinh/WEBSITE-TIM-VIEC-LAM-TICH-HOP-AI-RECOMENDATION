@@ -213,22 +213,32 @@
 
         loadDetail();
 
-        // ========== LOGIN/LOGOUT ==========
+        // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
         (function() {
             const AUTH_KEY = 'isLoggedIn';
-            const USER_NAME = 'Nguyễn Văn A';
+            const DEFAULT_USER = 'Nguyễn Văn A';
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
             const loginBtn = document.getElementById('fakeLoginBtn');
             const registerBtn = document.getElementById('fakeRegisterBtn');
             
+            function getUserName() {
+                let name = localStorage.getItem('userName');
+                if (!name || name === 'undefined' || name === 'null') {
+                    return DEFAULT_USER;
+                }
+                return name;
+            }
+            
             function renderUI() {
-                if (localStorage.getItem(AUTH_KEY) === 'true') {
+                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
+                if (isLoggedIn) {
+                    const userName = getUserName();
                     authDiv.style.display = 'none';
                     userDiv.innerHTML = `
                         <div class="user-info">
-                            <div class="user-avatar">A</div>
-                            <span>${USER_NAME}</span>
+                            <div class="user-avatar">${userName.charAt(0)}</div>
+                            <span>${userName}</span>
                             <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
                         </div>
                     `;
@@ -236,6 +246,7 @@
                     if (logoutBtn) {
                         logoutBtn.addEventListener('click', () => {
                             localStorage.setItem(AUTH_KEY, 'false');
+                            localStorage.removeItem('userName');
                             renderUI();
                             alert('Đã đăng xuất!');
                         });
@@ -250,18 +261,22 @@
                 loginBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
                     renderUI();
                     alert('Đăng nhập thành công!');
                 });
             }
+            
             if (registerBtn) {
                 registerBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     localStorage.setItem(AUTH_KEY, 'true');
+                    localStorage.setItem('userName', DEFAULT_USER);
                     renderUI();
                     alert('Đăng ký thành công!');
                 });
             }
+            
             renderUI();
         })();
     </script>
