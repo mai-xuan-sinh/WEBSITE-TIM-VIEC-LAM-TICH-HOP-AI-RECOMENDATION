@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xu hướng thị trường lao động Đà Nẵng 2026 - DANANG WORK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="xuhuong.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-main">DANANG WORK</span>
+            <p class="logo-sub">Tìm việc thông minh tại Đà Nẵng</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="trangvieclam.html">Việc làm</a></li>
+            <li><a href="congty.html">Công ty</a></li>
+            <li class="active"><a href="xuhuong.html">Xu hướng</a></li>
+            <li><a href="huongdan.html">Hướng dẫn</a></li>
+            <li><a href="taocv.html">Tạo CV</a></li>
+            <li><a href="hotro.html">Hỗ trợ</a></li>
+        </ul>
+        <div class="nav-right">
+            <!-- Nút Đăng nhập / Đăng ký (Ẩn khi đang đăng nhập) -->
+            <div id="authButtons" class="auth-buttons" style="display: none;">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+            
+            <!-- Trạng thái Đã Đăng Nhập -->
+            <div id="userBox" class="user-box">
+                <!-- Vùng Profile Clickable -->
+                <div class="user-info" id="profileClick" title="Xem hồ sơ cá nhân">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName">Trần Tiển Thắng</span>
+                </div>
+                <!-- Nút Đăng Xuất -->
+                <button id="btnLogout" class="btn-logout">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <div class="report-badge">
+                <i class="fa-solid fa-trophy"></i> Báo cáo thường niên <span id="current-badge-year">2026</span>
+            </div>
+            <h1>Thị trường lao động <br> <span id="current-title-year">Đà Nẵng 2026</span></h1>
+            <p>Phân tích chuyên sâu 8 khối ngành trọng điểm tại thành phố đáng sống nhất Việt Nam</p>
+            
+            <!-- Selector Năm -->
+            <div class="year-selector" id="year-selector">
+                <span class="year-btn" data-year="2024">2024</span>
+                <span class="year-btn" data-year="2025">2025</span>
+                <span class="year-btn active" data-year="2026">2026</span>
+                <span class="year-btn" data-year="2027">2027</span>
+                <span class="year-btn" data-year="2028">2028</span>
+                <span class="year-btn" data-year="2029">2029</span>
+                <span class="year-btn" data-year="2030">2030</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 4 THẺ THỐNG KÊ -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div>
+                    <span class="percent blue-text">+32%</span>
+                </div>
+                <h2 id="stat-job">121,000+</h2>
+                <p>Việc làm mới</p>
+                <div class="progress-bar"><div class="fill blue-bar" style="width: 40%"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div>
+                    <span class="percent green-text">+18%</span>
+                </div>
+                <h2 id="stat-comp">5,200+</h2>
+                <p>Doanh nghiệp</p>
+                <div class="progress-bar"><div class="fill green-bar" style="width: 60%"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div>
+                    <span class="percent purple-text">+45%</span>
+                </div>
+                <h2 id="stat-cand">45,000+</h2>
+                <p>Ứng viên active</p>
+                <div class="progress-bar"><div class="fill purple-bar" style="width: 80%"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div>
+                    <span class="percent orange-text">+15%</span>
+                </div>
+                <h2 id="stat-sal">15.2 Tr</h2>
+                <p>Lương TB / Tháng</p>
+                <div class="progress-bar"><div class="fill orange-bar" style="width: 35%"></div></div>
+            </div>
+        </div>
+
+        <!-- TABS NAVIGATION -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-target="tab-tong-quan"><i class="fa-solid fa-chart-simple"></i> Tổng quan 8 Ngành</button>
+            <button class="tab-btn" data-target="tab-phan-tich"><i class="fa-solid fa-desktop"></i> Phân tích tăng trưởng</button>
+            <button class="tab-btn" data-target="tab-luong"><i class="fa-solid fa-circle-dollar-to-slot"></i> Lương & đãi ngộ</button>
+            <button class="tab-btn" data-target="tab-ky-nang"><i class="fa-solid fa-fire-flame-curved"></i> Kỹ năng cốt lõi</button>
+            <button class="tab-btn" data-target="tab-du-bao"><i class="fa-solid fa-rocket"></i> Dự báo tương lai</button>
+        </div>
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tab-tong-quan" class="tab-content active">
+            <div class="industry-grid">
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-code"></i></div><h3>Công nghệ thông tin</h3><div class="job-badge"><span class="job-num">32</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Frontend</span><span class="sub-tag">Backend</span><span class="sub-tag">AI</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-hotel"></i></div><h3>Du lịch - Khách sạn</h3><div class="job-badge"><span class="job-num">27</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Lễ tân</span><span class="sub-tag">HDV</span><span class="sub-tag">Quản lý</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-chart-pie"></i></div><h3>Kinh doanh - Bán lẻ</h3><div class="job-badge"><span class="job-num">21</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Sales</span><span class="sub-tag">Marketing</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-helmet-safety"></i></div><h3>Xây dựng - BĐS</h3><div class="job-badge"><span class="job-num">18</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Kỹ sư</span><span class="sub-tag">Kiến trúc sư</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-truck-fast"></i></div><h3>Dịch vụ - Logistics</h3><div class="job-badge"><span class="job-num">26</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Kho bãi</span><span class="sub-tag">Vận tải</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-chalkboard-user"></i></div><h3>Giáo dục - Đào tạo</h3><div class="job-badge"><span class="job-num">12</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Giảng viên</span><span class="sub-tag">Trợ giảng</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-coins"></i></div><h3>Tài chính - Ngân hàng</h3><div class="job-badge"><span class="job-num">15</span> việc làm</div><div class="sub-tags"><span class="sub-tag">Kế toán</span><span class="sub-tag">Giao dịch viên</span></div></div>
+                <div class="ind-card"><div class="icon"><i class="fa-solid fa-palette"></i></div><h3>Thiết kế - Sáng tạo</h3><div class="job-badge"><span class="job-num">9</span> việc làm</div><div class="sub-tags"><span class="sub-tag">UI/UX</span><span class="sub-tag">Graphic</span></div></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: PHÂN TÍCH NGÀNH -->
+        <div id="tab-phan-tich" class="tab-content">
+            <h3 class="section-title">Tốc độ tăng trưởng nhân sự của 8 khối ngành</h3>
+            <div class="analysis-box">
+                <div class="analysis-item"><div class="analysis-title">Công nghệ thông tin (<span class="growth-num">+35%</span>)</div><div class="progress-bar"><div class="fill blue-bar growth-bar" style="width: 85%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Du lịch - Khách sạn (<span class="growth-num">+28%</span>)</div><div class="progress-bar"><div class="fill green-bar growth-bar" style="width: 70%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Logistics (<span class="growth-num">+20%</span>)</div><div class="progress-bar"><div class="fill purple-bar growth-bar" style="width: 60%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Kinh doanh - Bán lẻ (<span class="growth-num">+15%</span>)</div><div class="progress-bar"><div class="fill orange-bar growth-bar" style="width: 50%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Tài chính - Ngân hàng (<span class="growth-num">+12%</span>)</div><div class="progress-bar"><div class="fill blue-bar growth-bar" style="width: 45%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Giáo dục - Đào tạo (<span class="growth-num">+10%</span>)</div><div class="progress-bar"><div class="fill green-bar growth-bar" style="width: 40%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Thiết kế - Sáng tạo (<span class="growth-num">+18%</span>)</div><div class="progress-bar"><div class="fill purple-bar growth-bar" style="width: 55%"></div></div></div>
+                <div class="analysis-item"><div class="analysis-title">Xây dựng - BĐS (<span class="growth-num">+5%</span>)</div><div class="progress-bar"><div class="fill orange-bar growth-bar" style="width: 30%"></div></div></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LƯƠNG & ĐÃI NGỘ -->
+        <div id="tab-luong" class="tab-content">
+            <h3 class="section-title">Bảng lương trung bình theo 8 khối ngành</h3>
+            <table class="data-table">
+                <thead><tr><th>Nhóm Ngành</th><th>Mới ra trường (Junior)</th><th>Có kinh nghiệm (Mid)</th><th>Quản lý (Senior)</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>1. Công nghệ thông tin</strong></td><td>9 - 14 Triệu</td><td>18 - 25 Triệu</td><td>35 - 50 Triệu</td></tr>
+                    <tr><td><strong>2. Du lịch - Khách sạn</strong></td><td>7 - 10 Triệu</td><td>12 - 18 Triệu</td><td>20 - 35 Triệu</td></tr>
+                    <tr><td><strong>3. Kinh doanh - Bán lẻ</strong></td><td>8 - 12 Triệu</td><td>15 - 20 Triệu</td><td>25 - 40 Triệu</td></tr>
+                    <tr><td><strong>4. Xây dựng - BĐS</strong></td><td>8 - 11 Triệu</td><td>14 - 22 Triệu</td><td>25 - 45 Triệu</td></tr>
+                    <tr><td><strong>5. Dịch vụ - Logistics</strong></td><td>7 - 10 Triệu</td><td>13 - 19 Triệu</td><td>22 - 38 Triệu</td></tr>
+                    <tr><td><strong>6. Giáo dục - Đào tạo</strong></td><td>7 - 9 Triệu</td><td>12 - 16 Triệu</td><td>18 - 28 Triệu</td></tr>
+                    <tr><td><strong>7. Tài chính - Ngân hàng</strong></td><td>8 - 12 Triệu</td><td>16 - 24 Triệu</td><td>30 - 45 Triệu</td></tr>
+                    <tr><td><strong>8. Thiết kế - Sáng tạo</strong></td><td>8 - 11 Triệu</td><td>14 - 20 Triệu</td><td>25 - 40 Triệu</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 4: KỸ NĂNG HOT -->
+        <div id="tab-ky-nang" class="tab-content">
+            <h3 class="section-title">Bản đồ kỹ năng tương ứng 8 khối ngành</h3>
+            <ul class="skill-list">
+                <li><i class="fa-solid fa-brain text-purple"></i> <span><strong>Sử dụng AI & Automation:</strong> Kỹ năng sống còn cho khối <em>CNTT, Thiết kế - Sáng tạo</em> và <em>Tài chính</em>. Khả năng prompt và dùng công cụ AI tăng 50% cơ hội trúng tuyển.</span></li>
+                <li><i class="fa-solid fa-language text-blue"></i> <span><strong>Ngoại ngữ (Anh, Hàn, Nhật):</strong> Yêu cầu tiên quyết cho <em>Du lịch - Khách sạn</em>, <em>Logistics</em> và <em>Giáo dục</em> tại thị trường Đà Nẵng.</span></li>
+                <li><i class="fa-solid fa-chart-column text-orange"></i> <span><strong>Phân tích Dữ liệu (Data Analysis):</strong> Kỹ năng quyết định sự thăng tiến trong nhóm <em>Kinh doanh - Bán lẻ</em> và <em>Tài chính - Ngân hàng</em>.</span></li>
+                <li><i class="fa-solid fa-users-gear text-green"></i> <span><strong>Quản lý dự án & Nguồn lực:</strong> Năng lực cốt lõi dành riêng cho khối <em>Xây dựng - BĐS</em> và quản lý cấp trung của 8 ngành.</span></li>
+            </ul>
+        </div>
+
+        <!-- TAB 5: DỰ BÁO -->
+        <div id="tab-du-bao" class="tab-content">
+            <div class="forecast-box">
+                <i class="fa-solid fa-earth-asia forecast-icon"></i>
+                <div class="forecast-text">
+                    <h3>Bức tranh 8 khối ngành Đà Nẵng</h3>
+                    <ul>
+                        <li><strong>CNTT & Thiết kế:</strong> Sẽ hợp nhất mạnh mẽ, Đà Nẵng vươn mình thành trung tâm phát triển phần mềm và vi mạch bán dẫn miền Trung.</li>
+                        <li><strong>Du lịch & Logistics:</strong> Đóng vai trò xương sống, chuyển dịch hoàn toàn sang mô hình "Du lịch thông minh" và "Cảng biển xanh".</li>
+                        <li><strong>Kinh doanh & Tài chính:</strong> Giao dịch số lên ngôi, cắt giảm nhân sự offline, tập trung tuyển dụng chuyên gia phân tích rủi ro.</li>
+                        <li><strong>Xây dựng & Giáo dục:</strong> Duy trì mức tăng trưởng ổn định, ưu tiên ứng viên có chứng chỉ xanh (LEED) và công nghệ EdTech.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- HIGHLIGHT BANNER CUỐI TRANG -->
+        <div class="highlight-banner">
+            <div class="h-left">
+                <div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="h-text">
+                    <h3 id="banner-title">Xu hướng 2026</h3>
+                    <p id="banner-sub">Chuyển đổi số & Kinh tế xanh</p>
+                </div>
+            </div>
+            <div class="h-right">
+                <h3 id="banner-pct">+21%</h3>
+                <p id="banner-comp">so với 2025</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="xuhuong.js"></script>
+</body>
+</html>
