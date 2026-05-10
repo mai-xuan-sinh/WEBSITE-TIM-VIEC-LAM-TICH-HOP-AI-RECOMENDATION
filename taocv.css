@@ -1123,3 +1123,127 @@ body{
     font-size:26px;
   }
 }
+/* ===== ĐỒNG BỘ NAVBAR VỚI TRANG CHỦ ===== */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    backdrop-filter: blur(18px);
+    background: rgba(255,255,255,0.82);
+    border-bottom: 1px solid rgba(226,232,240,0.8);
+}
+
+.header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 84px;
+}
+
+.logo-area h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    position: relative;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+    transition: 0.25s;
+    text-decoration: none;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0%;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #0ea5e9;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-links a.active,
+.nav-links a.active-link {
+    color: #0ea5e9 !important;
+}
+
+.nav-links a.active::after,
+.nav-links a.active-link::after {
+    width: 100%;
+}
+
+/* User info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f1f5f9;
+    padding: 6px 15px;
+    border-radius: 40px;
+    border: 1px solid #e2e8f0;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+#userBox {
+    display: none;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Ẩn navbar cũ */
+.navbar {
+    display: none !important;
+}

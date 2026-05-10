@@ -38,4 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "index.html";
     }
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> ab57221f699c18fec3a1d357d88d53bafb604382

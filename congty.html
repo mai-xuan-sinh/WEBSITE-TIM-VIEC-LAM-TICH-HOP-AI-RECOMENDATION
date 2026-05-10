@@ -25,8 +25,13 @@
             </nav>
             <div class="nav-right">
                 <div id="authButtons">
+<<<<<<< HEAD
                     <a href="#" id="fakeLoginBtn">Đăng nhập</a>
                     <a href="#" id="fakeRegisterBtn">Đăng ký</a>
+=======
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
+>>>>>>> ab57221f699c18fec3a1d357d88d53bafb604382
                 </div>
                 <div id="userBox"></div>
             </div>
@@ -111,6 +116,7 @@
         });
         renderCompanies();
 
+<<<<<<< HEAD
         // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
         (function() {
             const AUTH_KEY = 'isLoggedIn';
@@ -177,6 +183,60 @@
             
             renderUI();
         })();
+=======
+        // ========== ĐỒNG BỘ ĐĂNG NHẬP VỚI HỆ THỐNG CHÍNH ==========
+        function updateAuthUI() {
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            if (!authDiv || !userDiv) return;
+            
+            let currentUser = localStorage.getItem('currentUser');
+            let isLoggedIn = false;
+            let userName = "";
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    isLoggedIn = true;
+                    userName = user.name || user.fullname || user.email?.split('@')[0] || "User";
+                } catch(e) { isLoggedIn = false; }
+            }
+            
+            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
+                isLoggedIn = true;
+                userName = localStorage.getItem('userName') || "User";
+            }
+            
+            if (isLoggedIn) {
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name">${userName}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>
+                `;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
+            }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.reload();
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'currentUser' || e.key === 'isLoggedIn') updateAuthUI();
+        });
+>>>>>>> ab57221f699c18fec3a1d357d88d53bafb604382
     </script>
 </body>
 </html>

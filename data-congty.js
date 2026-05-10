@@ -47,7 +47,11 @@ const companyData = {
         rating: "4.5",
         recommend: "85%",
         desc: "Thuộc tập đoàn Vingroup, Vinpearl Resort & Spa Đà Nẵng là biểu tượng của sự sang trọng. Chúng tôi mang đến cơ hội nghề nghiệp tuyệt vời trong ngành dịch vụ khách sạn với lộ trình đào tạo và thăng tiến rõ ràng.",
+<<<<<<< HEAD
         benefits: ["Chế độ đãi ngộ của Vingroup", "Thưởng các dịp Lễ Tết", "Hỗ trợ nhà ở cho nhân viên"],
+=======
+benefits: ["Chế độ đãi ngộ của Vingroup", "Thưởng các dịp Lễ Tết", "Hỗ trợ nhà ở cho nhân viên"],
+>>>>>>> ab57221f699c18fec3a1d357d88d53bafb604382
         contact: { web: "vinpearl.com", phone: "1900 23 23 89", email: "hr.danang@vinpearl.com" }
     },
 
@@ -98,7 +102,11 @@ const companyData = {
         size: "500+ nhân viên",
         rating: "4.5",
         recommend: "100%",
+<<<<<<< HEAD
         desc: "Lotte Mart là một trong những trung tâm thương mại và siêu thị lớn nhất tại Đà Nẵng, thuộc tập đoàn Lotte Hàn Quốc. Chúng tôi mang đến môi trường làm việc năng động trong lĩnh vực bán lẻ.",
+=======
+desc: "Lotte Mart là một trong những trung tâm thương mại và siêu thị lớn nhất tại Đà Nẵng, thuộc tập đoàn Lotte Hàn Quốc. Chúng tôi mang đến môi trường làm việc năng động trong lĩnh vực bán lẻ.",
+>>>>>>> ab57221f699c18fec3a1d357d88d53bafb604382
         benefits: ["Mua sắm nội bộ giá ưu đãi", "Chế độ bảo hiểm đầy đủ", "Cơ hội làm việc tại Hàn Quốc"],
         contact: { web: "lottemart.com.vn", phone: "0236 368 1666", email: "tuyendung.dn@lotte.vn" }
     },
