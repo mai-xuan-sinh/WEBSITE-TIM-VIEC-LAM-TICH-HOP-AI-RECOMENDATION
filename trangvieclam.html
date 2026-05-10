@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danang Work - Tất cả việc làm</title>
+
+    <link rel="stylesheet" href="trangvieclam.css">
+    <link rel="stylesheet" href="auth.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        /* Thêm CSS cho ảnh logo */
+        .comp-logo {
+            width: 55px;
+            height: 55px;
+            background: #f0f2f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .comp-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="navbar">
+        <div class="container nav-content">
+
+            <div class="logo-area">
+                <div class="logo-main">DANANG WORK</div>
+                <div class="logo-slogan">Tìm việc thông minh tại Đà Nẵng</div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html" class="active-link">Việc làm</a>
+                <a href="congty.html">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <a href="taocv.html">Tạo CV</a>
+                <a href="hotro.html">Hỗ trợ</a>
+            </nav>
+
+            <div class="nav-right">
+
+                <div id="authButtons">
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
+                </div>
+
+                <div id="userBox"></div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container content-wrapper">
+
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            Trang chủ / <strong>Tất cả việc làm phổ thông</strong>
+        </div>
+
+        <!-- HEADER -->
+        <div class="header-section">
+            <div class="title-group">
+                <h1>Tất cả việc làm phổ thông</h1>
+                <p class="results-count">Hiển thị 0 việc làm</p>
+            </div>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-bar">
+
+            <!-- SEARCH INPUT -->
+            <div class="search-item autocomplete-wrapper">
+                <i class="fas fa-briefcase"></i>
+
+                <input type="text"
+                    id="skillInput"
+                    placeholder="Vị trí, kỹ năng, công ty..."
+                    autocomplete="off">
+
+                <div id="suggestionsList" class="suggestions-dropdown"></div>
+            </div>
+
+            <!-- DISTRICT -->
+            <div class="search-item" id="districtSelectWrapper">
+                <i class="fas fa-map-marker-alt"></i>
+
+                <select id="districtSelect">
+                    <option value="">-- Chọn địa điểm --</option>
+                    <option value="Liên Chiểu">Quận Liên Chiểu</option>
+                    <option value="Thanh Khê">Quận Thanh Khê</option>
+                    <option value="Hải Châu">Quận Hải Châu</option>
+                    <option value="Ngũ Hành Sơn">Quận Ngũ Hành Sơn</option>
+                    <option value="Sơn Trà">Quận Sơn Trà</option>
+                    <option value="Cẩm Lệ">Quận Cẩm Lệ</option>
+                </select>
+            </div>
+
+            <!-- BUTTON -->
+            <button class="search-btn" id="searchBtn">
+                Tìm kiếm
+                <i class="fas fa-search"></i>
+            </button>
+
+        </div>
+
+        <!-- TAG -->
+        <div class="search-suggestions">
+            Gợi ý:
+            <text>React</text>,
+            <text>Node.js</text>,
+            <text>Frontend</text>,
+            <text>Backend</text>
+        </div>
+
+        <!-- FIELD -->
+        <div id="fieldCards" class="field-cards"></div>
+
+        <!-- JOB LIST -->
+        <div class="job-list" id="all-jobs-container"></div>
+
+    </main>
+
+    <script src="jobs-data.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const container = document.getElementById("all-jobs-container");
+            const skillInput = document.getElementById("skillInput");
+            const districtSelect = document.getElementById("districtSelect");
+            const searchBtn = document.getElementById("searchBtn");
+            const suggestionsList = document.getElementById("suggestionsList");
+
+            // =============================
+            // USER LOGIN
+            // =============================
+
+            const userBox = document.getElementById("userBox");
+            const authButtons = document.getElementById("authButtons");
+
+            const user = JSON.parse(localStorage.getItem("currentUser"));
+
+            if (user) {
+
+                authButtons.style.display = "none";
+
+                userBox.innerHTML = `
+                    <a href="profile.html" class="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>${user.name || "Tài khoản"}</span>
+                    </a>
+                `;
+            }
+
+            // =============================
+            // RENDER JOB (ĐÃ SỬA - HIỂN THỊ ẢNH)
+            // =============================
+
+            function renderJobs(jobs) {
+
+                if (!container) return;
+
+                if (jobs.length === 0) {
+
+                    container.innerHTML = `
+                        <div class="no-job">
+                            <i class="fas fa-briefcase"></i>
+                            <p>Không có công việc phù hợp</p>
+                        </div>
+                    `;
+
+                    document.querySelector(".results-count").textContent =
+                        `Hiển thị 0 việc làm`;
+
+                    return;
+                }
+
+                container.innerHTML = jobs.map(job => `
+
+                    <div class="job-item" onclick="goToJobDetail(${job.id})">
+
+                        <div class="job-card">
+
+                            <div class="card-top">
+
+                                <div class="comp-logo">
+                                    <img src="${job.image || 'img/fpt.jpg'}" 
+                                         alt="${job.company}"
+                                         onerror="this.src='img/fpt.jpg'; this.onerror=null;">
+                                </div>
+
+                                <div class="job-meta">
+                                    <h3>${job.title}</h3>
+                                    <p>${job.company}</p>
+                                </div>
+
+                            </div>
+
+                            <div class="card-mid">
+
+                                <span>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${job.location}
+                                </span>
+
+                                <span>
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    ${job.salary}
+                                </span>
+
+                            </div>
+
+                            <div class="card-tags">
+
+                                ${(job.skills || [])
+                                    .map(skill => `<span>${skill}</span>`)
+                                    .join("")}
+
+                            </div>
+
+                            <div class="card-bottom">
+
+                                <button class="btn-detail"
+                                    onclick="viewDetail(event, ${job.id})">
+
+                                    <i class="fas fa-eye"></i>
+                                    Xem chi tiết
+
+                                </button>
+
+                                <button class="btn-apply"
+                                    onclick="applyJob(event, ${job.id})">
+
+                                    Ứng tuyển
+
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                `).join("");
+
+                document.querySelector(".results-count").textContent =
+                    `Hiển thị ${jobs.length} việc làm`;
+            }
+
+            // =============================
+            // FIELD CARD
+            // =============================
+
+            function renderFieldCards() {
+
+                const fieldContainer =
+                    document.getElementById("fieldCards");
+
+                if (!fieldContainer) return;
+
+                const counts = {};
+
+                allJobs.forEach(job => {
+                    counts[job.field] = (counts[job.field] || 0) + 1;
+                });
+
+                fieldContainer.innerHTML = Object.entries(counts)
+                    .map(([field, total]) => `
+
+                        <div class="field-card" data-field="${field}">
+                            <h3>${field}</h3>
+                            <p>${total} việc làm</p>
+                        </div>
+
+                    `).join("");
+
+                document.querySelectorAll(".field-card")
+                    .forEach(card => {
+
+                        card.addEventListener("click", () => {
+
+                            const field = card.dataset.field;
+
+                            const filtered =
+                                allJobs.filter(job =>
+                                    job.field === field
+                                );
+
+                            renderJobs(filtered);
+                        });
+
+                    });
+            }
+
+            // =============================
+            // SEARCH FUNCTION
+            // =============================
+
+            function searchJobs() {
+
+                const keyword =
+                    skillInput.value.toLowerCase().trim();
+
+                const district =
+                    districtSelect.value.toLowerCase().trim();
+
+                const filtered = allJobs.filter(job => {
+
+                    const matchKeyword =
+
+                        job.title.toLowerCase().includes(keyword) ||
+
+                        job.company.toLowerCase().includes(keyword) ||
+
+                        job.skills.join(" ")
+                        .toLowerCase()
+                        .includes(keyword);
+
+                    const matchDistrict = district === ""
+                        || job.location.toLowerCase().includes(district);
+
+                    return matchKeyword && matchDistrict;
+                });
+
+                renderJobs(filtered);
+            }
+
+            // =============================
+            // AUTO COMPLETE
+            // =============================
+
+            skillInput.addEventListener("input", () => {
+
+                const value =
+                    skillInput.value.toLowerCase().trim();
+
+                if (!value) {
+                    suggestionsList.innerHTML = "";
+                    return;
+                }
+
+                const suggestions = [];
+
+                allJobs.forEach(job => {
+
+                    if (job.title.toLowerCase().includes(value)) {
+                        suggestions.push(job.title);
+                    }
+
+                    if (job.company.toLowerCase().includes(value)) {
+                        suggestions.push(job.company);
+                    }
+
+                    job.skills.forEach(skill => {
+
+                        if (skill.toLowerCase().includes(value)) {
+                            suggestions.push(skill);
+                        }
+
+                    });
+
+                });
+
+                const uniqueSuggestions =
+                    [...new Set(suggestions)].slice(0, 6);
+
+                suggestionsList.innerHTML =
+                    uniqueSuggestions.map(item => `
+                        <div class="suggestion-item">
+                            ${item}
+                        </div>
+                    `).join("");
+
+                document.querySelectorAll(".suggestion-item")
+                    .forEach(item => {
+
+                        item.addEventListener("click", () => {
+
+                            skillInput.value = item.textContent.trim();
+
+                            suggestionsList.innerHTML = "";
+
+                            searchJobs();
+                        });
+
+                    });
+
+            });
+
+            // =============================
+            // EVENTS
+            // =============================
+
+            searchBtn.addEventListener("click", searchJobs);
+
+            skillInput.addEventListener("keyup", (e) => {
+
+                if (e.key === "Enter") {
+                    searchJobs();
+                }
+
+            });
+
+            districtSelect.addEventListener("change", searchJobs);
+
+            // =============================
+            // GLOBAL FUNCTIONS
+            // =============================
+
+            window.goToJobDetail = function(id) {
+
+                window.location.href =
+                    `job-detail.html?id=${id}`;
+            };
+
+            window.viewDetail = function(event, id) {
+                event.stopPropagation();
+                window.location.href = `job-detail.html?id=${id}`;
+            };
+
+            window.applyJob = function(event, id) {
+
+                event.stopPropagation();
+
+                const job =
+                    allJobs.find(item => item.id === id);
+
+                if (!job) return;
+
+                // Hiển thị modal ứng tuyển
+                alert(`Bạn đã ứng tuyển vào vị trí: ${job.title} tại ${job.company}\nChúng tôi sẽ liên hệ lại sau!`);
+            };
+
+
+
+            renderJobs(allJobs);
+            renderFieldCards();
+
+        });
+    </script>
+
+</body>
+
+</html>

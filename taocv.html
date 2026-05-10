@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đà Nẵng Work - Tạo CV Ấn Tượng</title>
+    <link rel="stylesheet" href="taocv.css">
+    <link rel="stylesheet" href="auth.css">
+    <!-- FontAwesome cho các icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-briefcase logo-icon"></i>
+                <div class="logo-text">
+                    <span class="brand">DANANG WORK</span>
+                    <span class="slogan">Tìm việc thông minh tại Đà Nẵng</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html">Việc làm</a>
+                <a href="congty.html">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <div class="nav-dropdown">
+    <a href="taocv.html" class="active dropdown-toggle">
+        Tạo CV
+        <i class="fa-solid fa-chevron-down"></i>
+    </a>
+
+    <div class="dropdown-menu">
+        <a href="luucv.html">
+            <i class="fa-solid fa-folder-open"></i>
+            Lưu CV
+        </a>
+    </div>
+</div>
+                <a href="hotro.html">Hỗ trợ</a>
+            </nav>
+            <div class="nav-right">
+                <div id="authButtons">
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
+                </div>
+                <div id="userBox"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <div class="hero-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Tạo CV chuyên nghiệp - Hoàn toàn miễn phí
+            </div>
+            <h1>Tạo CV Ấn Tượng<br><span class="highlight">Trong 5 Phút</span></h1>
+            <p>Hàng ngàn mẫu CV độc đáo, thiết kế chuyên nghiệp, phù hợp với mọi ngành nghề</p>
+            <div class="hero-btns">
+                <button class="btn-white">Xem mẫu theo phong cách</button>
+                <a href="huongdan-cv.html" class="btn-glass btn-link">
+                    Hướng dẫn viết CV
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container main-content">
+        
+        <!-- Section: Phong cách Tối giản -->
+        <div class="cv-section">
+            <div class="section-title">
+                <div class="title-icon bg-purple"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="title-text">
+                    <h2>Phong cách Tối giản</h2>
+                </div>
+                <i class="fa-solid fa-chevron-up collapse-icon"></i>
+            </div>
+
+            <div class="cv-grid">
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <span class="tag-popular">Mới</span>
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Minimal 1</h3>
+                <p class="cv-desc">Tối giản - Cân bằng</p>
+                <p class="cv-detail">Bố cục 1 cột, thông tin ngang, phù hợp mọi ngành</p>
+
+                <div class="cv-tags">
+                    <span>Corporate</span>
+                    <span>Business</span>
+                </div>
+
+               <button class="btn-use-template secondary">
+                Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Minimal 2</h3>
+                <p class="cv-desc">Chuyên nghiệp - Tinh gọn</p>
+                <p class="cv-detail">Bố cục gọn gàng dành cho HR và kế toán</p>
+
+                <div class="cv-tags">
+                    <span>HR</span>
+                    <span>Office</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Minimal 3</h3>
+                <p class="cv-desc">Chuyên nghiệp - Thanh lịch</p>
+                <p class="cv-detail">Phong cách lịch sự cho cấp quản lý và leader</p>
+
+                <div class="cv-tags">
+                    <span>Manager</span>
+                    <span>Leader</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <!-- Section: Modern & Professional collapse -->
+       <!-- Section: Modern -->
+<div class="cv-section">
+    <div class="section-title">
+        <div class="title-left">
+            <div class="title-icon bg-blue">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+
+            <div class="title-text">
+                <h2>Phong cách Hiện đại</h2>
+            </div>
+        </div>
+
+        <i class="fa-solid fa-chevron-down collapse-icon"></i>
+    </div>
+        
+    <div class="cv-grid">
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <span class="tag-popular">Phổ biến</span>
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Modern 1</h3>
+                <p class="cv-desc">Hiện đại - Chuyên nghiệp</p>
+                <p class="cv-detail">Thiết kế hiện đại dành cho sinh viên và fresher</p>
+
+                <div class="cv-tags">
+                    <span>Modern</span>
+                    <span>Professional</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                  Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Modern 2</h3>
+                <p class="cv-desc">Hiện đại - Năng động</p>
+                <p class="cv-detail">Phong cách trẻ trung cho designer và marketing</p>
+
+                <div class="cv-tags">
+                    <span>Creative</span>
+                    <span>Modern</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Modern 3</h3>
+                <p class="cv-desc">Hiện đại - Tối ưu</p>
+                <p class="cv-detail">Tập trung vào kỹ năng và kinh nghiệm làm việc</p>
+
+                <div class="cv-tags">
+                    <span>Skill</span>
+                    <span>Experience</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Section: Professional -->
+<div class="cv-section">
+    <div class="section-title">
+        <div class="title-left">
+            <div class="title-icon bg-dark-blue">
+                <i class="fa-solid fa-shield"></i>
+            </div>
+
+            <div class="title-text">
+                <h2>Phong cách Chuyên nghiệp</h2>
+            </div>
+        </div>
+
+        <i class="fa-solid fa-chevron-down collapse-icon"></i>
+    </div>
+
+    <div class="cv-grid">
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <span class="tag-popular">Mới</span>
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Professional 1</h3>
+                <p class="cv-desc">Chuyên nghiệp - Doanh nghiệp</p>
+                <p class="cv-detail">Thiết kế phù hợp cho môi trường corporate</p>
+
+                <div class="cv-tags">
+                    <span>Corporate</span>
+                    <span>Business</span>
+                </div>
+
+               <button class="btn-use-template secondary">
+                Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Professional 2</h3>
+                <p class="cv-desc">Chuyên nghiệp - Tinh gọn</p>
+                <p class="cv-detail">Bố cục gọn gàng dành cho HR và kế toán</p>
+
+                <div class="cv-tags">
+                    <span>HR</span>
+                    <span>Office</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+        <div class="cv-card">
+            <div class="cv-thumb">
+                <div class="cv-image-placeholder"></div>
+            </div>
+
+            <div class="cv-info">
+                <h3>Professional 3</h3>
+                <p class="cv-desc">Chuyên nghiệp - Thanh lịch</p>
+                <p class="cv-detail">Phong cách lịch sự cho cấp quản lý và leader</p>
+
+                <div class="cv-tags">
+                    <span>Manager</span>
+                    <span>Leader</span>
+                </div>
+
+                <button class="btn-use-template secondary">
+                    Dùng mẫu
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+        <!-- Footer Summary Box -->
+        <div class="summary-box">
+            <div class="summary-header">
+                <div class="summary-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3>Tạo CV có gì đặc biệt </h3>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item"><strong>Đa dạng mẫu mã, phong cách</strong><p>Các mẫu CV thiết kế rất đa dạng kiểu mẫu, phù hợp với mọi đối tượng</p></div>
+                <div class="summary-item"><strong>Tạo CV thật dễ dàng, tiện lợi</strong><p>Quá trình tạo CV Online chỉ mất khoảng 5 phút, dễ dàng thao tác kể cả với điện thoại.</p></div>
+                <div class="summary-item"><strong>Trình tạo CV miễn phí 100%</strong><p>Trình tạo CV là hoàn toàn miễn phí, từ việc đăng ký đến tạo và tải CV xin việc.</p></div>
+                <div class="summary-item"><strong>Tạo CV dễ dàng hơn với khung hướng dẫn chi tiết</strong><p>Dễ dàng hơn với khung hướng dẫn chi tiết, tự động góp ý, báo lỗi với thuật toán thông minh.</p></div>
+            </div>
+        </div>
+    </main>
+<!-- POPUP CV -->
+<div class="cv-popup" id="cvPopup">
+
+    <div class="cv-popup-content">
+
+        <span class="close-popup" onclick="closeCVPopup()">
+            <i class="fa-solid fa-xmark"></i>
+        </span>
+
+        <div class="popup-header">
+            <h2 id="popupTitle">Tạo CV</h2>           
+        </div>
+
+        <!-- ===== MINIMAL ===== -->
+        <form class="cv-form template-form" id="minimalForm">
+
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" placeholder="Nguyễn Văn A">
+            </div>
+
+            <div class="form-group">
+                <label>Vị trí ứng tuyển</label>
+                <input type="text" placeholder="Frontend Developer">
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="example@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" placeholder="0123456789">
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input type="text" placeholder="Đà Nẵng">
+            </div>
+
+            <div class="form-group">
+                <label>Giới thiệu</label>
+                <textarea rows="4"></textarea>
+            </div>
+             <div class="form-group">
+                <label>Kỹ năng</label>
+                <textarea rows="3" placeholder="HTML, CSS, JavaScript..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Kinh nghiệm</label>
+                <textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Học vấn</label>
+                <textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea>
+            </div>
+
+
+            <button class="btn-create-cv">
+                Tạo CV Minimal
+            </button>
+
+        </form>
+
+        <!-- ===== MODERN ===== -->
+        <form class="cv-form template-form" id="modernForm">
+
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" placeholder="Nguyễn Văn A">
+            </div>
+
+            <div class="form-group">
+                <label>Vị trí ứng tuyển</label>
+
+                <div class="custom-select">
+                    <select>
+                        <option disabled selected>Chọn vị trí</option>
+                        <option>Frontend Developer</option>
+                        <option>Backend Developer</option>
+                        <option>UI/UX Designer</option>
+                        <option>Tester</option>
+                        <option>Marketing</option>
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="example@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" placeholder="0123456789">
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+
+                <div class="custom-select">
+                    <select>
+                        <option disabled selected>Chọn địa chỉ</option>
+                        <option>Hải Châu</option>
+                        <option>Thanh Khê</option>
+                        <option>Cẩm Lệ</option>
+                        <option>Ngũ Hành Sơn</option>
+                        <option>Sơn Trà</option>
+                        <option>Liên Chiểu</option>
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Giới thiệu</label>
+                <textarea rows="4"></textarea>
+            </div>
+             <div class="form-group">
+                <label>Kỹ năng</label>
+                <textarea rows="3" placeholder="HTML, CSS, JavaScript..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Kinh nghiệm</label>
+                <textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Học vấn</label>
+                <textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea>
+            </div>
+
+
+            <button class="btn-create-cv">
+                Tạo CV Modern
+            </button>
+
+        </form>
+
+        <!-- ===== PROFESSIONAL ===== -->
+        <form class="cv-form template-form" id="professionalForm">
+
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" value="Võ Nguyên Hên">
+            </div>
+
+            <div class="form-group">    
+                <label>Vị trí ứng tuyển</label>
+
+                <div class="custom-select">
+                    <select>
+                        <option disabled selected>Chọn vị trí</option>
+                        <option>Business Analyst</option>
+                        <option>Project Manager</option>
+                        <option>Sales IT</option>
+                        <option>HR Manager</option>
+                        <option>Leader</option>
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="nguyenhen@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" value="0123456789">
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+
+                <div class="custom-select">
+                    <select>
+                        <option disabled selected>Chọn địa chỉ</option>
+                        <option>Hải Châu</option>
+                        <option>Thanh Khê</option>
+                        <option>Cẩm Lệ</option>
+                        <option>Ngũ Hành Sơn</option>
+                        <option>Sơn Trà</option>
+                        <option>Liên Chiểu</option>
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Giới thiệu</label>
+                <textarea rows="4"></textarea>
+            </div>
+
+             <div class="form-group">
+                <label>Kỹ năng</label>
+                <textarea rows="3" placeholder="HTML, CSS, JavaScript..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Kinh nghiệm</label>
+                <textarea rows="4" placeholder="Mô tả kinh nghiệm làm việc"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Học vấn</label>
+                <textarea rows="3" placeholder="Trường học, chuyên ngành..."></textarea>
+            </div>
+
+
+            <button class="btn-create-cv">
+                Tạo CV Professional
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const popup = document.getElementById("cvPopup");
+
+const minimalForm = document.getElementById("minimalForm");
+const modernForm = document.getElementById("modernForm");
+const professionalForm = document.getElementById("professionalForm");
+
+const popupTitle = document.getElementById("popupTitle");
+
+minimalForm.style.display = "none";
+modernForm.style.display = "none";
+professionalForm.style.display = "none";
+
+const buttons = document.querySelectorAll(".btn-use-template");
+
+let currentTemplate = "";
+
+buttons.forEach(button => {
+
+    button.addEventListener("click", function(){
+
+        buttons.forEach(btn=>{
+            btn.classList.remove("active-template");
+        });
+
+        this.classList.add("active-template");
+
+        const cardTitle =
+            this.closest(".cv-card")
+            .querySelector("h3")
+            .innerText;
+
+        currentTemplate = cardTitle;
+
+        popup.classList.add("active");
+
+        minimalForm.style.display = "none";
+        modernForm.style.display = "none";
+        professionalForm.style.display = "none";
+
+        // ===== Minimal =====
+        if(cardTitle.includes("Minimal")){
+
+            popupTitle.innerText = "CV Phong Cách Tối Giản";
+            minimalForm.style.display = "grid";
+        }
+
+        // ===== Modern =====
+        else if(cardTitle.includes("Modern")){
+
+            popupTitle.innerText = "CV Phong Cách Hiện Đại";
+            modernForm.style.display = "grid";
+        }
+
+        // ===== Professional =====
+        else if(cardTitle.includes("Professional")){
+
+            popupTitle.innerText = "CV Phong Cách Chuyên Nghiệp";
+            professionalForm.style.display = "grid";
+        }
+
+    });
+
+});
+
+function closeCVPopup(){
+    popup.classList.remove("active");
+}
+
+window.addEventListener("click", function(e){
+
+    if(e.target === popup){
+        popup.classList.remove("active");
+    }
+
+});
+
+
+/* =========================
+   SAVE CV
+========================= */
+
+const forms = document.querySelectorAll(".template-form");
+
+forms.forEach(form => {
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        const inputs = form.querySelectorAll("input, textarea, select");
+
+        const cvData = {
+            template: currentTemplate,
+            fullName: inputs[0].value,
+            position: inputs[1].value,
+            email: inputs[2].value,
+            phone: inputs[3].value,
+            address: inputs[4].value,
+            intro: inputs[5].value,
+            createdAt: new Date().toLocaleString()
+        };
+
+        let savedCVs = JSON.parse(localStorage.getItem("savedCVs")) || [];
+
+        savedCVs.push(cvData);
+
+        localStorage.setItem("savedCVs", JSON.stringify(savedCVs));
+
+        alert("Tạo CV thành công!");
+
+        window.location.href = "luucv.html";
+
+    });
+
+});
+
+
+</script>
+<script src="auth.js"></script>
+
+</body>
+</html>
