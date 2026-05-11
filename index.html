@@ -15,17 +15,14 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth.css">
 </head>
-
 <body>
 
 <!-- HEADER -->
 <div class="top-header">
   <div class="container header-flex">
-
     <div class="logo-area">
       <h1>DANANG WORK</h1>
-        </div>
-
+    </div>
     <div class="nav-links">
       <a href="index.html">Trang chủ</a>
       <a href="trangvieclam.html">Việc làm</a>
@@ -35,21 +32,17 @@
       <a href="taocv.html">Tạo CV</a>
       <a href="hotro.html">Hỗ trợ</a>
     </div>
-
     <div class="nav-right">
-
       <div id="authButtons">
         <a href="login.html">Đăng nhập</a>
         <a href="register.html">Đăng ký</a>
       </div>
-
       <div id="userBox">
         <a href="profile.html" class="user-info">
           <i class="fas fa-user-circle avatar-icon"></i>
           <span class="username">Tên người dùng</span>
         </a>
       </div>
-
     </div>
   </div>
 </div>
@@ -59,90 +52,38 @@
 
   <!-- HERO -->
   <div class="hero-section" id="dynamicHero">
-
     <div class="hero-overlay"></div>
-
     <div class="container hero-content">
-
-      <div class="hero-badge">
-        ĐÀ NẴNG
-      </div>
-
-    <h1 class="hero-title">
-  Tìm kiếm việc làm thông minh tại
-  <span class="nowrap">Đà Nẵng</span>
-</h1>
-
-      <p class="hero-desc">
-        Kết nối với hàng ngàn nhà tuyển dụng hàng đầu.
-        Công việc phù hợp với kỹ năng và đam mê của bạn.
-      </p>
-
+      <div class="hero-badge">ĐÀ NẴNG</div>
+      <h1 class="hero-title">Tìm kiếm việc làm thông minh tại <span class="nowrap">Đà Nẵng</span></h1>
+      <p class="hero-desc">Kết nối với hàng ngàn nhà tuyển dụng hàng đầu. Công việc phù hợp với kỹ năng và đam mê của bạn.</p>
     </div>
   </div>
-<!-- VIDEO GIỚI THIỆU ĐÀ NẴNG -->
-<section class="danang-video-section">
 
-  <div class="container">
-
-    <div class="danang-video-box">
-
-      <!-- LEFT -->
-      <div class="danang-video-content">
-
-        <div class="video-tag">
-          <i class="fas fa-play-circle"></i>
-          KHÁM PHÁ ĐÀ NẴNG
+  <!-- VIDEO GIỚI THIỆU ĐÀ NẴNG -->
+  <section class="danang-video-section">
+    <div class="container">
+      <div class="danang-video-box">
+        <div class="danang-video-content">
+          <div class="video-tag"><i class="fas fa-play-circle"></i> KHÁM PHÁ ĐÀ NẴNG</div>
+          <h2>Thành phố đáng sống <span>và đầy cơ hội nghề nghiệp</span></h2>
+          <p>Đà Nẵng không chỉ nổi tiếng với biển đẹp, môi trường sống hiện đại mà còn là trung tâm công nghệ, du lịch và dịch vụ phát triển mạnh. Hàng ngàn doanh nghiệp đang tìm kiếm nhân tài mỗi ngày.</p>
+          <div class="video-stats">
+            <div class="stat-item"><h3>5000+</h3><span>Việc làm mới</span></div>
+            <div class="stat-item"><h3>1200+</h3><span>Doanh nghiệp</span></div>
+            <div class="stat-item"><h3>98%</h3><span>Hài lòng</span></div>
+          </div>
         </div>
-
-        <h2>
-          Thành phố đáng sống
-          <span>và đầy cơ hội nghề nghiệp</span>
-        </h2>
-
-        <p>
-          Đà Nẵng không chỉ nổi tiếng với biển đẹp, môi trường sống hiện đại
-          mà còn là trung tâm công nghệ, du lịch và dịch vụ phát triển mạnh.
-          Hàng ngàn doanh nghiệp đang tìm kiếm nhân tài mỗi ngày.
-        </p>
-
-        <div class="video-stats">
-
-          <div class="stat-item">
-            <h3>5000+</h3>
-            <span>Việc làm mới</span>
-          </div>
-
-          <div class="stat-item">
-            <h3>1200+</h3>
-            <span>Doanh nghiệp</span>
-          </div>
-
-          <div class="stat-item">
-            <h3>98%</h3>
-            <span>Hài lòng</span>
-          </div>
-
+        <div class="danang-video-wrapper">
+          <video autoplay muted loop playsinline>
+            <source src="video/gioithieudanang.mp4" type="video/mp4">
+          </video>
+          <div class="video-glow"></div>
         </div>
-
       </div>
-
-      <!-- RIGHT -->
-      <div class="danang-video-wrapper">
-
-        <video autoplay muted loop playsinline>
-          <source src="video/gioithieudanang.mp4" type="video/mp4">
-        </video>
-
-        <div class="video-glow"></div>
-
-      </div>
-
     </div>
+  </section>
 
-  </div>
-
-</section>
   <!-- JOB MODAL -->
   <div id="jobModal" class="job-modal">
     <div class="job-modal-content">
@@ -154,404 +95,84 @@
   <!-- CONTENT -->
   <div class="container">
 
-    <div id="jobList" class="jobs-grid"></div>
-
     <!-- KHÁM PHÁ LĨNH VỰC -->
     <div>
-
-      <div class="section-title">
-        Khám phá theo lĩnh vực
-      </div>
-
-      <div class="section-sub">
-        Chọn ngành bạn yêu thích để tìm kiếm cơ hội phù hợp nhất
-      </div>
-
+      <div class="section-title">Khám phá theo lĩnh vực</div>
+      <div class="section-sub">Chọn ngành bạn yêu thích để tìm kiếm cơ hội phù hợp nhất</div>
       <div class="categories-grid">
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-code"></i></div><h3>Công nghệ thông tin</h3><div class="job-count">32 việc làm</div><div class="skills-list"><span>Frontend</span><span>Backend</span><span>DevOps</span><span>AI</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-hotel"></i></div><h3>Du lịch - Khách sạn</h3><div class="job-count">27 việc làm</div><div class="skills-list"><span>Hướng dẫn viên</span><span>Lễ tân</span><span>Quản lý resort</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-chart-line"></i></div><h3>Kinh doanh - Bán lẻ</h3><div class="job-count">21 việc làm</div><div class="skills-list"><span>Sales</span><span>Marketing</span><span>Quản lý</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-hard-hat"></i></div><h3>Xây dựng - BĐS</h3><div class="job-count">21 việc làm</div><div class="skills-list"><span>Kỹ sư</span><span>Kiến trúc sư</span><span>Giám sát</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-truck"></i></div><h3>Dịch vụ - Logistics</h3><div class="job-count">26 việc làm</div><div class="skills-list"><span>Shipper</span><span>CSKH</span><span>Vận hành</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-chalkboard-teacher"></i></div><h3>Giáo dục - Đào tạo</h3><div class="job-count">18 việc làm</div><div class="skills-list"><span>Giáo viên</span><span>Trợ giảng</span><span>Đào tạo</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-coins"></i></div><h3>Tài chính - Ngân hàng</h3><div class="job-count">22 việc làm</div><div class="skills-list"><span>Kế toán</span><span>Kiểm toán</span><span>Đầu tư</span></div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fas fa-palette"></i></div><h3>Thiết kế - Sáng tạo</h3><div class="job-count">19 việc làm</div><div class="skills-list"><span>UI/UX</span><span>Graphic</span><span>Video</span></div></div>
+      </div>
 
-        <!-- 1 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-code"></i>
-          </div>
-
-          <h3>Công nghệ thông tin</h3>
-
-          <div class="job-count">32 việc làm</div>
-
-          <div class="skills-list">
-            <span>Frontend</span>
-            <span>Backend</span>
-            <span>DevOps</span>
-            <span>AI</span>
-          </div>
-        </div>
-
-        <!-- 2 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-hotel"></i>
-          </div>
-
-          <h3>Du lịch - Khách sạn</h3>
-
-          <div class="job-count">27 việc làm</div>
-
-          <div class="skills-list">
-            <span>Hướng dẫn viên</span>
-            <span>Lễ tân</span>
-            <span>Quản lý resort</span>
+      <!-- AI RECOMMENDATION - DUY NHẤT -->
+      <div class="ai-recommend-box">
+        <div class="ai-header">
+          <div class="ai-title-wrap">
+            <div class="ai-badge"><i class="fas fa-robot"></i> AI SMART MATCH</div>
+            <h2 class="ai-title">Việc làm phù hợp với bạn</h2>
+            <p class="ai-desc">Công việc được AI đề xuất dựa trên kỹ năng, xu hướng và nhu cầu tuyển dụng tại Đà Nẵng.</p>
           </div>
         </div>
-
-        <!-- 3 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-
-          <h3>Kinh doanh - Bán lẻ</h3>
-
-          <div class="job-count">21 việc làm</div>
-
-          <div class="skills-list">
-            <span>Sales</span>
-            <span>Marketing</span>
-            <span>Quản lý</span>
-          </div>
+        <div id="aiRecommendations" class="ai-jobs-grid">
+          <div class="loading-ai"><i class="fas fa-spinner fa-pulse"></i> AI đang phân tích dữ liệu...</div>
         </div>
-
-        <!-- 4 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-hard-hat"></i>
-          </div>
-
-          <h3>Xây dựng - BĐS</h3>
-
-          <div class="job-count">21 việc làm</div>
-
-          <div class="skills-list">
-            <span>Kỹ sư</span>
-            <span>Kiến trúc sư</span>
-            <span>Giám sát</span>
-          </div>
-        </div>
-
-        <!-- 5 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-truck"></i>
-          </div>
-
-          <h3>Dịch vụ - Logistics</h3>
-
-          <div class="job-count">26 việc làm</div>
-
-          <div class="skills-list">
-            <span>Shipper</span>
-            <span>CSKH</span>
-            <span>Vận hành</span>
-          </div>
-        </div>
-
-        <!-- 6 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-chalkboard-teacher"></i>
-          </div>
-
-          <h3>Giáo dục - Đào tạo</h3>
-
-          <div class="job-count">18 việc làm</div>
-
-          <div class="skills-list">
-            <span>Giáo viên</span>
-            <span>Trợ giảng</span>
-            <span>Đào tạo</span>
-          </div>
-        </div>
-
-        <!-- 7 -->
-        <div class="cat-card">
-          <div class="cat-icon">
-            <i class="fas fa-coins"></i>
-          </div>
-
-          <h3>Tài chính - Ngân hàng</h3>
-
-          <div class="job-count">22 việc làm</div>
-
-          <div class="skills-list">
-            <span>Kế toán</span>
-            <span>Kiểm toán</span>
-            <span>Đầu tư</span>
-          </div>
-        </div>
-
-        <!-- 8 -->
-<div class="cat-card">
-  <div class="cat-icon">
-    <i class="fas fa-palette"></i>
-  </div>
-
-  <h3>Thiết kế - Sáng tạo</h3>
-
-  <div class="job-count">19 việc làm</div>
-
-  <div class="skills-list">
-    <span>UI/UX</span>
-    <span>Graphic</span>
-    <span>Video</span>
-  </div>
-</div>
-
-</div> <!-- ĐÓNG categories-grid -->
-
-<!-- AI RECOMMENDATION -->
-<div class="ai-recommend-box">
-
-  <div class="ai-header">
-
-    <div class="ai-title-wrap">
-      <div class="ai-badge">
-        <i class="fas fa-robot"></i>
-        AI SMART MATCH
-      </div>
-
-      <h2 class="ai-title">
-        AI Recommendation
-      </h2>
-
-      <p class="ai-desc">
-        Công việc được AI đề xuất dựa trên kỹ năng, xu hướng
-        và nhu cầu tuyển dụng tại Đà Nẵng.
-      </p>
-    </div>
-
-
-  </div>
-
-  <div class="ai-jobs-grid">
-
-    <!-- JOB 1 -->
-    <div class="job-card ai-card">
-
-      <div class="match-percent">
-        98% phù hợp
-      </div>
-
-      <div class="job-title">
-        Backend Developer
-      </div>
-
-      <div class="company">
-        <i class="fas fa-building"></i>
-        Axon Active
-      </div>
-
-      <div class="details">
-        <span>
-          <i class="fas fa-map-pin"></i>
-          Ngũ Hành Sơn
-        </span>
-
-        <span>
-          <i class="fas fa-clock"></i>
-          Full-time
-        </span>
-      </div>
-
-      <div class="tech-stack">
-        <span>Node.js</span>
-        <span>Express</span>
-        <span>MongoDB</span>
-      </div>
-
-      <button class="apply-btn">
-        Xem đề xuất
-      </button>
-
-    </div>
-
-    <!-- JOB 2 -->
-    <div class="job-card ai-card">
-
-      <div class="match-percent">
-        95% phù hợp
-      </div>
-
-      <div class="job-title">
-        Fullstack Developer
-      </div>
-
-      <div class="company">
-        <i class="fas fa-building"></i>
-        TMA Solutions
-      </div>
-
-      <div class="details">
-        <span>
-          <i class="fas fa-map-pin"></i>
-          Liên Chiểu
-        </span>
-
-        <span>
-          <i class="fas fa-clock"></i>
-          Full-time
-        </span>
-      </div>
-
-      <div class="tech-stack">
-        <span>Java</span>
-        <span>Spring Boot</span>
-        <span>React</span>
-      </div>
-
-      <button class="apply-btn">
-        Xem đề xuất
-      </button>
-
-    </div>
-
-    <!-- JOB 3 -->
-    <div class="job-card ai-card">
-
-      <div class="match-percent">
-        93% phù hợp
-      </div>
-
-      <div class="job-title">
-        Mobile Developer
-      </div>
-
-      <div class="company">
-        <i class="fas fa-building"></i>
-        GAMELOFT
-      </div>
-
-      <div class="details">
-        <span>
-          <i class="fas fa-map-pin"></i>
-          Sơn Trà
-        </span>
-
-        <span>
-          <i class="fas fa-clock"></i>
-          Full-time
-        </span>
-      </div>
-
-      <div class="tech-stack">
-        <span>React Native</span>
-        <span>Redux</span>
-        <span>JavaScript</span>
-      </div>
-
-      <button class="apply-btn">
-        Xem đề xuất
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-    
-        
       </div>
     </div>
-
   </div>
 </main>
 
 <!-- FOOTER -->
 <footer class="footer">
-
   <div class="container footer-container">
-
     <div class="footer-col">
-
-      <h2 class="footer-logo">
-        DANANG WORK
-      </h2>
-
-      <p class="footer-desc">
-        Nền tảng tìm việc thông minh tại Đà Nẵng.
-        Kết nối ứng viên và doanh nghiệp nhanh chóng, hiệu quả.
-      </p>
-
+      <h2 class="footer-logo">DANANG WORK</h2>
+      <p class="footer-desc">Nền tảng tìm việc thông minh tại Đà Nẵng. Kết nối ứng viên và doanh nghiệp nhanh chóng, hiệu quả.</p>
       <div class="footer-social">
         <a href="#"><i class="fab fa-facebook-f"></i></a>
         <a href="#"><i class="fab fa-linkedin-in"></i></a>
         <a href="#"><i class="fab fa-github"></i></a>
         <a href="#"><i class="fab fa-youtube"></i></a>
       </div>
-
     </div>
-
-    <div class="footer-col">
-
-      <h3>Dành cho ứng viên</h3>
-
-      <ul>
-        <li><a href="#">Tìm việc làm</a></li>
-        <li><a href="#">Tạo CV</a></li>
-        <li><a href="#">Công ty</a></li>
-        <li><a href="#">Kinh nghiệm phỏng vấn</a></li>
-      </ul>
-
-    </div>
-
-    <div class="footer-col">
-
-      <h3>Dành cho nhà tuyển dụng</h3>
-
-      <ul>
-        <li><a href="#">Đăng tin tuyển dụng</a></li>
-        <li><a href="#">Tìm ứng viên</a></li>
-        <li><a href="#">Giải pháp HR</a></li>
-        <li><a href="#">Bảng giá</a></li>
-      </ul>
-
-    </div>
-
-    <div class="footer-col">
-
-      <h3>Liên hệ</h3>
-
-      <ul>
-        <li><i class="fas fa-map-marker-alt"></i> Đà Nẵng, Việt Nam</li>
-        <li><i class="fas fa-envelope"></i> support@danangwork.vn</li>
-        <li><i class="fas fa-phone"></i> 0123 456 789</li>
-      </ul>
-
-    </div>
-
+    <div class="footer-col"><h3>Dành cho ứng viên</h3><ul><li><a href="#">Tìm việc làm</a></li><li><a href="#">Tạo CV</a></li><li><a href="#">Công ty</a></li><li><a href="#">Kinh nghiệm phỏng vấn</a></li></ul></div>
+    <div class="footer-col"><h3>Dành cho nhà tuyển dụng</h3><ul><li><a href="#">Đăng tin tuyển dụng</a></li><li><a href="#">Tìm ứng viên</a></li><li><a href="#">Giải pháp HR</a></li><li><a href="#">Bảng giá</a></li></ul></div>
+    <div class="footer-col"><h3>Liên hệ</h3><ul><li><i class="fas fa-map-marker-alt"></i> Đà Nẵng, Việt Nam</li><li><i class="fas fa-envelope"></i> support@danangwork.vn</li><li><i class="fas fa-phone"></i> 0123 456 789</li></ul></div>
   </div>
-
-  <div class="footer-bottom">
-    <p>© 2026 DANANG WORK. All rights reserved.</p>
-  </div>
-
+  <div class="footer-bottom"><p>© 2026 DANANG WORK. All rights reserved.</p></div>
 </footer>
 
-<!-- SCRIPT -->
 <script>
   const heroSection = document.getElementById("dynamicHero");
   const heroBadge = document.querySelector(".hero-badge");
-
   heroBadge.textContent = "ĐÀ NẴNG";
-
   heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
   heroSection.style.backgroundSize = "cover";
   heroSection.style.backgroundPosition = "center";
 </script>
 
-<!-- JS -->
+<script src="jobs-data.js"></script>
+<script src="ai-recommend.js"></script>
 <script src="index.js"></script>
 <script src="auth.js"></script>
+
+<style>
+  .loading-ai {
+    text-align: center;
+    padding: 60px;
+    color: #fff;
+    font-size: 16px;
+    grid-column: 1/-1;
+  }
+  .loading-ai i {
+    margin-right: 10px;
+  }
+</style>
 
 </body>
 </html>
