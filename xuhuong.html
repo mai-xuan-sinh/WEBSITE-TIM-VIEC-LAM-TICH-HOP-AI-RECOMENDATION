@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xu hướng thị trường lao động Đà Nẵng 2026</title>
     <link rel="stylesheet" href="xuhuong.css">
+    <link rel="stylesheet" href="floating.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -208,6 +209,20 @@
             });
         });
         window.addEventListener('storage', updateAuthUI);
+        const notifyBtn = document.getElementById("notifyBtn");
+const notifyPanel = document.getElementById("notifyPanel");
+
+if (notifyBtn && notifyPanel) {
+    notifyBtn.addEventListener("click", () => {
+        notifyPanel.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!notifyBtn.contains(e.target) && !notifyPanel.contains(e.target)) {
+            notifyPanel.classList.remove("show");
+        }
+    });
+}
     </script>
 
     <style>
@@ -234,5 +249,31 @@
         .loading-trends, .trends-error { text-align: center; padding: 60px; background: white; border-radius: 20px; }
         @media (max-width: 768px) { .ai-trends-grid { grid-template-columns: 1fr; } .trend-card-large { grid-column: span 1; } }
     </style>
+    <!-- FLOATING ACTION BUTTONS -->
+<div class="floating-actions">
+
+  <!-- FAVORITE -->
+  <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
+    <i class="fas fa-heart"></i>
+  </a>
+
+  <!-- NOTIFICATION -->
+  <div class="fab fab-bell" id="notifyBtn" title="Thông báo">
+    <i class="fas fa-bell"></i>
+    <span class="dot" id="notifyDot"></span>
+  </div>
+
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notify-panel" id="notifyPanel">
+  <h3>Thông báo</h3>
+  <div class="notify-item">📢 Có 5 việc làm mới phù hợp với bạn</div>
+  <div class="notify-item">🏢 FPT Software vừa đăng tuyển Developer</div>
+  <div class="notify-item">🔥 CV của bạn đã được xem 12 lần</div>
+</div>
+
+<script src="floating.js"></script>
+
 </body>
 </html>

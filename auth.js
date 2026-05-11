@@ -1,54 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const userBox = document.getElementById("userBox");
   const authButtons = document.getElementById("authButtons");
-
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-
-  if (user) {
-    // Ẩn login/register
-    if (authButtons) authButtons.style.display = "none";
-
-    // Hiện user + logout
-    if (userBox) {
-      userBox.innerHTML = `
-        <div class="user-info">
-          <a href="profile.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <i class="fas fa-user-circle avatar-icon"></i>
-            <span class="username">${user.username}</span>
-          </a>
-          <button id="logoutBtn">Đăng xuất</button>
-        </div>
-      `;
-
-      // xử lý logout
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      });
-    }
-  }
-document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-
-  const usernameText = document.getElementById("usernameText");
   const userBox = document.getElementById("userBox");
-  const logoutBtn = document.getElementById("logoutBtn");
 
-  if (user) {
-    usernameText.textContent = user.fullname || user.username;
+  const user = JSON.parse(localStorage.getItem("currentUser"));
 
-    // đảm bảo có thể click vào profile
-    userBox.href = "profile.html";
-  } else {
-    usernameText.textContent = "Khách";
-    userBox.href = "login.html";
+  if (!user) {
+    if (authButtons) authButtons.style.display = "flex";
+    return;
   }
 
-  if (logoutBtn) {
-    logoutBtn.onclick = () => {
-      localStorage.removeItem("currentUser");
-      window.location.reload();
-    };
-  }
-});
+  if (authButtons) authButtons.style.display = "none";
+
+  // LẤY TÊN CHUẨN (QUAN TRỌNG)
+  const displayName =
+    user.fullname ||
+    user.name ||
+    user.username ||
+    (user.email ? user.email.split("@")[0] : "User");
+
+  userBox.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;">
+
+      <a href="profile.html"
+         style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+
+        <i class="fas fa-user-circle" style="font-size:20px;"></i>
+
+        <span>${displayName}</span>
+
+      </a>
+
+      <button id="logoutBtn"
+              style="padding:5px 10px;border:none;border-radius:6px;cursor:pointer;">
+        Đăng xuất
+      </button>
+
+    </div>
+  `;
+
+  document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem("currentUser");
+    location.reload();
+  };
 });
