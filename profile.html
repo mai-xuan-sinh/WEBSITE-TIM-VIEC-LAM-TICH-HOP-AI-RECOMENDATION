@@ -1,88 +1,552 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>User Profile</title>
-  <link rel="stylesheet" href="profile.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ cá nhân - DANANG WORK</title>
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
 </head>
 <body>
 
-<div class="profile-container">
-
-  <!-- LEFT SIDEBAR -->
-  <div class="sidebar">
-    <div class="welcome">
-      Xin chào, <strong id="username">User</strong>
+    <!-- HEADER -->
+    <div class="top-header">
+        <div class="container header-flex">
+            <div class="logo-area">
+                <h1>DANANG WORK</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html">Việc làm</a>
+                <a href="congty.html">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <a href="taocv.html">Tạo CV</a>
+                <a href="hotro.html">Hỗ trợ</a>
+            </div>
+            <div class="nav-right">
+                <div id="authButtons" style="display: flex; gap: 12px;">
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
+                </div>
+                <div id="userBox" style="display: none;"></div>
+            </div>
+        </div>
     </div>
 
-    <img src="https://i.pravatar.cc/150" class="avatar">
+    <!-- PROFILE CONTENT -->
+    <div class="profile-wrapper">
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> / <span>Hồ sơ cá nhân</span>
+        </div>
 
-    <h3 id="name">Người dùng</h3>
-    <p class="role">Member</p>
+        <div class="profile-grid">
+            <!-- SIDEBAR -->
+            <aside class="profile-sidebar">
+                <div class="avatar-wrapper">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" alt="Avatar" class="avatar-img" id="avatarImg">
+                    <h3 id="sidebarName">Người dùng</h3>
+                    <p id="sidebarEmail">user@example.com</p>
+                    <button class="change-avatar-btn" onclick="changeAvatar()"><i class="fas fa-camera"></i> Đổi avatar</button>
+                </div>
 
-    <div class="stats">
-      <p><strong>2,354</strong><br>Followers</p>
-      <p><strong>5,987</strong><br>Following</p>
-      <p><strong>6,320</strong><br>Friends</p>
+                <ul class="sidebar-menu">
+                    <li class="active" data-tab="profile">
+                        <i class="fas fa-user-circle"></i> Thông tin cá nhân
+                    </li>
+                    <li data-tab="security">
+                        <i class="fas fa-lock"></i> Bảo mật
+                    </li>
+                    <li data-tab="cv">
+                        <i class="fas fa-file-alt"></i> CV đã lưu
+                    </li>
+                    <li data-tab="applications">
+                        <i class="fas fa-briefcase"></i> Lịch sử ứng tuyển
+                    </li>
+                    <li data-tab="saved">
+                        <i class="fas fa-heart"></i> Việc làm đã lưu
+                    </li>
+                </ul>
+
+                <div class="stats-card">
+                    <h4><i class="fas fa-chart-line"></i> Thống kê</h4>
+                    <div class="stats-row">
+                        <span>CV đã tạo</span>
+                        <span class="number" id="statsCV">0</span>
+                    </div>
+                    <div class="stats-row">
+                        <span>Đã ứng tuyển</span>
+                        <span class="number" id="statsApplied">0</span>
+                    </div>
+                    <div class="stats-row">
+                        <span>Đã lưu</span>
+                        <span class="number" id="statsSaved">0</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="profile-main">
+                <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
+                <div id="tab-profile" class="tab-pane active">
+                    <div class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Thông tin cá nhân</span>
+                    </div>
+
+                    <div id="profileAlert" class="alert"></div>
+
+                    <form id="profileForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input type="text" id="fullName" placeholder="Nhập họ và tên">
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại</label>
+                                <input type="tel" id="phone" placeholder="Nhập số điện thoại">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" placeholder="Email" readonly style="background:#f1f5f9">
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày sinh</label>
+                                <input type="date" id="dob">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <input type="text" id="address" placeholder="Nhập địa chỉ">
+                        </div>
+                        <div class="form-group">
+                            <label>Giới thiệu về bản thân</label>
+                            <textarea id="bio" rows="4" placeholder="Chia sẻ đôi nét về bản thân, kinh nghiệm, kỹ năng của bạn..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Kỹ năng (cách nhau bằng dấu phẩy)</label>
+                            <input type="text" id="skills" placeholder="VD: React, Node.js, Python, UI/UX">
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Cập nhật thông tin</button>
+                    </form>
+                </div>
+
+                <!-- TAB 2: BẢO MẬT -->
+                <div id="tab-security" class="tab-pane">
+                    <div class="section-title">
+                        <i class="fas fa-lock"></i>
+                        <span>Đổi mật khẩu</span>
+                    </div>
+
+                    <div id="securityAlert" class="alert"></div>
+
+                    <form id="securityForm">
+                        <div class="form-group">
+                            <label>Mật khẩu hiện tại</label>
+                            <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)">
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fas fa-key"></i> Đổi mật khẩu</button>
+                    </form>
+                </div>
+
+                <!-- TAB 3: CV ĐÃ LƯU -->
+                <div id="tab-cv" class="tab-pane">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        <span>CV đã lưu</span>
+                        <a href="taocv.html" class="btn-primary" style="margin-left: auto; padding: 8px 16px; font-size: 13px; text-decoration: none;">
+                            <i class="fas fa-plus"></i> Tạo CV mới
+                        </a>
+                    </div>
+                    <div id="cvListContainer" class="cv-list">
+                        <!-- CV list sẽ được render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 4: LỊCH SỬ ỨNG TUYỂN -->
+                <div id="tab-applications" class="tab-pane">
+                    <div class="section-title">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Lịch sử ứng tuyển</span>
+                    </div>
+                    <div id="applicationsList" class="application-list">
+                        <!-- Applications sẽ được render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 5: VIỆC LÀM ĐÃ LƯU -->
+                <div id="tab-saved" class="tab-pane">
+                    <div class="section-title">
+                        <i class="fas fa-heart"></i>
+                        <span>Việc làm đã lưu</span>
+                    </div>
+                    <div id="savedJobsList" class="application-list">
+                        <!-- Saved jobs sẽ được render bằng JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
-    <button class="follow-btn">Follow</button>
+    <script>
+        // ===== LẤY THÔNG TIN USER =====
+        let currentUser = null;
+        let users = [];
+        let savedCVs = [];
+        let applications = [];
+        let savedJobs = [];
 
-    <div class="social">
-      <span>Social Accounts</span>
-      <div class="icons">
-        <i>🌐</i>
-        <i>📘</i>
-        <i>🐦</i>
-        <i>💼</i>
-      </div>
-    </div>
-  </div>
+        function loadUserData() {
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            users = JSON.parse(localStorage.getItem('users')) || [];
+            savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+            applications = JSON.parse(localStorage.getItem('applications')) || [];
+            savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
 
-  <!-- RIGHT CONTENT -->
-  <div class="content">
-    <h1>Hồ sơ cá nhân</h1>
-    <p class="desc">
-      Quản lý thông tin cá nhân và tài khoản của bạn trên hệ thống Danang Work.
-    </p>
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="active">Overview</button>
-      <button>Profile</button>
-      <button>Email</button>
-      <button>Password</button>
-    </div>
+            // Tìm user đầy đủ trong danh sách
+            const fullUser = users.find(u => u.email === currentUser.email) || currentUser;
 
-    <!-- About -->
-    <div class="card">
-      <h3>About</h3>
-      <p id="aboutText">
-        Người dùng của hệ thống Danang Work.
-      </p>
-    </div>
+            // Cập nhật UI
+            document.getElementById('sidebarName').innerText = fullUser.name || fullUser.fullname || currentUser.name || 'Người dùng';
+            document.getElementById('sidebarEmail').innerText = fullUser.email;
+            document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
+            document.getElementById('email').value = fullUser.email || '';
+            document.getElementById('phone').value = fullUser.phone || '';
+            document.getElementById('address').value = fullUser.address || '';
+            document.getElementById('bio').value = fullUser.bio || '';
+            document.getElementById('skills').value = (fullUser.skills || []).join(', ');
+            document.getElementById('dob').value = fullUser.dob || '';
 
-    <!-- Profile Info -->
-    <div class="card">
-      <h3>Profile</h3>
-      <div class="info-grid">
-        <p>First Name</p><span id="firstName">---</span>
-        <p>Last Name</p><span id="lastName">---</span>
-        <p>Email</p><span id="email">---</span>
-        <p>Location</p><span>Đà Nẵng</span>
-        <p>Job</p><span>Chưa cập nhật</span>
-      </div>
-    </div>
+            // Cập nhật stats
+            const userApplications = applications.filter(app => app.userEmail === currentUser.email);
+            const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
+            document.getElementById('statsCV').innerText = savedCVs.length;
+            document.getElementById('statsApplied').innerText = userApplications.length;
+            document.getElementById('statsSaved').innerText = userSavedJobs.length;
 
-    <div class="action-buttons">
-      <button id="logoutBtn" class="logout">Đăng xuất</button>
-      <a href="index.html" class="home-btn">Quay lại trang chủ</a>
-    </div>
+            // Render các danh sách
+            renderCVList();
+            renderApplications();
+            renderSavedJobs();
+        }
 
-  </div>
+        // ===== RENDER CV LIST =====
+        function renderCVList() {
+            const container = document.getElementById('cvListContainer');
+            if (!container) return;
 
-</div>
+            if (savedCVs.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Bạn chưa có CV nào. Hãy <a href="taocv.html" style="color: #0ea5e9;">tạo CV ngay</a>!</p></div>`;
+                return;
+            }
 
-<script src="profile.js"></script>
+            container.innerHTML = savedCVs.map((cv, index) => `
+                <div class="cv-item">
+                    <div class="cv-info">
+                        <h4>${cv.template || 'CV Chuyên nghiệp'}</h4>
+                        <p>${cv.fullName || 'Chưa có tên'} • ${cv.position || 'Chưa có vị trí'} • ${cv.createdAt || 'Ngày tạo: ' + new Date().toLocaleDateString()}</p>
+                    </div>
+                    <div class="cv-actions">
+                        <button onclick="viewCV(${index})" title="Xem CV"><i class="fas fa-eye"></i></button>
+                        <button onclick="deleteCV(${index})" class="delete-cv" title="Xóa CV"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewCV(index) {
+            const cv = savedCVs[index];
+            alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || 'Chưa cập nhật'}\nVị trí: ${cv.position || 'Chưa cập nhật'}\nEmail: ${cv.email || 'Chưa cập nhật'}\nSĐT: ${cv.phone || 'Chưa cập nhật'}\nĐịa chỉ: ${cv.address || 'Chưa cập nhật'}\nKỹ năng: ${cv.skills || 'Chưa cập nhật'}\nKinh nghiệm: ${cv.experience || 'Chưa cập nhật'}`);
+        }
+
+        function deleteCV(index) {
+            if (confirm('Bạn có chắc muốn xóa CV này?')) {
+                savedCVs.splice(index, 1);
+                localStorage.setItem('savedCVs', JSON.stringify(savedCVs));
+                renderCVList();
+                document.getElementById('statsCV').innerText = savedCVs.length;
+                showAlert('profileAlert', 'Đã xóa CV thành công!', 'success');
+            }
+        }
+
+        // ===== RENDER APPLICATIONS =====
+        function renderApplications() {
+            const container = document.getElementById('applicationsList');
+            if (!container) return;
+
+            const userApplications = applications.filter(app => app.userEmail === currentUser.email);
+
+            if (userApplications.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Bạn chưa ứng tuyển công việc nào.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = userApplications.map(app => `
+                <div class="application-item">
+                    <div>
+                        <h4>${app.jobTitle}</h4>
+                        <p style="font-size: 13px; color: #64748b;">${app.company} • ${app.location}</p>
+                    </div>
+                    <div>
+                        <span class="status-badge status-${app.status}">${getStatusText(app.status)}</span>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Đang xử lý';
+                case 'approved': return 'Đã duyệt';
+                case 'rejected': return 'Từ chối';
+                default: return 'Đã gửi';
+            }
+        }
+
+        // ===== RENDER SAVED JOBS =====
+        function renderSavedJobs() {
+            const container = document.getElementById('savedJobsList');
+            if (!container) return;
+
+            const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
+
+            if (userSavedJobs.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Bạn chưa lưu công việc nào.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = userSavedJobs.map((job, index) => `
+                <div class="application-item">
+                    <div>
+                        <h4>${job.title}</h4>
+                        <p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p>
+                        <p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p>
+                    </div>
+                    <div class="cv-actions">
+                        <button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                        <button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewJobDetail(jobId) {
+            window.location.href = `job-detail.html?id=${jobId}`;
+        }
+
+        function removeSavedJob(index) {
+            if (confirm('Bỏ lưu công việc này?')) {
+                savedJobs.splice(index, 1);
+                localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+                renderSavedJobs();
+                document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length;
+                showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success');
+            }
+        }
+
+        // ===== UPDATE PROFILE =====
+        function updateProfile(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const skillsInput = document.getElementById('skills').value.trim();
+            const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
+            const dob = document.getElementById('dob').value;
+
+            if (!fullName) {
+                showAlert('profileAlert', 'Vui lòng nhập họ và tên!', 'error');
+                return;
+            }
+
+            // Cập nhật trong users array
+            const userIndex = users.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) {
+                users[userIndex] = {
+                    ...users[userIndex],
+                    name: fullName,
+                    fullname: fullName,
+                    phone: phone,
+                    address: address,
+                    bio: bio,
+                    skills: skills,
+                    dob: dob
+                };
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+
+            // Cập nhật currentUser
+            currentUser.name = fullName;
+            currentUser.fullname = fullName;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Cập nhật sidebar
+            document.getElementById('sidebarName').innerText = fullName;
+
+            showAlert('profileAlert', 'Cập nhật thông tin thành công!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        // ===== CHANGE PASSWORD =====
+        function changePassword(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            const userIndex = users.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1 && users[userIndex].password !== currentPassword) {
+                showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error');
+                return;
+            }
+
+            // Cập nhật mật khẩu
+            if (userIndex !== -1) {
+                users[userIndex].password = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+
+            document.getElementById('securityForm').reset();
+            showAlert('securityAlert', 'Đổi mật khẩu thành công!', 'success');
+            setTimeout(() => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }, 2000);
+        }
+
+        // ===== CHANGE AVATAR =====
+        function changeAvatar() {
+            const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User');
+            if (seed) {
+                const newAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
+                document.getElementById('avatarImg').src = newAvatar;
+                showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success');
+            }
+        }
+
+        // ===== SHOW ALERT =====
+        function showAlert(alertId, message, type) {
+            const alertDiv = document.getElementById(alertId);
+            if (alertDiv) {
+                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+                alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+                setTimeout(() => {
+                    alertDiv.className = 'alert';
+                    alertDiv.innerHTML = '';
+                }, 3000);
+            } else {
+                alert(message);
+            }
+        }
+
+        // ===== TAB SWITCHING =====
+        function initTabs() {
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    const tabId = item.getAttribute('data-tab');
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    document.getElementById(`tab-${tabId}`).classList.add('active');
+                });
+            });
+        }
+
+        // ===== AUTH UI =====
+        function updateAuthUI() {
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            if (!authDiv || !userDiv) return;
+
+            let isLoggedIn = !!localStorage.getItem('currentUser');
+            let userName = "";
+
+            if (isLoggedIn && currentUser) {
+                userName = currentUser.name || currentUser.fullname || "User";
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name">${userName}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>
+                `;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            initTabs();
+
+            const profileForm = document.getElementById('profileForm');
+            const securityForm = document.getElementById('securityForm');
+
+            if (profileForm) profileForm.addEventListener('submit', updateProfile);
+            if (securityForm) securityForm.addEventListener('submit', changePassword);
+
+            updateAuthUI();
+        });
+
+        // Global functions for onclick
+        window.viewCV = viewCV;
+        window.deleteCV = deleteCV;
+        window.viewJobDetail = viewJobDetail;
+        window.removeSavedJob = removeSavedJob;
+        window.changeAvatar = changeAvatar;
+        window.handleLogout = handleLogout;
+    </script>
+
+    
 </body>
 </html>
