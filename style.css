@@ -224,7 +224,7 @@ button{
   border: 1px solid #e2e8f0;
   transition: 0.3s;
 }
-
+}
 .user-info:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
@@ -980,6 +980,8 @@ button{
   .ai-refresh-btn{
     width:100%;
   }
+}
+
 /* =========================================
    DANANG VIDEO SECTION
 ========================================= */
