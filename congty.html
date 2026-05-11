@@ -4,34 +4,390 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công ty - DANANG WORK</title>
-    <link rel="stylesheet" href="style-congty.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* ===== NAVBAR GIỐNG INDEX ===== */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(18px);
+            background: rgba(255,255,255,0.95);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            min-height: 70px;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            position: relative;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            transition: 0.25s;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 30px;
+        }
+
+        .nav-links a:hover {
+            background: #f1f5f9;
+            color: #0ea5e9;
+        }
+
+        /* ACTIVE STYLE: CHỮ XANH + GẠCH CHÂN, KHÔNG NỀN */
+        .nav-links a.active {
+            color: #0ea5e9 !important;
+            background: transparent !important;
+        }
+
+        .nav-links a.active::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: -2px;
+            height: 3px;
+            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+            border-radius: 999px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ===== AUTH BUTTONS ĐỒNG BỘ ===== */
+        #authButtons {
+            display: flex;
+            gap: 8px;
+        }
+
+        #authButtons a {
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        #authButtons a:first-child {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        #authButtons a:first-child:hover {
+            background: #bae6fd;
+            transform: translateY(-2px);
+        }
+
+        #authButtons a:last-child {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14,165,233,0.3);
+        }
+
+        #authButtons a:last-child:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(14,165,233,0.4);
+        }
+
+        /* ===== USER INFO ===== */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        #userBox {
+            display: none;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            text-align: center;
+            padding: 50px 24px;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            color: #facc15;
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.8;
+        }
+
+        /* ===== FILTER ===== */
+        .filter-bar {
+            margin: 32px 0 24px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #0ea5e9;
+        }
+
+        .filter-btn.active {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
+
+        /* ===== COMPANY GRID ===== */
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .company-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .company-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .card-top {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .company-logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .company-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .company-info {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 0.85rem;
+        }
+
+        .company-desc {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin: 12px 0;
+            padding: 12px 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-primary {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #0284c7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        @media (max-width: 768px) {
+            .header-flex {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .company-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .card-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="container nav-content">
-            <div>
-                <div class="logo-main">DANANG WORK</div>
-                <div class="logo-slogan">Tìm việc thông minh tại Đà Nẵng</div>
+    <!-- HEADER GIỐNG INDEX -->
+    <div class="top-header">
+        <div class="header-flex">
+            <div class="logo-area">
+                <h1>DANANG WORK</h1>
             </div>
-            <nav class="nav-links">
+            <div class="nav-links">
                 <a href="index.html">Trang chủ</a>
                 <a href="trangvieclam.html">Việc làm</a>
-                <a href="congty.html" class="active-link">Công ty</a>
+                <a href="congty.html" class="active">Công ty</a>
                 <a href="xuhuong.html">Xu hướng</a>
                 <a href="huongdan.html">Hướng dẫn</a>
                 <a href="taocv.html">Tạo CV</a>
                 <a href="hotro.html">Hỗ trợ</a>
-            </nav>
+            </div>
             <div class="nav-right">
                 <div id="authButtons">
-                    <a href="#" id="fakeLoginBtn">Đăng nhập</a>
-                    <a href="#" id="fakeRegisterBtn">Đăng ký</a>
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
                 </div>
                 <div id="userBox"></div>
             </div>
         </div>
-    </header>
+    </div>
 
     <section class="hero">
         <div class="container">
@@ -111,72 +467,42 @@
         });
         renderCompanies();
 
-        // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
-        (function() {
-            const AUTH_KEY = 'isLoggedIn';
-            const DEFAULT_USER = 'Nguyễn Văn A';
+        // ===== AUTH UI ĐỒNG BỘ =====
+        function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
-            const loginBtn = document.getElementById('fakeLoginBtn');
-            const registerBtn = document.getElementById('fakeRegisterBtn');
+            if (!authDiv || !userDiv) return;
             
-            function getUserName() {
-                let name = localStorage.getItem('userName');
-                if (!name || name === 'undefined' || name === 'null' || name === '') {
-                    return DEFAULT_USER;
-                }
-                return name;
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (user && user.email) {
+                const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name">${displayName}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>
+                `;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
             }
-            
-            function renderUI() {
-                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
-                if (isLoggedIn) {
-                    const userName = getUserName();
-                    authDiv.style.display = 'none';
-                    userDiv.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-avatar">${userName.charAt(0)}</div>
-                            <span>${userName}</span>
-                            <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
-                        </div>
-                    `;
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', () => {
-                            localStorage.setItem(AUTH_KEY, 'false');
-                            localStorage.removeItem('userName');
-                            renderUI();
-                            alert('Đã đăng xuất!');
-                        });
-                    }
-                } else {
-                    authDiv.style.display = 'flex';
-                    userDiv.innerHTML = '';
-                }
-            }
-            
-            if (loginBtn) {
-                loginBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.setItem(AUTH_KEY, 'true');
-                    localStorage.setItem('userName', DEFAULT_USER);
-                    renderUI();
-                    alert('Đăng nhập thành công!');
-                });
-            }
-            
-            if (registerBtn) {
-                registerBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.setItem(AUTH_KEY, 'true');
-                    localStorage.setItem('userName', DEFAULT_USER);
-                    renderUI();
-                    alert('Đăng ký thành công!');
-                });
-            }
-            
-            renderUI();
-        })();
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.href = 'index.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+        window.addEventListener('storage', updateAuthUI);
     </script>
 </body>
 </html>

@@ -1,140 +1,358 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hướng dẫn - DANANG WORK</title>
-    <link rel="stylesheet" href="huongdan.css">
-    <!-- Thêm icon font nếu cần (ví dụ Font Awesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn - DANANG WORK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f5f7fb; color: #1f2937; }
+    
+    /* HEADER */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      backdrop-filter: blur(18px);
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 70px;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo-area h1 {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 30px;
+      transition: 0.25s;
+    }
+    .nav-links a:hover { background: #f1f5f9; color: #0ea5e9; }
+    .nav-links a.active { color: #0ea5e9 !important; background: #eff6ff; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    #authButtons { display: flex; gap: 8px; }
+    #authButtons a {
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    #authButtons a:first-child { background: #e0f2fe; color: #0369a1; }
+    #authButtons a:last-child { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f1f5f9;
+      padding: 5px 12px;
+      border-radius: 40px;
+    }
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    .logout-btn { background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 30px; cursor: pointer; }
+    #userBox { display: none; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      height: 380px;
+      background: url('https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&q=80&w=2070') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+    }
+    .hero-content { position: relative; z-index: 10; color: white; }
+    .hero-content .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 20px;
+      border-radius: 30px;
+      margin-bottom: 20px;
+    }
+    .hero-content h1 { font-size: 48px; margin: 20px 0; }
+    .hero-content h1 span { color: #facc15; }
+    .hero-content p { max-width: 600px; margin: 0 auto; }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto 60px;
+      display: flex;
+      gap: 40px;
+      padding: 0 20px;
+    }
+    .sidebar {
+      flex: 1;
+      background: white;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+    .sidebar h3 { margin-bottom: 20px; font-size: 20px; }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .sidebar ul li i { margin-right: 10px; color: #0ea5e9; }
+    .sidebar ul li:hover { background: #f1f5f9; }
+    .sidebar ul li.active { background: #0ea5e9; color: white; }
+    .sidebar ul li.active i { color: white; }
+    
+    .content-area { flex: 3; }
+    .content-section {
+      display: none;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      animation: fadeIn 0.4s ease;
+    }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .content-section h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      padding-left: 15px;
+      border-left: 5px solid #0ea5e9;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .feature-item {
+      text-align: center;
+      padding: 24px;
+      border-radius: 16px;
+    }
+    .feature-item i { font-size: 36px; margin-bottom: 12px; }
+    .blue { background: #e0f2fe; color: #0284c7; }
+    .green { background: #dcfce7; color: #16a34a; }
+    .purple { background: #f3e8ff; color: #9333ea; }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .faq-question {
+      padding: 18px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      background: #fafbfc;
+    }
+    .faq-question i { transition: 0.3s; }
+    .faq-item.active .faq-question i { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: 0.3s;
+      padding: 0 20px;
+      color: #6b7280;
+    }
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+      padding: 0 20px 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .sidebar { position: static; }
+      .hero-content h1 { font-size: 32px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .header-flex { flex-wrap: wrap; justify-content: center; }
+      .nav-links { justify-content: center; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Header / Navbar -->
-    <header class="navbar">
-        <div class="logo">
-            <span class="logo-main">DANANG WORK</span>
-            <p class="logo-sub">Tìm việc thông minh tại Đà Nẵng</p>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="index.html">Trang chủ</a></li>
-                <li><a href="trangvieclam.html">Việc làm</a></li>
-                <li><a href="congty.html">Công ty</a></li>
-                <li><a href="xuhuong.html">Xu hướng</a></li>
-                <li><a href="huongdan.html" class="active">Hướng dẫn</a></li>
-                <li><a href="taocv.html">Tạo CV</a></li>
-                <li><a href="hotro.html">Hỗ trợ</a></li>
-            </ul>
-        </nav>
-  <div id="authButtons">
-    <a href="login.html">Đăng nhập</a>
-    <a href="register.html">Đăng ký</a>
+<div class="top-header">
+  <div class="header-flex">
+    <div class="logo-area"><h1>DANANG WORK</h1></div>
+    <div class="nav-links">
+      <a href="index.html">Trang chủ</a>
+      <a href="trangvieclam.html">Việc làm</a>
+      <a href="congty.html">Công ty</a>
+      <a href="xuhuong.html">Xu hướng</a>
+      <a href="huongdan.html" class="active">Hướng dẫn</a>
+      <a href="taocv.html">Tạo CV</a>
+      <a href="hotro.html">Hỗ trợ</a>
+    </div>
+    <div class="nav-right">
+      <div id="authButtons"><a href="login.html">Đăng nhập</a><a href="register.html">Đăng ký</a></div>
+      <div id="userBox"></div>
+    </div>
   </div>
-
-  <div id="userBox"></div>
 </div>
-        </div>
-    </header>
 
-    <!-- Hero Banner -->
-    <section class="hero-section">
-        <div class="hero-overlay">
-            <div class="hero-content">
-                <span class="badge"><i class="fa-solid fa-book-open"></i> Hướng dẫn sử dụng</span>
-                <h1>Bắt đầu hành trình <br> <span>tìm việc thành công</span></h1>
-                <p>Hướng dẫn chi tiết từ A-Z giúp bạn làm quen và sử dụng hiệu quả các tính năng của DANANG WORK</p>
-            </div>
-        </div>
-    </section>
+<section class="hero">
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <div class="badge"><i class="fa-solid fa-book-open"></i> Hướng dẫn sử dụng</div>
+    <h1>Bắt đầu hành trình <br><span>tìm việc thành công</span></h1>
+    <p>Hướng dẫn chi tiết từ A-Z giúp bạn sử dụng hiệu quả các tính năng của DANANG WORK</p>
+  </div>
+</section>
 
-    <!-- Main Content Container -->
-    <main class="container">
-        <!-- Sidebar Menu -->
-        <aside class="sidebar">
-            <h3>Nội dung</h3>
-            <ul>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Giới thiệu</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Đăng ký tài khoản</a></li>
-                <li class="active"><a href="#"><i class="fa-regular fa-circle-check"></i> Tạo hồ sơ & CV</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Tìm kiếm việc làm</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Ứng tuyển</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> AI gợi ý việc làm</a></li>
-                <li><a href="#"><i class="fa-regular fa-circle-check"></i> Chuẩn bị phỏng vấn</a></li>
-            </ul>
-        </aside>
+<div class="container">
+  <aside class="sidebar">
+    <h3>Nội dung</h3>
+    <ul>
+      <li data-section="intro"><i class="fa-regular fa-circle-check"></i> Giới thiệu</li>
+      <li data-section="register"><i class="fa-regular fa-circle-check"></i> Đăng ký tài khoản</li>
+      <li data-section="cv"><i class="fa-regular fa-circle-check"></i> Tạo hồ sơ & CV</li>
+      <li data-section="search"><i class="fa-regular fa-circle-check"></i> Tìm kiếm việc làm</li>
+      <li data-section="apply"><i class="fa-regular fa-circle-check"></i> Ứng tuyển</li>
+      <li data-section="ai"><i class="fa-regular fa-circle-check"></i> AI gợi ý việc làm</li>
+      <li data-section="interview"><i class="fa-regular fa-circle-check"></i> Chuẩn bị phỏng vấn</li>
+    </ul>
+  </aside>
 
-        <!-- Main Content -->
-        <section class="content-area">
-<h2 class="section-title">Giới thiệu</h2>
-            <div class="card info-box">
-                <p>Chào mừng bạn đến với DANANG WORK - nền tảng kết nối việc làm thông minh tại Đà Nẵng. Hướng dẫn này sẽ giúp bạn làm quen với các tính năng và tận dụng tối đa công nghệ AI để tìm kiếm công việc mơ ước.</p>
-                
-                <div class="feature-grid">
-                    <div class="feature-item blue">
-                        <i class="fa-solid fa-bullseye"></i>
-                        <h4>Tìm việc nhanh</h4>
-                        <p>Hơn 1000+ việc làm</p>
-                    </div>
-                    <div class="feature-item green">
-                        <i class="fa-solid fa-robot"></i>
-                        <h4>Gợi ý thông minh</h4>
-                        <p>AI phân tích kỹ năng</p>
-                    </div>
-                    <div class="feature-item purple">
-                        <i class="fa-solid fa-briefcase"></i>
-                        <h4>Kết nối trực tiếp</h4>
-                        <p>Với nhà tuyển dụng</p>
-                    </div>
-                </div>
-            </div>
-
-            <h2 class="section-title">Câu hỏi thường gặp</h2>
-<div class="faq-list">
-    <!-- Câu 1 -->
-    <div class="faq-item">
-        <span>Tôi có cần trả phí để sử dụng DANANG WORK không?</span>
-        <i class="fa-solid fa-chevron-down"></i>
-    </div>
-    
-    <!-- Câu 2 -->
-    <div class="faq-item">
-        <span>Làm thế nào để AI gợi ý việc làm chính xác?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+  <main class="content-area">
+    <div id="intro" class="content-section active">
+      <h2>Giới thiệu</h2>
+      <p>Chào mừng bạn đến với DANANG WORK - nền tảng kết nối việc làm thông minh tại Đà Nẵng. Hướng dẫn này sẽ giúp bạn làm quen với các tính năng và tận dụng tối đa công nghệ AI để tìm kiếm công việc mơ ước.</p>
+      <div class="feature-grid">
+        <div class="feature-item blue"><i class="fa-solid fa-bullseye"></i><h4>Tìm việc nhanh</h4><p>Hơn 1000+ việc làm</p></div>
+        <div class="feature-item green"><i class="fa-solid fa-robot"></i><h4>Gợi ý thông minh</h4><p>AI phân tích kỹ năng</p></div>
+        <div class="feature-item purple"><i class="fa-solid fa-briefcase"></i><h4>Kết nối trực tiếp</h4><p>Với nhà tuyển dụng</p></div>
+      </div>
     </div>
 
-    <!-- Câu 3 -->
-    <div class="faq-item">
-        <span>Tôi có thể ứng tuyển bao nhiêu công việc cùng lúc?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+    <div id="register" class="content-section">
+      <h2>Đăng ký tài khoản</h2>
+      <p>Để sử dụng đầy đủ các tính năng của DANANG WORK, bạn cần đăng ký tài khoản. Nhấp vào nút "Đăng ký" góc phải màn hình, chọn loại tài khoản (Ứng viên hoặc Nhà tuyển dụng) và điền đầy đủ thông tin.</p>
+      <p>Sau khi đăng ký thành công, bạn sẽ nhận được email xác nhận và có thể đăng nhập để sử dụng.</p>
     </div>
 
-    <!-- Câu 4 -->
-    <div class="faq-item">
-        <span>Làm sao để biết nhà tuyển dụng đã xem hồ sơ của tôi?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+    <div id="cv" class="content-section">
+      <h2>Tạo hồ sơ & CV</h2>
+      <p>Hồ sơ cá nhân là nơi thể hiện thông tin của bạn với nhà tuyển dụng. Hãy cập nhật đầy đủ:</p>
+      <ul style="margin: 15px 0 0 20px;"><li>Thông tin cá nhân (họ tên, email, số điện thoại)</li><li>Kỹ năng chuyên môn</li><li>Kinh nghiệm làm việc</li><li>Học vấn và chứng chỉ</li></ul>
+      <p>Ngoài ra, bạn có thể tạo CV chuyên nghiệp với nhiều mẫu thiết kế sẵn có tại mục "Tạo CV".</p>
     </div>
 
-    <!-- Câu 5 -->
-    <div class="faq-item">
-        <span>Tôi có thể chỉnh sửa hồ sơ sau khi đã tạo không?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+    <div id="search" class="content-section">
+      <h2>Tìm kiếm việc làm</h2>
+      <p>Sử dụng thanh tìm kiếm để tìm việc theo từ khóa (vị trí, kỹ năng, công ty) hoặc lọc theo địa điểm, mức lương, ngành nghề. Bạn cũng có thể khám phá việc làm theo từng lĩnh vực để tìm cơ hội phù hợp.</p>
     </div>
 
-    <!-- Câu 6 -->
-    <div class="faq-item">
-        <span>Làm thế nào để tải lên CV cá nhân?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+    <div id="apply" class="content-section">
+      <h2>Ứng tuyển</h2>
+      <p>Khi tìm thấy công việc phù hợp, nhấn nút "Ứng tuyển". Hệ thống sẽ gửi hồ sơ của bạn đến nhà tuyển dụng. Bạn có thể theo dõi trạng thái ứng tuyển trong mục "Lịch sử ứng tuyển" trên trang cá nhân.</p>
     </div>
 
-    <!-- Câu 7 -->
-    <div class="faq-item">
-        <span>Làm thế nào để bảo mật thông tin cá nhân của tôi?</span>
-        <i class="fa-solid fa-chevron-down"></i>
+    <div id="ai" class="content-section">
+      <h2>AI gợi ý việc làm</h2>
+      <p>Công nghệ AI sẽ phân tích hồ sơ, kỹ năng và hành vi tìm kiếm của bạn để gợi ý những công việc phù hợp nhất. Hãy cập nhật đầy đủ thông tin để AI có thể gợi ý chính xác hơn.</p>
     </div>
-</div>        </section>
-    </main>
-<script src="auth.js"></script>
-<link rel="stylesheet" href="auth.css">
+
+    <div id="interview" class="content-section">
+      <h2>Chuẩn bị phỏng vấn</h2>
+      <p>Khi được nhà tuyển dụng liên hệ phỏng vấn, hãy chuẩn bị kỹ lưỡng: tìm hiểu về công ty, ôn lại kỹ năng và chuẩn bị câu hỏi cho nhà tuyển dụng. Chúc bạn thành công!</p>
+    </div>
+
+    <div class="faq-list">
+      <h2 style="margin-bottom: 20px;">Câu hỏi thường gặp</h2>
+      <div class="faq-item"><div class="faq-question">Tôi có cần trả phí để sử dụng DANANG WORK không? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer">Không, DANANG WORK hoàn toàn miễn phí cho người tìm việc.</div></div>
+      <div class="faq-item"><div class="faq-question">Làm thế nào để AI gợi ý việc làm chính xác? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer">Cập nhật đầy đủ kỹ năng, kinh nghiệm và thường xuyên xem các công việc phù hợp.</div></div>
+      <div class="faq-item"><div class="faq-question">Tôi có thể ứng tuyển bao nhiêu công việc cùng lúc? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer">Không giới hạn số lượng, bạn có thể ứng tuyển nhiều công việc cùng lúc.</div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  function updateAuthUI() {
+    const authDiv = document.getElementById('authButtons');
+    const userDiv = document.getElementById('userBox');
+    if (!authDiv || !userDiv) return;
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (user && user.email) {
+      const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+      authDiv.style.display = 'none';
+      userDiv.style.display = 'block';
+      userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div><span class="user-name">${displayName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+    } else {
+      authDiv.style.display = 'flex';
+      userDiv.style.display = 'none';
+      userDiv.innerHTML = '';
+    }
+  }
+  function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); window.location.href = 'index.html'; }
+  document.addEventListener('DOMContentLoaded', updateAuthUI);
+  window.addEventListener('storage', updateAuthUI);
+
+  // SIDEBAR MENU
+  const menuItems = document.querySelectorAll('.sidebar ul li');
+  const sections = document.querySelectorAll('.content-section');
+  menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+      menuItems.forEach(i => i.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      const sectionId = item.dataset.section;
+      document.getElementById(sectionId).classList.add('active');
+    });
+  });
+
+  // FAQ ACCORDION
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    question.addEventListener('click', () => {
+      faqItems.forEach(i => { if (i !== item) i.classList.remove('active'); });
+      item.classList.toggle('active');
+    });
+  });
+</script>
 </body>
 </html>

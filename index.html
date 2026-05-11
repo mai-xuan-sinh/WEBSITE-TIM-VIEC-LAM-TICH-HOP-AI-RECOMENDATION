@@ -24,7 +24,7 @@
       <h1>DANANG WORK</h1>
     </div>
     <div class="nav-links">
-      <a href="index.html">Trang chủ</a>
+      <a href="index.html" class="active">Trang chủ</a>
       <a href="trangvieclam.html">Việc làm</a>
       <a href="congty.html">Công ty</a>
       <a href="xuhuong.html">Xu hướng</a>
@@ -37,12 +37,7 @@
         <a href="login.html">Đăng nhập</a>
         <a href="register.html">Đăng ký</a>
       </div>
-      <div id="userBox">
-        <a href="profile.html" class="user-info">
-          <i class="fas fa-user-circle avatar-icon"></i>
-          <span class="username">Tên người dùng</span>
-        </a>
-      </div>
+      <div id="userBox"></div>
     </div>
   </div>
 </div>
@@ -173,6 +168,44 @@
     margin-right: 10px;
   }
 </style>
+
+<script>
+  function updateAuthUI() {
+    const authDiv = document.getElementById('authButtons');
+    const userDiv = document.getElementById('userBox');
+    if (!authDiv || !userDiv) return;
+    
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (user && user.email) {
+      const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+      authDiv.style.display = 'none';
+      userDiv.style.display = 'block';
+      userDiv.innerHTML = `
+        <div class="user-info">
+          <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
+          <span class="user-name">${displayName}</span>
+          <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+        </div>
+      `;
+    } else {
+      authDiv.style.display = 'flex';
+      userDiv.style.display = 'none';
+      userDiv.innerHTML = '';
+    }
+  }
+  
+  function handleLogout() {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('rememberUser');
+    window.location.href = 'index.html';
+  }
+  
+  document.addEventListener('DOMContentLoaded', updateAuthUI);
+  window.addEventListener('storage', updateAuthUI);
+</script>
 
 </body>
 </html>

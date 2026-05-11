@@ -2,53 +2,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBox = document.getElementById("userBox");
   const authButtons = document.getElementById("authButtons");
 
-  const user = JSON.parse(localStorage.getItem("currentUser"));
+  function updateAuthUI() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
 
-  if (user) {
-    // Ẩn login/register
-    if (authButtons) authButtons.style.display = "none";
-
-    // Hiện user + logout
-    if (userBox) {
-      userBox.innerHTML = `
-        <div class="user-info">
-          <a href="profile.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <i class="fas fa-user-circle avatar-icon"></i>
-            <span class="username">${user.username}</span>
-          </a>
-          <button id="logoutBtn">Đăng xuất</button>
-        </div>
-      `;
-
-      // xử lý logout
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      });
+    if (user && user.email) {
+      if (authButtons) authButtons.style.display = "none";
+      
+      if (userBox) {
+        const displayName = user.name || user.fullname || user.username || user.email.split("@")[0];
+        userBox.style.display = "block";
+        userBox.innerHTML = `
+          <div class="user-info">
+            <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
+            <span class="user-name">${displayName}</span>
+            <button id="logoutBtn" class="logout-btn">Đăng xuất</button>
+          </div>
+        `;
+        
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("rememberUser");
+            window.location.href = "index.html";
+          });
+        }
+      }
+    } else {
+      if (authButtons) authButtons.style.display = "flex";
+      if (userBox) {
+        userBox.style.display = "none";
+        userBox.innerHTML = "";
+      }
     }
   }
-document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
 
-  const usernameText = document.getElementById("usernameText");
-  const userBox = document.getElementById("userBox");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  if (user) {
-    usernameText.textContent = user.fullname || user.username;
-
-    // đảm bảo có thể click vào profile
-    userBox.href = "profile.html";
-  } else {
-    usernameText.textContent = "Khách";
-    userBox.href = "login.html";
-  }
-
-  if (logoutBtn) {
-    logoutBtn.onclick = () => {
-      localStorage.removeItem("currentUser");
-      window.location.reload();
-    };
-  }
-});
+  updateAuthUI();
+  
+  window.addEventListener("storage", updateAuthUI);
 });

@@ -131,18 +131,36 @@ body{
   border-radius:999px;
 }
 
-.nav-right,
-#authButtons{
-  display:flex;
-  align-items:center;
-  gap:12px;
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
 }
 
-#authButtons a{
-  text-decoration:none;
-  color:var(--text);
-  font-size:14px;
-  font-weight:600;
+#authButtons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+#authButtons a {
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#authButtons a:first-child {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+#authButtons a:last-child {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
 }
 
 /* =========================

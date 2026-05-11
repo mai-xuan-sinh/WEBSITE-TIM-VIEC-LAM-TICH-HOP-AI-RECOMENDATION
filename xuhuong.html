@@ -1,238 +1,179 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xu hướng thị trường lao động Đà Nẵng 2026</title>
-    <link rel="stylesheet" href="xuhuong.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xu hướng thị trường lao động Đà Nẵng</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="xuhuong.css">
+  
 </head>
 <body>
 
-    <!-- HEADER GIỐNG TRANG CHỦ -->
-    <div class="top-header">
-        <div class="container header-flex">
-            <div class="logo-area"><h1>DANANG WORK</h1></div>
-            <div class="nav-links">
-                <a href="index.html">Trang chủ</a>
-                <a href="trangvieclam.html">Việc làm</a>
-                <a href="congty.html">Công ty</a>
-                <a href="xuhuong.html" class="active">Xu hướng</a>
-                <a href="huongdan.html">Hướng dẫn</a>
-                <a href="taocv.html">Tạo CV</a>
-                <a href="hotro.html">Hỗ trợ</a>
-            </div>
-            <div class="nav-right">
-                <div id="authButtons" style="display: flex; gap: 12px;"><a href="login.html">Đăng nhập</a><a href="register.html">Đăng ký</a></div>
-                <div id="userBox" style="display: none;"></div>
-            </div>
-        </div>
+<div class="top-header">
+  <div class="header-flex">
+    <div class="logo-area"><h1>DANANG WORK</h1></div>
+    <div class="nav-links">
+      <a href="index.html">Trang chủ</a>
+      <a href="trangvieclam.html">Việc làm</a>
+      <a href="congty.html">Công ty</a>
+      <a href="xuhuong.html" class="active">Xu hướng</a>
+      <a href="huongdan.html">Hướng dẫn</a>
+      <a href="taocv.html">Tạo CV</a>
+      <a href="hotro.html">Hỗ trợ</a>
     </div>
+    <div class="nav-right">
+      <div id="authButtons"><a href="login.html">Đăng nhập</a><a href="register.html">Đăng ký</a></div>
+      <div id="userBox"></div>
+    </div>
+  </div>
+</div>
 
-    <!-- HERO SECTION -->
-    <header class="hero-section">
-        <div class="overlay"></div>
-        <div class="hero-content">
-            <div class="report-badge"><i class="fa-solid fa-trophy"></i> Báo cáo thường niên <span id="current-badge-year">2026</span></div>
-            <h1>Thị trường lao động <br> <span id="current-title-year">Đà Nẵng 2026</span></h1>
-            <p>Phân tích chuyên sâu về xu hướng tuyển dụng, mức lương và kỹ năng hot nhất tại thành phố đáng sống nhất Việt Nam</p>
-            <div class="year-selector">
-                <span class="year-btn" data-year="2024">2024</span>
-                <span class="year-btn" data-year="2025">2025</span>
-                <span class="year-btn active" data-year="2026">2026</span>
-                <span class="year-btn" data-year="2027">2027</span>
-                <span class="year-btn" data-year="2028">2028</span>
-                <span class="year-btn" data-year="2029">2029</span>
-                <span class="year-btn" data-year="2030">2030</span>
-            </div>
-        </div>
-    </header>
+<header class="hero-section">
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <div class="report-badge"><i class="fa-solid fa-trophy"></i> Báo cáo thường niên <span id="current-badge-year">2026</span></div>
+    <h1>Thị trường lao động <br> <span id="current-title-year">Đà Nẵng 2026</span></h1>
+    <p>Phân tích chuyên sâu về xu hướng tuyển dụng, mức lương và kỹ năng hot nhất</p>
+    <div class="year-selector">
+      <span class="year-btn" data-year="2024">2024</span>
+      <span class="year-btn" data-year="2025">2025</span>
+      <span class="year-btn active" data-year="2026">2026</span>
+      <span class="year-btn" data-year="2027">2027</span>
+      <span class="year-btn" data-year="2028">2028</span>
+      <span class="year-btn" data-year="2029">2029</span>
+      <span class="year-btn" data-year="2030">2030</span>
+    </div>
+  </div>
+</header>
 
-    <!-- MAIN CONTENT -->
-    <main class="container">
+<main class="container">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-header"><div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div><span class="percent">+32%</span></div><h2 id="stat-job">121,000+</h2><p>Việc làm</p><div class="progress-bar"><div class="fill blue-bar"></div></div></div>
+    <div class="stat-card"><div class="stat-header"><div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div><span>+18%</span></div><h2 id="stat-comp">5,200+</h2><p>Công ty</p><div class="progress-bar"><div class="fill green-bar"></div></div></div>
+    <div class="stat-card"><div class="stat-header"><div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div><span>+45%</span></div><h2 id="stat-cand">45,000+</h2><p>Ứng viên</p><div class="progress-bar"><div class="fill purple-bar"></div></div></div>
+    <div class="stat-card"><div class="stat-header"><div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div><span>+15%</span></div><h2 id="stat-sal">15.2 Tr</h2><p>Lương TB</p><div class="progress-bar"><div class="fill orange-bar"></div></div></div>
+  </div>
 
-        <!-- STATS GRID -->
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-header"><div class="icon-box blue-bg"><i class="fa-solid fa-briefcase"></i></div><span class="percent blue-text">+32%</span></div><h2 id="stat-job">121,000+</h2><p>Việc làm</p><div class="progress-bar"><div class="fill blue-bar" style="width: 40%"></div></div></div>
-            <div class="stat-card"><div class="stat-header"><div class="icon-box green-bg"><i class="fa-solid fa-building"></i></div><span class="percent green-text">+18%</span></div><h2 id="stat-comp">5,200+</h2><p>Công ty</p><div class="progress-bar"><div class="fill green-bar" style="width: 60%"></div></div></div>
-            <div class="stat-card"><div class="stat-header"><div class="icon-box purple-bg"><i class="fa-solid fa-users"></i></div><span class="percent purple-text">+45%</span></div><h2 id="stat-cand">45,000+</h2><p>Ứng viên</p><div class="progress-bar"><div class="fill purple-bar" style="width: 80%"></div></div></div>
-            <div class="stat-card"><div class="stat-header"><div class="icon-box orange-bg"><i class="fa-solid fa-chart-line"></i></div><span class="percent orange-text">+15%</span></div><h2 id="stat-sal">15.2 Tr</h2><p>Lương TB</p><div class="progress-bar"><div class="fill orange-bar" style="width: 35%"></div></div></div>
-        </div>
+  <div class="tabs-nav">
+    <button class="tab-btn active" data-target="tab-overview"><i class="fa-solid fa-chart-simple"></i> Tổng quan</button>
+    <button class="tab-btn" data-target="tab-industry"><i class="fa-solid fa-desktop"></i> Phân tích ngành</button>
+    <button class="tab-btn" data-target="tab-salary"><i class="fa-solid fa-circle-dollar-to-slot"></i> Lương & đãi ngộ</button>
+    <button class="tab-btn" data-target="tab-skills"><i class="fa-solid fa-fire-flame-curved"></i> Kỹ năng hot</button>
+    <button class="tab-btn" data-target="tab-forecast"><i class="fa-solid fa-rocket"></i> Dự báo 2030</button>
+  </div>
 
-        <!-- TABS NAVIGATION -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" data-target="tab-overview"><i class="fa-solid fa-chart-simple"></i> Tổng quan thị trường</button>
-            <button class="tab-btn" data-target="tab-industry"><i class="fa-solid fa-desktop"></i> Phân tích ngành</button>
-            <button class="tab-btn" data-target="tab-salary"><i class="fa-solid fa-circle-dollar-to-slot"></i> Lương & đãi ngộ</button>
-            <button class="tab-btn" data-target="tab-skills"><i class="fa-solid fa-fire-flame-curved"></i> Kỹ năng hot</button>
-            <button class="tab-btn" data-target="tab-forecast"><i class="fa-solid fa-rocket"></i> Dự báo 2030</button>
-            <button class="tab-btn" data-target="tab-ai-trends"><i class="fa-solid fa-robot"></i> AI Insights</button>
-        </div>
+  <div id="tab-overview" class="tab-content active">
+    <div class="industry-grid">
+      <div class="industry-card border-blue"><div class="ind-header"><h3>Công nghệ thông tin</h3><span class="trend-tag">+32%</span></div><p>AI, Blockchain, Cloud Computing đang bùng nổ tại Đà Nẵng</p><div class="ind-footer"><span>Việc làm</span><strong id="job-it">450+</strong></div></div>
+      <div class="industry-card border-green"><div class="ind-header"><h3>Du lịch - Khách sạn</h3><span class="trend-tag">+28%</span></div><p>Phục hồi mạnh mẽ, nhu cầu nhân sự cao cấp tăng đột biến</p><div class="ind-footer"><span>Việc làm</span><strong id="job-tourism">380+</strong></div></div>
+      <div class="industry-card border-blue"><div class="ind-header"><h3>Xây dựng - Bất động sản</h3><span class="trend-tag">+20%</span></div><p>Phát triển các dự án đô thị thông minh, khu công nghiệp mới</p><div class="ind-footer"><span>Việc làm</span><strong id="job-construction">210+</strong></div></div>
+      <div class="industry-card border-green"><div class="ind-header"><h3>Kinh doanh - Bán lẻ</h3><span class="trend-tag">+15%</span></div><p>Thương mại điện tử bùng nổ, nhiều trung tâm thương mại mới</p><div class="ind-footer"><span>Việc làm</span><strong id="job-retail">180+</strong></div></div>
+    </div>
+  </div>
 
-        <!-- TAB 1-5: Giữ nguyên nội dung cũ ... -->
-        <div id="tab-overview" class="tab-content active">
-            <div class="industry-grid">
-                <div class="industry-card border-blue"><div class="ind-header"><h3>Công nghệ thông tin</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +32%</span></div><p>AI, Blockchain, Cloud Computing đang bùng nổ tại Đà Nẵng</p><div class="ind-footer"><span>Việc làm</span><strong id="job-it">450+</strong></div></div>
-                <div class="industry-card border-green"><div class="ind-header"><h3>Du lịch - Khách sạn</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +28%</span></div><p>Phục hồi mạnh mẽ, nhu cầu nhân sự cao cấp tăng đột biến</p><div class="ind-footer"><span>Việc làm</span><strong id="job-tourism">380+</strong></div></div>
-                <div class="industry-card border-blue"><div class="ind-header"><h3>Xây dựng - Bất động sản</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +20%</span></div><p>Phát triển các dự án đô thị thông minh, khu công nghiệp mới</p><div class="ind-footer"><span>Việc làm</span><strong id="job-construction">210+</strong></div></div>
-                <div class="industry-card border-green"><div class="ind-header"><h3>Kinh doanh - Bán lẻ</h3><span class="trend-tag"><i class="fa-solid fa-arrow-trend-up"></i> +15%</span></div><p>Thương mại điện tử bùng nổ, nhiều trung tâm thương mại mới</p><div class="ind-footer"><span>Việc làm</span><strong id="job-retail">180+</strong></div></div>
-            </div>
-        </div>
+  <div id="tab-industry" class="tab-content"><div class="industry-grid"><div class="industry-card border-blue"><div class="ind-header"><h3>Công nghệ thông tin</h3><span class="trend-tag">+32%</span></div><p><strong>Xu hướng:</strong> AI, Blockchain, Cloud Computing, IoT, Cybersecurity</p><div class="ind-footer"><span>Việc làm</span><strong>450+</strong></div></div><div class="industry-card border-green"><div class="ind-header"><h3>Du lịch - Khách sạn</h3><span class="trend-tag">+28%</span></div><p><strong>Xu hướng:</strong> Phục hồi mạnh mẽ, Resort 5 sao tuyển dụng cao cấp</p><div class="ind-footer"><span>Việc làm</span><strong>380+</strong></div></div></div></div>
 
-        <div id="tab-industry" class="tab-content">
-            <div class="industry-detail-grid">
-                <div class="industry-detail-card"><h3><i class="fa-solid fa-laptop-code"></i> Công nghệ thông tin</h3><div class="industry-stats"><div class="stat-badge"><div class="number">450+</div><div class="label">Việc làm</div></div><div class="stat-badge"><div class="number">35%</div><div class="label">Tăng trưởng</div></div></div><p><strong>Xu hướng:</strong> AI, Blockchain, Cloud Computing, IoT, Cybersecurity</p></div>
-                <div class="industry-detail-card"><h3><i class="fa-solid fa-hotel"></i> Du lịch - Khách sạn</h3><div class="industry-stats"><div class="stat-badge"><div class="number">380+</div><div class="label">Việc làm</div></div><div class="stat-badge"><div class="number">28%</div><div class="label">Tăng trưởng</div></div></div><p><strong>Xu hướng:</strong> Phục hồi mạnh mẽ, Resort 5 sao tuyển dụng cao cấp</p></div>
-            </div>
-        </div>
+  <div id="tab-salary" class="tab-content">
+    <table style="width:100%; border-collapse: collapse; background: white; border-radius: 20px; overflow: hidden;">
+      <thead><tr style="background: #f1f5f9;"><th style="padding: 15px; text-align: left;">Ngành nghề</th><th>Mới ra trường</th><th>Có kinh nghiệm</th><th>Cấp cao</th></tr></thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px;">Công nghệ thông tin</td><td>8-12tr</td><td>15-25tr</td><td>30-50tr</td></tr>
+        <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px;">Du lịch - Khách sạn</td><td>6-9tr</td><td>10-18tr</td><td>20-35tr</td></tr>
+        <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px;">Xây dựng - BĐS</td><td>7-10tr</td><td>12-20tr</td><td>25-40tr</td></tr>
+        <tr><td style="padding: 12px;">Kinh doanh - Bán lẻ</td><td>6-8tr</td><td>10-18tr</td><td>20-35tr</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-        <div id="tab-salary" class="tab-content">
-            <div class="salary-table"><table><thead><tr><th>Ngành nghề</th><th>Mới ra trường</th><th>Có kinh nghiệm</th><th>Cấp cao</th></tr></thead><tbody>
-                <tr><td>Công nghệ thông tin</td><td>8-12tr</td><td>15-25tr</td><td>30-50tr</td></tr>
-                <tr><td>Du lịch - Khách sạn</td><td>6-9tr</td><td>10-18tr</td><td>20-35tr</td></tr>
-                <tr><td>Xây dựng - BĐS</td><td>7-10tr</td><td>12-20tr</td><td>25-40tr</td></tr>
-                <tr><td>Kinh doanh - Bán lẻ</td><td>6-8tr</td><td>10-18tr</td><td>20-35tr</td></tr>
-            </tbody></table></div>
-        </div>
+  <div id="tab-skills" class="tab-content">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div style="background: white; border-radius: 20px; padding: 24px;"><h3>Kỹ năng công nghệ</h3><div style="margin-top: 20px;"><div><span>React/NextJS</span><div style="background:#e2e8f0; height:8px; border-radius:10px; margin:8px 0;"><div style="width:85%; background:#3b82f6; height:8px; border-radius:10px;"></div></div></div><div><span>Node.js/Python</span><div style="background:#e2e8f0; height:8px; border-radius:10px; margin:8px 0;"><div style="width:78%; background:#3b82f6; height:8px; border-radius:10px;"></div></div></div><div><span>AI/ML</span><div style="background:#e2e8f0; height:8px; border-radius:10px; margin:8px 0;"><div style="width:72%; background:#3b82f6; height:8px; border-radius:10px;"></div></div></div></div></div>
+      <div style="background: white; border-radius: 20px; padding: 24px;"><h3>Kỹ năng mềm</h3><div style="margin-top: 20px;"><div><span>Tiếng Anh</span><div style="background:#e2e8f0; height:8px; border-radius:10px; margin:8px 0;"><div style="width:80%; background:#22c55e; height:8px; border-radius:10px;"></div></div></div><div><span>Làm việc nhóm</span><div style="background:#e2e8f0; height:8px; border-radius:10px; margin:8px 0;"><div style="width:88%; background:#22c55e; height:8px; border-radius:10px;"></div></div></div></div></div>
+    </div>
+  </div>
 
-        <div id="tab-skills" class="tab-content">
-            <div class="skills-grid">
-                <div class="skill-category"><h3>Kỹ năng công nghệ</h3><div class="skill-list"><div class="skill-item"><span>React/NextJS</span><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div><span>85%</span></div><div class="skill-item"><span>Node.js/Python</span><div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div><span>78%</span></div><div class="skill-item"><span>AI/ML</span><div class="skill-bar"><div class="skill-fill" style="width:72%"></div></div><span>72%</span></div></div></div>
-                <div class="skill-category"><h3>Kỹ năng mềm</h3><div class="skill-list"><div class="skill-item"><span>Tiếng Anh</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div><span>80%</span></div><div class="skill-item"><span>Làm việc nhóm</span><div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div><span>88%</span></div></div></div>
-            </div>
-        </div>
+  <div id="tab-forecast" class="tab-content">
+    <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;">
+      <div style="background: white; border-radius: 20px; padding: 28px; text-align: center;"><div style="font-size: 48px; color: #3b82f6;"><i class="fa-solid fa-robot"></i></div><h3 style="margin: 16px 0;">AI & Tự động hóa</h3><div style="font-size: 32px; font-weight: 800; color: #2563eb;">45%</div><p>công việc được hỗ trợ bởi AI</p></div>
+      <div style="background: white; border-radius: 20px; padding: 28px; text-align: center;"><div style="font-size: 48px; color: #22c55e;"><i class="fa-solid fa-globe"></i></div><h3 style="margin: 16px 0;">Việc làm từ xa</h3><div style="font-size: 32px; font-weight: 800; color: #2563eb;">60%</div><p>doanh nghiệp áp dụng hybrid</p></div>
+      <div style="background: white; border-radius: 20px; padding: 28px; text-align: center;"><div style="font-size: 48px; color: #f97316;"><i class="fa-solid fa-leaf"></i></div><h3 style="margin: 16px 0;">Kinh tế xanh</h3><div style="font-size: 32px; font-weight: 800; color: #2563eb;">25,000+</div><p>việc làm năng lượng tái tạo</p></div>
+    </div>
+  </div>
 
-        <div id="tab-forecast" class="tab-content">
-            <div class="forecast-grid">
-                <div class="forecast-card"><div class="forecast-icon"><i class="fa-solid fa-robot"></i></div><h3>AI & Tự động hóa</h3><div class="forecast-number">45%</div><p>công việc được hỗ trợ bởi AI</p></div>
-                <div class="forecast-card"><div class="forecast-icon"><i class="fa-solid fa-globe"></i></div><h3>Việc làm từ xa</h3><div class="forecast-number">60%</div><p>doanh nghiệp áp dụng hybrid</p></div>
-                <div class="forecast-card"><div class="forecast-icon"><i class="fa-solid fa-leaf"></i></div><h3>Kinh tế xanh</h3><div class="forecast-number">25,000+</div><p>việc làm năng lượng tái tạo</p></div>
-            </div>
-        </div>
+  <div class="highlight-banner">
+    <div class="h-left"><div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div class="h-text"><h3 id="banner-title">Xu hướng 2026</h3><p id="banner-sub">Chuyển đổi số & Kinh tế xanh</p></div></div>
+    <div class="h-right"><h3 id="banner-pct">+21%</h3><p id="banner-comp">so với năm 2025</p></div>
+  </div>
+</main>
 
-        <!-- TAB 6: AI INSIGHTS - PHÂN TÍCH XU HƯỚNG BẰNG AI -->
-        <div id="tab-ai-trends" class="tab-content">
-            <div class="section-title"><i class="fas fa-robot"></i> Phân tích xu hướng bằng AI</div>
-            <div id="aiTrendsContainer">
-                <div class="loading-trends"><i class="fas fa-spinner fa-pulse"></i> AI đang phân tích dữ liệu thị trường...</div>
-            </div>
-        </div>
+<script>
+  // AUTH UI
+  function updateAuthUI() {
+    const authDiv = document.getElementById('authButtons');
+    const userDiv = document.getElementById('userBox');
+    if (!authDiv || !userDiv) return;
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (user && user.email) {
+      const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+      authDiv.style.display = 'none';
+      userDiv.style.display = 'block';
+      userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div><span class="user-name">${displayName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+    } else {
+      authDiv.style.display = 'flex';
+      userDiv.style.display = 'none';
+      userDiv.innerHTML = '';
+    }
+  }
+  function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); window.location.href = 'index.html'; }
+  document.addEventListener('DOMContentLoaded', updateAuthUI);
+  window.addEventListener('storage', updateAuthUI);
 
-        <!-- HIGHLIGHT BANNER -->
-        <div class="highlight-banner">
-            <div class="h-left"><div class="h-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div class="h-text"><h3 id="banner-title">Xu hướng 2026</h3><p id="banner-sub">Chuyển đổi số & Kinh tế xanh</p></div></div>
-            <div class="h-right"><h3 id="banner-pct">+21%</h3><p id="banner-comp">so với năm 2025</p></div>
-        </div>
+  // YEAR DATA
+  const yearlyData = {
+    "2024": { stats: { job: "98,000+", comp: "4,100+", cand: "35,000+", sal: "13.5 Tr" }, banner: { pct: "+15%", comp: "so với 2023", sub: "Phục hồi sau đại dịch" } },
+    "2025": { stats: { job: "110,000+", comp: "4,800+", cand: "40,000+", sal: "14.2 Tr" }, banner: { pct: "+18%", comp: "so với 2024", sub: "Tăng trưởng ổn định" } },
+    "2026": { stats: { job: "121,000+", comp: "5,200+", cand: "45,000+", sal: "15.2 Tr" }, banner: { pct: "+21%", comp: "so với 2025", sub: "Chuyển đổi số & Kinh tế xanh" } },
+    "2027": { stats: { job: "135,000+", comp: "5,800+", cand: "52,000+", sal: "16.5 Tr" }, banner: { pct: "+24%", comp: "so với 2026", sub: "Bùng nổ AI & Tự động hóa" } },
+    "2028": { stats: { job: "150,000+", comp: "6,500+", cand: "60,000+", sal: "18.0 Tr" }, banner: { pct: "+28%", comp: "so với 2027", sub: "Đô thị thông minh toàn diện" } },
+    "2029": { stats: { job: "168,000+", comp: "7,200+", cand: "68,000+", sal: "19.5 Tr" }, banner: { pct: "+32%", comp: "so với 2028", sub: "Trung tâm công nghệ quốc tế" } },
+    "2030": { stats: { job: "190,000+", comp: "8,500+", cand: "80,000+", sal: "21.5 Tr" }, banner: { pct: "+35%", comp: "so với 2029", sub: "Kỷ nguyên số hóa toàn phần" } }
+  };
 
-    </main>
+  const yearBtns = document.querySelectorAll('.year-btn');
+  yearBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      yearBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const y = btn.dataset.year;
+      const data = yearlyData[y];
+      document.getElementById('current-badge-year').textContent = y;
+      document.getElementById('current-title-year').innerHTML = `Đà Nẵng ${y}`;
+      if (data) {
+        document.getElementById('stat-job').textContent = data.stats.job;
+        document.getElementById('stat-comp').textContent = data.stats.comp;
+        document.getElementById('stat-cand').textContent = data.stats.cand;
+        document.getElementById('stat-sal').textContent = data.stats.sal;
+        document.getElementById('banner-title').textContent = `Xu hướng ${y}`;
+        document.getElementById('banner-sub').textContent = data.banner.sub;
+        document.getElementById('banner-pct').textContent = data.banner.pct;
+        document.getElementById('banner-comp').textContent = data.banner.comp;
+      }
+    });
+  });
 
-    <script src="jobs-data.js"></script>
-    <script src="ai-recommend.js"></script>
-    <script src="xuhuong.js"></script>
-    
-    <script>
-        // ===== HIỂN THỊ AI TRENDS =====
-        function renderAITrends() {
-            const container = document.getElementById('aiTrendsContainer');
-            if (!container) return;
-            
-            if (typeof aiEngine !== 'undefined' && aiEngine.getMarketTrends) {
-                const trends = aiEngine.getMarketTrends();
-                container.innerHTML = `
-                    <div class="ai-trends-grid">
-                        <div class="trend-card-large">
-                            <h3><i class="fas fa-chart-line"></i> Top lĩnh vực tuyển dụng</h3>
-                            <div class="trend-list">
-                                ${trends.topFields.slice(0, 6).map(([field, count]) => `
-                                    <div class="trend-item">
-                                        <span class="trend-name">${field}</span>
-                                        <div class="trend-bar"><div class="trend-fill" style="width: ${Math.min((count / trends.topFields[0][1]) * 100, 100)}%"></div></div>
-                                        <span class="trend-count">${count} việc</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        <div class="trend-card-medium">
-                            <h3><i class="fas fa-code"></i> Top kỹ năng được săn đón</h3>
-                            <div class="skills-cloud">
-                                ${trends.topSkills.map(([skill, count]) => `<span class="skill-cloud-item" style="font-size: ${12 + Math.min(count / 5, 20)}px">${skill}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="trend-card-small">
-                            <h3><i class="fas fa-map-marker-alt"></i> Nhu cầu theo khu vực</h3>
-                            <ul class="location-list">
-                                ${trends.demandByLocation.slice(0, 6).map(([location, count]) => `<li><span>${location}</span><span class="location-count">${count} việc</span></li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="ai-insight-summary">
-                        <h4><i class="fas fa-lightbulb"></i> Nhận định từ AI</h4>
-                        <p>🔍 Ngành <strong>${trends.topFields[0]?.[0] || 'Công nghệ thông tin'}</strong> đang dẫn đầu thị trường với ${trends.topFields[0]?.[1] || 0}+ cơ hội việc làm.</p>
-                        <p>📊 Kỹ năng <strong>${trends.topSkills[0]?.[0] || 'ReactJS'}</strong> được nhà tuyển dụng tìm kiếm nhiều nhất (+${trends.topSkills[0]?.[1] || 0} tin tuyển dụng).</p>
-                        <p>📍 Khu vực <strong>${trends.demandByLocation[0]?.[0] || 'Hải Châu'}</strong> có nhu cầu tuyển dụng cao nhất, chiếm ${Math.round((trends.demandByLocation[0]?.[1] / (trends.demandByLocation.reduce((a,b) => a + (b[1] || 0), 1))) * 100)}% thị phần.</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `<div class="trends-error"><i class="fas fa-exclamation-circle"></i> Đang khởi tạo AI...</div>`;
-            }
-        }
-
-        // ===== ĐỒNG BỘ ĐĂNG NHẬP =====
-        function updateAuthUI() {
-            const authDiv = document.getElementById('authButtons');
-            const userDiv = document.getElementById('userBox');
-            if (!authDiv || !userDiv) return;
-            let currentUser = localStorage.getItem('currentUser');
-            let isLoggedIn = false;
-            let userName = "";
-            if (currentUser) { try { const user = JSON.parse(currentUser); isLoggedIn = true; userName = user.name || user.fullname || "User"; } catch(e) {} }
-            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') { isLoggedIn = true; userName = localStorage.getItem('userName') || "User"; }
-            if (isLoggedIn) {
-                authDiv.style.display = 'none';
-                userDiv.style.display = 'block';
-                userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${userName.charAt(0).toUpperCase()}</div><span class="user-name">${userName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
-            } else {
-                authDiv.style.display = 'flex';
-                userDiv.style.display = 'none';
-                userDiv.innerHTML = '';
-            }
-        }
-        function handleLogout() { localStorage.removeItem('currentUser'); window.location.reload(); }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthUI();
-            renderAITrends();
-            // refresh AI trends khi đổi năm
-            document.querySelectorAll('.year-btn').forEach(btn => {
-                btn.addEventListener('click', () => { setTimeout(renderAITrends, 100); });
-            });
-        });
-        window.addEventListener('storage', updateAuthUI);
-    </script>
-
-    <style>
-        /* AI Trends Styles */
-        .ai-trends-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .trend-card-large, .trend-card-medium, .trend-card-small { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .trend-card-large { grid-column: span 2; }
-        .trend-card-medium { grid-column: span 1; }
-        .trend-card-small { grid-column: span 1; }
-        .trend-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .trend-name { width: 180px; font-weight: 600; }
-        .trend-bar { flex: 1; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .trend-fill { height: 100%; background: linear-gradient(90deg, #0ea5e9, #3b82f6); border-radius: 10px; }
-        .trend-count { width: 60px; font-size: 13px; color: #64748b; }
-        .skills-cloud { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; min-height: 200px; }
-        .skill-cloud-item { background: #e0f2fe; color: #0369a1; padding: 8px 16px; border-radius: 30px; transition: 0.3s; }
-        .skill-cloud-item:hover { transform: scale(1.05); background: #0ea5e9; color: white; }
-        .location-list { list-style: none; }
-        .location-list li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
-        .location-count { color: #0ea5e9; font-weight: 600; }
-        .ai-insight-summary { margin-top: 24px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 20px; padding: 24px; }
-        .ai-insight-summary h4 { margin-bottom: 16px; }
-        .ai-insight-summary p { margin-bottom: 12px; opacity: 0.9; }
-        .loading-trends, .trends-error { text-align: center; padding: 60px; background: white; border-radius: 20px; }
-        @media (max-width: 768px) { .ai-trends-grid { grid-template-columns: 1fr; } .trend-card-large { grid-column: span 1; } }
-    </style>
+  // TABS
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
+    });
+  });
+</script>
 </body>
 </html>
