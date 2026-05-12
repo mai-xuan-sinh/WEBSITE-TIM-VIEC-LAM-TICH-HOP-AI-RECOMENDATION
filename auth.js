@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const userBox = document.getElementById("userBox");
   const authButtons = document.getElementById("authButtons");
 
   function updateAuthUI() {

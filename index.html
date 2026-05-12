@@ -14,6 +14,7 @@
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="floating.css">
 </head>
 <body>
 
@@ -32,6 +33,7 @@
       <a href="taocv.html">Tạo CV</a>
       <a href="hotro.html">Hỗ trợ</a>
     </div>
+    
     <div class="nav-right">
       <div id="authButtons">
         <a href="login.html">Đăng nhập</a>
@@ -168,44 +170,51 @@
     margin-right: 10px;
   }
 </style>
+<!-- FLOATING ACTION BUTTONS -->
+<div class="floating-actions">
 
+  <!-- FAVORITE -->
+  <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
+    <i class="fas fa-heart"></i>
+  </a>
+
+  <!-- NOTIFICATION -->
+  <div class="fab fab-bell" id="notifyBtn" title="Thông báo">
+    <i class="fas fa-bell"></i>
+    <span class="dot" id="notifyDot"></span>
+  </div>
+
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notify-panel" id="notifyPanel">
+  <h3>Thông báo</h3>
+  <div class="notify-item">📢 Có 5 việc làm mới phù hợp với bạn</div>
+  <div class="notify-item">🏢 FPT Software vừa đăng tuyển Developer</div>
+  <div class="notify-item">🔥 CV của bạn đã được xem 12 lần</div>
+</div>
 <script>
-  function updateAuthUI() {
-    const authDiv = document.getElementById('authButtons');
-    const userDiv = document.getElementById('userBox');
-    if (!authDiv || !userDiv) return;
-    
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    
-    if (user && user.email) {
-      const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
-      authDiv.style.display = 'none';
-      userDiv.style.display = 'block';
-      userDiv.innerHTML = `
-        <div class="user-info">
-          <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
-          <span class="user-name">${displayName}</span>
-          <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-        </div>
-      `;
-    } else {
-      authDiv.style.display = 'flex';
-      userDiv.style.display = 'none';
-      userDiv.innerHTML = '';
-    }
-  }
-  
-  function handleLogout() {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('rememberUser');
-    window.location.href = 'index.html';
-  }
-  
-  document.addEventListener('DOMContentLoaded', updateAuthUI);
-  window.addEventListener('storage', updateAuthUI);
-</script>
+const notifyBtn = document.getElementById("notifyBtn");
+const notifyPanel = document.getElementById("notifyPanel");
+const notifyDot = document.getElementById("notifyDot");
 
+// giả lập có thông báo mới
+let hasNotify = true;
+
+if (hasNotify) {
+  notifyDot.style.display = "block";
+}
+
+// click mở/đóng panel
+notifyBtn.addEventListener("click", () => {
+  if (notifyPanel.style.display === "flex") {
+    notifyPanel.style.display = "none";
+  } else {
+    notifyPanel.style.display = "flex";
+    notifyDot.style.display = "none";
+  }
+});
+</script>
+<script src="floating.js"></script>
 </body>
 </html>
