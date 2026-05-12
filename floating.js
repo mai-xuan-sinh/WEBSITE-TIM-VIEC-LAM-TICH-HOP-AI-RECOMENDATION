@@ -256,7 +256,6 @@
                 console.log('🔄 Phát hiện thay đổi storage, cập nhật thông báo...');
                 loadNotifications();
                 
-                // Hiển thị toast cho thông báo mới
                 if (e.key === 'candidate_notifications' && e.newValue) {
                     try {
                         const newNotifs = JSON.parse(e.newValue);
@@ -284,8 +283,8 @@
             }
         });
 
-        // Polling mỗi 3 giây để đảm bảo đồng bộ
-        setInterval(loadNotifications, 3000);
+        // Polling mỗi 2 giây để đảm bảo đồng bộ
+        setInterval(loadNotifications, 2000);
         
         // Khởi tạo lần đầu
         loadNotifications();
