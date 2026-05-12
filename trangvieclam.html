@@ -190,6 +190,27 @@
                 </div>
                 <div class="selected-cv-info" id="selectedCVInfo"></div>
                 <div class="form-group"><label>Giới thiệu bản thân</label><textarea id="applyMessage" rows="4" placeholder="Nhập giới thiệu ngắn..."></textarea></div>
+                <!-- CCCD -->
+<div class="form-group">
+    <label>Tải lên CCCD/CMND (Công dân Việt Nam)</label>
+    <input type="file" 
+           id="applyCCCD" 
+           accept=".jpg,.jpeg,.png,.pdf">
+    <small class="upload-note">
+        Hỗ trợ JPG, PNG hoặc PDF
+    </small>
+</div>
+
+<!-- PASSPORT -->
+<div class="form-group">
+    <label>Tải lên Hộ chiếu (Người nước ngoài)</label>
+    <input type="file" 
+           id="applyPassport" 
+           accept=".jpg,.jpeg,.png,.pdf">
+    <small class="upload-note">
+        Dành cho ứng viên nước ngoài
+    </small>
+</div>
                 <button type="submit" class="submit-apply-btn"><i class="fas fa-paper-plane"></i> Gửi ứng tuyển</button>
             </form>
         </div>
@@ -570,19 +591,29 @@ window.applyJob = function(event, jobId) {
 // Xử lý submit ứng tuyển
 document.getElementById('applyForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const job = window.currentApplyingJob;
     if (!job) return;
-    
+
     const selectedCVIndex = document.getElementById('savedCVSelect').value;
     const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
     const cvData = selectedCVIndex !== '' ? savedCVs[selectedCVIndex] : null;
-    
+
     const name = document.getElementById('applyName').value;
     const email = document.getElementById('applyEmail').value;
     const phone = document.getElementById('applyPhone').value;
     const message = document.getElementById('applyMessage').value;
-    
+
+    // FILE CCCD + PASSPORT
+    const cccdFile = document.getElementById('applyCCCD').files[0];
+    const passportFile = document.getElementById('applyPassport').files[0];
+
+    // Bắt buộc phải có 1 trong 2
+    if (!cccdFile && !passportFile) {
+        alert('Vui lòng tải lên CCCD hoặc Hộ chiếu!');
+        return;
+    }
+
     const applicationData = {
         skills: cvData?.skills ? cvData.skills.split(/[,\n]+/).map(s => s.trim()) : [],
         experience: cvData?.experience || '',
@@ -591,15 +622,30 @@ document.getElementById('applyForm')?.addEventListener('submit', function(e) {
         intro: message || cvData?.intro || '',
         fullName: name,
         email: email,
-        phone: phone
+        phone: phone,
+
+        // Lưu tên file
+        cccdFileName: cccdFile ? cccdFile.name : '',
+        passportFileName: passportFile ? passportFile.name : ''
     };
-    
-    const success = submitApplication(job.id, job.title, job.company, job.location || job.district, job.salary, applicationData);
-    
+
+    const success = submitApplication(
+        job.id,
+        job.title,
+        job.company,
+        job.location || job.district,
+        job.salary,
+        applicationData
+    );
+
     if (success) {
-        alert('✅ Ứng tuyển thành công! HR sẽ liên hệ với bạn trong thời gian sớm nhất.');
+        alert('✅ Ứng tuyển thành công!');
+
         document.getElementById('applyModal').classList.remove('active');
+
         this.reset();
+
+        document.getElementById('selectedCVInfo').style.display = 'none';
     }
 });
     </script>
