@@ -10,6 +10,62 @@ const ADMIN_USER = {
     createdAt: new Date().toISOString()
 };
 
+// ==================== FORCE FIX ADMIN ACCOUNT ====================
+function forceFixAdminAccount() {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    let hasChanges = false;
+    
+    // Tìm tài khoản admin
+    let adminAccount = users.find(u => u.email === "admin@danangwork.com");
+    
+    if (!adminAccount) {
+        users.push(ADMIN_USER);
+        hasChanges = true;
+        console.log("✅ Đã tạo tài khoản Admin");
+    } else if (adminAccount.role !== "admin") {
+        adminAccount.role = "admin";
+        hasChanges = true;
+        console.log("🔄 Đã sửa role Admin thành 'admin'");
+    }
+    
+    // Đồng thời kiểm tra currentUser
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser && currentUser.email === "admin@danangwork.com" && currentUser.role !== "admin") {
+        currentUser.role = "admin";
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        console.log("🔄 Đã sửa role trong currentUser cho Admin");
+    }
+    
+    if (hasChanges) {
+        localStorage.setItem("users", JSON.stringify(users));
+    }
+}
+
+// Gọi ngay lập tức
+forceFixAdminAccount();
+
+// ==================== KIỂM TRA ĐĂNG NHẬP ADMIN ====================
+function checkAdminAuth() {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    // Kiểm tra nếu chưa đăng nhập hoặc không phải admin
+    if (!currentUser || currentUser.role !== "admin") {
+        // Nếu là admin nhưng role bị lỗi, thử sửa
+        if (currentUser && currentUser.email === "admin@danangwork.com") {
+            currentUser.role = "admin";
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log("🔄 Đã sửa role Admin trong checkAdminAuth");
+            document.getElementById("adminName").innerText = currentUser.name || "Admin";
+            return true;
+        }
+        window.location.href = "login.html";
+        return false;
+    }
+    
+    document.getElementById("adminName").innerText = currentUser.name || "Admin";
+    return true;
+}
+
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
 
 // Đồng bộ việc làm từ allJobs (jobs-data.js)
@@ -139,17 +195,6 @@ function initSampleData() {
             { id: "TXN004", companyName: "Viettel Post", package: "Basic", days: 7, amount: 350000, date: "2026-05-12", status: "completed" }
         ]));
     }
-}
-
-// ==================== KIỂM TRA ĐĂNG NHẬP ADMIN ====================
-function checkAdminAuth() {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (!currentUser || currentUser.role !== "admin") {
-        window.location.href = "login.html";
-        return false;
-    }
-    document.getElementById("adminName").innerText = currentUser.name || "Admin";
-    return true;
 }
 
 // ==================== CẬP NHẬT THỐNG KÊ ====================
@@ -348,14 +393,13 @@ function editUser(id) { openUserModal(id); }
 function deleteUser(id) { if(confirm("Xóa người dùng này?")){ let users = JSON.parse(localStorage.getItem("users")) || []; users = users.filter(u => u.id !== id); localStorage.setItem("users", JSON.stringify(users)); renderUsers(); updateStats(); alert("Đã xóa!"); } }
 function toggleUserStatus(id) { let users = JSON.parse(localStorage.getItem("users")) || []; const user = users.find(u => u.id === id); if(user){ user.status = user.status === "banned" ? "active" : "banned"; localStorage.setItem("users", JSON.stringify(users)); renderUsers(); alert(`Đã ${user.status === "banned" ? "khóa" : "mở khóa"} tài khoản!`); } }
 
-// ==================== QUẢN LÝ VIỆC LÀM (Lấy từ allJobs) ====================
+// ==================== QUẢN LÝ VIỆC LÀM ====================
 let currentJobPage = 1;
 const jobsPerPage = 10;
 let pendingJobId = null;
 let editingJobId = null;
 
 function renderJobs() {
-    // Đồng bộ dữ liệu từ allJobs trước khi render
     let jobs = syncJobsFromData();
     
     const searchTerm = document.getElementById("searchJob")?.value.toLowerCase() || "";
@@ -374,7 +418,7 @@ function renderJobs() {
     tbody.innerHTML = paginated.map(job => `
         <tr>
             <td>${job.id}</td>
-            <td><strong>${job.title || "---"}</strong></td>
+            </td><strong>${job.title || "---"}</strong></td>
             <td>${job.company || "---"}</td>
             <td>${job.field || "---"}</td>
             <td>${job.location || job.district || "---"}</td>
@@ -410,7 +454,6 @@ function editJob(id) {
         document.getElementById("editJobDesc").value = job.desc || "";
         document.getElementById("editJobStatus").value = job.status || "active";
         
-        // Load industries
         const industries = JSON.parse(localStorage.getItem("industries")) || [];
         const fieldSelect = document.getElementById("editJobField");
         if (fieldSelect) {
@@ -442,7 +485,6 @@ function updateJob() {
         };
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
-        // Cập nhật cả allJobs nếu có
         if (typeof allJobs !== 'undefined') {
             const originalIndex = allJobs.findIndex(j => j.id == editingJobId);
             if (originalIndex !== -1) allJobs[originalIndex] = jobs[index];
@@ -477,9 +519,8 @@ function toggleJobStatus(id) {
     }
 }
 
-// ==================== QUẢN LÝ CÔNG TY (Lấy từ companyData) ====================
+// ==================== QUẢN LÝ CÔNG TY ====================
 function renderCompanies() {
-    // Đồng bộ dữ liệu từ companyData trước khi render
     let companies = syncCompaniesFromData();
     
     const searchTerm = document.getElementById("searchCompany")?.value.toLowerCase() || "";
@@ -728,10 +769,10 @@ function renderTransactions() {
             <td>${t.id}</td>
             <td>${t.companyName}</td>
             <td>${t.package || "Premium"}</td>
-            <td>${t.days || 7} ngày</td>
-            <td>${t.amount.toLocaleString()}đ</td>
-            <td>${t.date}</td>
-            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}</span><table>
+            <td>${t.days || 7} ngày\n
+            <td>${t.amount.toLocaleString()}đ\n
+            <td>${t.date}\n
+            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}</span>\n
         </tr>
     `).join("");
 }
@@ -772,7 +813,6 @@ function initTabs() {
             if (activeTab) activeTab.classList.add("active");
             if (pageTitle) pageTitle.innerText = titles[tabId] || "Quản trị hệ thống";
             
-            // Load dữ liệu cho từng tab
             if (tabId === "users") renderUsers();
             if (tabId === "jobs") renderJobs();
             if (tabId === "companies") renderCompanies();
@@ -784,7 +824,6 @@ function initTabs() {
 }
 
 function initFilters() {
-    // Filter cho users
     document.querySelectorAll("#tab-users .filter-tab").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll("#tab-users .filter-tab").forEach(b => b.classList.remove("active"));
@@ -794,7 +833,6 @@ function initFilters() {
         });
     });
     
-    // Filter cho jobs
     document.querySelectorAll("#tab-jobs .filter-tab").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll("#tab-jobs .filter-tab").forEach(b => b.classList.remove("active"));
@@ -804,7 +842,6 @@ function initFilters() {
         });
     });
     
-    // Filter cho support
     document.querySelectorAll("#tab-support .filter-tab").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll("#tab-support .filter-tab").forEach(b => b.classList.remove("active"));
@@ -813,7 +850,6 @@ function initFilters() {
         });
     });
     
-    // Search listeners
     const searchUser = document.getElementById("searchUser");
     const searchJob = document.getElementById("searchJob");
     const searchCompany = document.getElementById("searchCompany");
@@ -837,16 +873,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initAdminAccount();
     if (!checkAdminAuth()) return;
     
-    // Đồng bộ dữ liệu từ file gốc
     initSyncData();
-    
     initSampleData();
     setCurrentDate();
     updateStats();
     initTabs();
     initFilters();
     
-    // Load dữ liệu ban đầu
     renderUsers();
     renderJobs();
     renderCompanies();

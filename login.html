@@ -5,229 +5,208 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng nhập - Danang Work</title>
 
-  <!-- FONT + ICON -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
   <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
-<!-- LOGIN BOX -->
 <div class="login-wrapper">
   <div class="login-card">
-
     <h2>Chào mừng trở lại</h2>
     <p>Đăng nhập để tiếp tục hành trình của bạn</p>
 
-    <!-- EMAIL -->
     <div class="input-group">
       <i class="fa fa-envelope"></i>
-      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="email" id="loginEmail" placeholder="Email" value="admin@danangwork.com">
     </div>
 
-    <!-- PASSWORD -->
     <div class="input-group">
       <i class="fa fa-lock"></i>
-      <input type="password" id="loginPassword" placeholder="Mật khẩu">
+      <input type="password" id="loginPassword" placeholder="Mật khẩu" value="Admin@123">
       <i class="fa fa-eye toggle-pass"></i>
     </div>
 
-    <!-- OPTIONS -->
     <div class="options">
-      <label>
-        <input type="checkbox" id="rememberMe"> Ghi nhớ đăng nhập
-      </label>
-
-      <!-- FIX -->
+      <label><input type="checkbox" id="rememberMe"> Ghi nhớ đăng nhập</label>
       <a href="#" id="forgotBtn">Quên mật khẩu?</a>
     </div>
 
-    <!-- BUTTON -->
     <button class="btn-login" id="loginBtn">Đăng nhập →</button>
 
-    <p class="register">
-      Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
-    </p>
+    <p class="register">Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
 
-    <!-- STATS -->
     <div class="stats">
       <span>✨ 1,200+ việc làm</span>
       <span>🛡 500+ công ty</span>
       <span>👤 10,000+ ứng viên</span>
     </div>
-
   </div>
 </div>
 
-<!-- FORM QUÊN MẬT KHẨU -->
 <div class="forgot-popup" id="forgotPopup">
-
   <div class="forgot-box">
-
     <h3>Đổi mật khẩu</h3>
-
-    <!-- EMAIL -->
-    <div class="input-group">
-      <i class="fa fa-envelope"></i>
-      <input type="email" id="forgotEmail" placeholder="Nhập gmail tài khoản">
-    </div>
-
-    <!-- NEW PASS -->
-    <div class="input-group">
-      <i class="fa fa-lock"></i>
-      <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-    </div>
-
-    <!-- RE PASS -->
-    <div class="input-group">
-      <i class="fa fa-lock"></i>
-      <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu">
-    </div>
-
-    <button class="btn-login" id="resetPasswordBtn">
-      Hoàn thành
-    </button>
-
-    <button class="close-btn" id="closeForgot">
-      Đóng
-    </button>
-
+    <div class="input-group"><i class="fa fa-envelope"></i><input type="email" id="forgotEmail" placeholder="Nhập email tài khoản"></div>
+    <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="newPassword" placeholder="Mật khẩu mới"></div>
+    <div class="input-group"><i class="fa fa-lock"></i><input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu"></div>
+    <button class="btn-login" id="resetPasswordBtn">Hoàn thành</button>
+    <button class="close-btn" id="closeForgot">Đóng</button>
   </div>
-
 </div>
 
-<!-- Nút về trang chủ -->
-<a href="index.html" class="home-btn">
-  <i class="fa fa-home"></i>
-</a>
+<a href="index.html" class="home-btn"><i class="fa fa-home"></i></a>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+  const loginBtn = document.getElementById("loginBtn");
+  const emailInput = document.getElementById("loginEmail");
+  const passwordInput = document.getElementById("loginPassword");
+  const rememberCheckbox = document.getElementById("rememberMe");
+  const togglePass = document.querySelector(".toggle-pass");
 
-  // =========================
-  // HIỆN / ẨN PASSWORD
-  // =========================
-
-  document.querySelectorAll(".toggle-pass").forEach(icon => {
-
-    icon.addEventListener("click", () => {
-
-      const input = icon.previousElementSibling;
-
-      if (input.type === "password") {
-        input.type = "text";
-        icon.classList.replace("fa-eye", "fa-eye-slash");
-      } else {
-        input.type = "password";
-        icon.classList.replace("fa-eye-slash", "fa-eye");
+  // ==================== TẠO TÀI KHOẢN CỐ ĐỊNH ====================
+  function createFixedAccounts() {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    
+    // Xóa tài khoản cũ để tránh trùng
+    users = users.filter(u => u.email !== "admin@danangwork.com" && u.email !== "hr@danangwork.com");
+    
+    const adminAccount = {
+      id: 999,
+      email: "admin@danangwork.com",
+      password: "Admin@123",
+      role: "admin",
+      name: "Quản trị viên",
+      fullname: "Quản trị viên hệ thống",
+      status: "active",
+      createdAt: new Date().toISOString()
+    };
+    
+    const hrAccount = {
+      id: 1,
+      email: "hr@danangwork.com",
+      password: "123456",
+      role: "hr",
+      name: "HR Manager",
+      fullname: "HR Manager",
+      status: "active",
+      createdAt: new Date().toISOString(),
+      company: {
+        name: "Công ty Công nghệ Đà Nẵng",
+        address: "Đà Nẵng, Việt Nam"
       }
+    };
+    
+    users.push(adminAccount, hrAccount);
+    localStorage.setItem("users", JSON.stringify(users));
+    console.log("✅ Đã tạo tài khoản Admin và HR");
+  }
+  
+  createFixedAccounts();
 
+  // Toggle password
+  if (togglePass && passwordInput) {
+    togglePass.addEventListener("click", function() {
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      this.classList.toggle("fa-eye-slash");
     });
+  }
 
-  });
+  // ==================== XỬ LÝ ĐĂNG NHẬP ====================
+  function handleLogin() {
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value.trim();
+    const remember = rememberCheckbox.checked;
 
-
-  // =========================
-  // ĐĂNG NHẬP
-  // =========================
-
-  document.getElementById("loginBtn").addEventListener("click", () => {
-
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
-
-    // Lấy user trong localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    // Tìm user
-    const user = users.find(u =>
-      u.email === email && u.password === password
-    );
-
-    if (user) {
-
-      // Lưu đăng nhập
-      localStorage.setItem("currentUser", JSON.stringify(user));
-
-      alert("Đăng nhập thành công!");
-
-      window.location.href = "index.html";
-
-    } else {
-      alert("Sai email hoặc mật khẩu!");
+    if (!email || !password) {
+      alert("❌ Vui lòng nhập đầy đủ email và mật khẩu!");
+      return;
     }
 
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    console.log("Users:", users);
+    
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (!user) {
+      alert("❌ Sai email hoặc mật khẩu!\n\nAdmin: admin@danangwork.com / Admin@123\nHR: hr@danangwork.com / 123456");
+      return;
+    }
+
+    // Đảm bảo role được xác định đúng
+    let finalRole = user.role;
+    if (!finalRole || finalRole === "candidate") {
+      if (user.email === "admin@danangwork.com") finalRole = "admin";
+      else if (user.email === "hr@danangwork.com") finalRole = "hr";
+      else finalRole = "candidate";
+    }
+
+    const currentUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name || user.fullname || user.email.split("@")[0],
+      fullname: user.fullname || user.name || user.email.split("@")[0],
+      role: finalRole
+    };
+
+    if (finalRole === "hr" && user.company) {
+      currentUser.company = user.company;
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+    if (remember) {
+      localStorage.setItem("rememberUser", JSON.stringify({ email: user.email, password: user.password }));
+    } else {
+      localStorage.removeItem("rememberUser");
+    }
+
+    alert(`✅ Đăng nhập thành công!\nChào mừng ${currentUser.name}`);
+
+    // ========== QUAN TRỌNG: CHUYỂN HƯỚNG THEO ROLE ==========
+    if (finalRole === "admin") {
+      window.location.href = "admin.html";
+    } else if (finalRole === "hr") {
+      window.location.href = "hr-dashboard.html";
+    } else {
+      window.location.href = "index.html";
+    }
+  }
+
+  loginBtn.addEventListener("click", handleLogin);
+
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleLogin();
+    });
   });
 
-
-  // =========================
-  // QUÊN MẬT KHẨU
-  // =========================
-
+  // ==================== QUÊN MẬT KHẨU ====================
   const forgotPopup = document.getElementById("forgotPopup");
-
-  // Mở popup
   document.getElementById("forgotBtn").addEventListener("click", (e) => {
-
     e.preventDefault();
-
     forgotPopup.style.display = "flex";
-
   });
-
-  // Đóng popup
   document.getElementById("closeForgot").addEventListener("click", () => {
-
     forgotPopup.style.display = "none";
-
   });
-
-
-  // =========================
-  // ĐỔI MẬT KHẨU
-  // =========================
-
   document.getElementById("resetPasswordBtn").addEventListener("click", () => {
-
     const email = document.getElementById("forgotEmail").value.trim();
     const newPassword = document.getElementById("newPassword").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
-
     let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    // CHECK EMAIL
     const userIndex = users.findIndex(u => u.email === email);
-
-    if (userIndex === -1) {
-      alert("Email không tồn tại!");
-      return;
-    }
-
-    // CHECK PASS
-    if (newPassword.length < 6) {
-      alert("Mật khẩu phải từ 6 ký tự!");
-      return;
-    }
-
-    // CHECK CONFIRM
-    if (newPassword !== confirmPassword) {
-      alert("Mật khẩu nhập lại không khớp!");
-      return;
-    }
-
-    // UPDATE PASSWORD
+    if (userIndex === -1) { alert("Email không tồn tại!"); return; }
+    if (newPassword.length < 6) { alert("Mật khẩu phải từ 6 ký tự!"); return; }
+    if (newPassword !== confirmPassword) { alert("Mật khẩu nhập lại không khớp!"); return; }
     users[userIndex].password = newPassword;
-
-    // SAVE
     localStorage.setItem("users", JSON.stringify(users));
-
     alert("Đổi mật khẩu thành công!");
-
     forgotPopup.style.display = "none";
-
   });
-
+});
 </script>
-
 </body>
 </html>

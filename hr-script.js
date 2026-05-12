@@ -1,4 +1,49 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // ==================== FORCE FIX HR ACCOUNT ====================
+    function forceFixHRAccount() {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let hasChanges = false;
+        
+        let hrAccount = users.find(u => u.email === "hr@danangwork.com");
+        
+        if (!hrAccount) {
+            users.push({
+                id: 1,
+                email: "hr@danangwork.com",
+                password: "123456",
+                role: "hr",
+                name: "HR Manager",
+                fullname: "HR Manager",
+                status: "active",
+                createdAt: new Date().toISOString(),
+                company: {
+                    name: "Công ty Công nghệ Đà Nẵng",
+                    address: "Đà Nẵng, Việt Nam"
+                }
+            });
+            hasChanges = true;
+            console.log("✅ Đã tạo tài khoản HR");
+        } else if (hrAccount.role !== "hr") {
+            hrAccount.role = "hr";
+            hasChanges = true;
+            console.log("🔄 Đã sửa role HR thành 'hr'");
+        }
+        
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (currentUser && currentUser.email === "hr@danangwork.com" && currentUser.role !== "hr") {
+            currentUser.role = "hr";
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log("🔄 Đã sửa role trong currentUser cho HR");
+        }
+        
+        if (hasChanges) {
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+    
+    forceFixHRAccount();
+    
     // ==================== TÀI KHOẢN HR CỐ ĐỊNH ====================
     const fixedHRUser = {
         id: 1,
@@ -30,11 +75,19 @@ document.addEventListener("DOMContentLoaded", () => {
         try { currentUser = JSON.parse(userStr); } catch(e) { currentUser = null; }
     }
     
-    const isValidHR = currentUser && (currentUser.role === "hr" || currentUser.role === "employer");
+    // Kiểm tra với nhiều điều kiện
+    const isValidHR = currentUser && (currentUser.role === "hr" || currentUser.role === "employer" || currentUser.email === "hr@danangwork.com");
     
     if (!isValidHR) {
-        window.location.href = "login.html";
-        return;
+        // Thử sửa role nếu là HR nhưng bị lỗi
+        if (currentUser && currentUser.email === "hr@danangwork.com") {
+            currentUser.role = "hr";
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log("🔄 Đã sửa role HR trong kiểm tra đăng nhập");
+        } else {
+            window.location.href = "login.html";
+            return;
+        }
     }
     
     // Hiển thị thông tin HR
@@ -62,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
     
-    // Khởi tạo thông báo
     let notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [
         { id: 1, title: "Ứng viên mới", content: "Nguyễn Văn C đã ứng tuyển vị trí Backend Developer", type: "application", time: "5 phút trước", read: false, link: "#" },
         { id: 2, title: "Phỏng vấn sắp diễn ra", content: "Buổi phỏng vấn với Trần Văn A lúc 14:00 hôm nay", type: "interview", time: "1 giờ trước", read: false, link: "#" },
@@ -71,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Pro"];
     
-    // Tạo lịch phỏng vấn mẫu
     if (interviews.length === 0) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -114,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (approvalRate) approvalRate.innerText = "0%";
         document.getElementById("activeCompanies").innerText = "1";
         
-        // Cập nhật badge thông báo
         const unreadCount = notifications.filter(n => !n.read).length;
         const badgeCount = document.querySelector(".badge-count");
         if (badgeCount) badgeCount.innerText = unreadCount > 0 ? unreadCount : "0";
@@ -182,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (panel) panel.classList.toggle("show");
     }
     
-    // Click outside để đóng notification panel
     document.addEventListener("click", function(e) {
         const panel = document.getElementById("notificationPanel");
         const bellBtn = document.querySelector(".action-btn.relative");
@@ -248,7 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }).join('');
         
-        // Gắn sự kiện (giữ nguyên như cũ)
         document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(data.find(c => c.id === parseInt(btn.dataset.id))));
         document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => { approveCandidate(parseInt(btn.dataset.id)); });
         document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => { rejectCandidate(parseInt(btn.dataset.id)); });
@@ -582,8 +630,8 @@ document.addEventListener("DOMContentLoaded", () => {
         item.addEventListener("click", function(e) {
             e.preventDefault();
             document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active"));
-            this.classList.add("active");
             document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
+            this.classList.add("active");
             const target = this.dataset.target;
             document.getElementById(target)?.classList.add("active");
             
@@ -624,7 +672,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Đã làm mới!");
     });
     
-    // Gán các hàm global
     window.approveCandidate = approveCandidate;
     window.rejectCandidate = rejectCandidate;
     window.searchCandidates = searchCandidates;
@@ -639,7 +686,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderNotifications();
     updateStats();
     
-    // Cập nhật filter options cho vị trí
     const positionFilter = document.getElementById("positionFilter");
     if (positionFilter) {
         const positions = [...new Set(candidates.map(c => c.position))];
