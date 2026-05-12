@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DANANG WORK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>DANANG WORK</h2>
+            <p>Quản trị hệ thống</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active" data-tab="dashboard"><a href="#"><i class="fas fa-chart-line"></i><span>Tổng quan</span></a></li>
+            <li data-tab="users"><a href="#"><i class="fas fa-users"></i><span>Quản lý người dùng</span></a></li>
+            <li data-tab="jobs"><a href="#"><i class="fas fa-briefcase"></i><span>Quản lý việc làm</span></a></li>
+            <li data-tab="companies"><a href="#"><i class="fas fa-building"></i><span>Quản lý công ty</span></a></li>
+            <li data-tab="cvs"><a href="#"><i class="fas fa-file-alt"></i><span>Quản lý CV</span></a></li>
+            <li data-tab="categories"><a href="#"><i class="fas fa-tags"></i><span>Danh mục hệ thống</span></a></li>
+            <li data-tab="reports"><a href="#"><i class="fas fa-chart-bar"></i><span>Báo cáo & Thống kê</span></a></li>
+            <li data-tab="content"><a href="#"><i class="fas fa-newspaper"></i><span>Quản lý nội dung</span></a></li>
+            <li data-tab="support"><a href="#"><i class="fas fa-headset"></i><span>Hỗ trợ người dùng</span></a></li>
+            <li data-tab="revenue"><a href="#"><i class="fas fa-dollar-sign"></i><span>Thống kê doanh thu</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar">A</div>
+                <div class="admin-details">
+                    <h4 id="adminName">Admin</h4>
+                    <p>Quản trị viên</p>
+                </div>
+            </div>
+            <button class="logout-admin" onclick="handleAdminLogout()"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1 id="pageTitle">Tổng quan</h1>
+                <p>Chào mừng bạn đến với trang quản trị</p>
+            </div>
+            <div class="date-time">
+                <div class="date" id="currentDate"></div>
+            </div>
+        </div>
+
+        <!-- TAB: TỔNG QUAN -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-info"><h3 id="totalUsers">0</h3><p>Tổng người dùng</p></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="totalEmployers">0</h3><p>Nhà tuyển dụng</p></div><div class="stat-icon"><i class="fas fa-building"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="totalCandidates">0</h3><p>Ứng viên</p></div><div class="stat-icon"><i class="fas fa-user-graduate"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="totalJobs">0</h3><p>Tin tuyển dụng</p></div><div class="stat-icon"><i class="fas fa-briefcase"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="totalApplications">0</h3><p>Lượt ứng tuyển</p></div><div class="stat-icon"><i class="fas fa-file-signature"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="totalCompanies">0</h3><p>Công ty</p></div><div class="stat-icon"><i class="fas fa-building"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="pendingJobs">0</h3><p>Chờ duyệt</p></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="revenue">0</h3><p>Doanh thu (VNĐ)</p></div><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                <div style="background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 16px;"><i class="fas fa-chart-pie"></i> Thống kê người dùng</h3>
+                    <div id="userStatsChart" style="height: 250px;"></div>
+                </div>
+                <div style="background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 16px;"><i class="fas fa-chart-line"></i> Xu hướng tuyển dụng</h3>
+                    <div id="jobTrendChart" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: QUẢN LÝ NGƯỜI DÙNG -->
+        <div id="tab-users" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Quản lý người dùng</h2>
+                <button class="btn-primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Tất cả</button>
+                <button class="filter-tab" data-filter="candidate">Ứng viên</button>
+                <button class="filter-tab" data-filter="employer">Nhà tuyển dụng</button>
+                <button class="filter-tab" data-filter="admin">Quản trị viên</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchUser" placeholder="Tìm kiếm theo tên, email...">
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="userTable">
+                    <thead>
+                        <tr><th>ID</th><th>Avatar</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Loại</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr>
+                    </thead>
+                    <tbody id="userList"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="userPagination"></div>
+        </div>
+
+        <!-- TAB: QUẢN LÝ VIỆC LÀM -->
+        <div id="tab-jobs" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-briefcase"></i> Quản lý tin tuyển dụng</h2>
+                <button class="btn-primary" onclick="openJobModal()"><i class="fas fa-plus"></i> Thêm tin mới</button>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Tất cả</button>
+                <button class="filter-tab" data-filter="pending">Chờ duyệt</button>
+                <button class="filter-tab" data-filter="active">Đang hiển thị</button>
+                <button class="filter-tab" data-filter="rejected">Từ chối</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchJob" placeholder="Tìm kiếm theo tiêu đề, công ty...">
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="jobTable">
+                    <thead><tr><th>ID</th><th>Tiêu đề</th><th>Công ty</th><th>Lĩnh vực</th><th>Địa điểm</th><th>Trạng thái</th><th>Ngày đăng</th><th>Thao tác</th></tr></thead>
+                    <tbody id="jobList"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="jobPagination"></div>
+        </div>
+
+        <!-- TAB: QUẢN LÝ CÔNG TY -->
+        <div id="tab-companies" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-building"></i> Quản lý công ty</h2>
+                <button class="btn-primary" onclick="openCompanyModal()"><i class="fas fa-plus"></i> Thêm công ty</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchCompany" placeholder="Tìm kiếm theo tên công ty...">
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="companyTable">
+                    <thead><tr><th>ID</th><th>Logo</th><th>Tên công ty</th><th>Địa chỉ</th><th>SĐT</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <tbody id="companyList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB: QUẢN LÝ CV -->
+        <div id="tab-cvs" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-file-alt"></i> Quản lý CV / Hồ sơ ứng viên</h2>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchCV" placeholder="Tìm kiếm theo tên, email...">
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="cvTable">
+                    <thead><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Vị trí</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+                    <tbody id="cvList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB: DANH MỤC HỆ THỐNG -->
+        <div id="tab-categories" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Quản lý danh mục</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
+                <div>
+                    <h3><i class="fas fa-industry"></i> Ngành nghề</h3>
+                    <div id="industryList" style="margin-top: 16px;"></div>
+                    <button class="btn-outline btn-sm" onclick="addCategory('industry')"><i class="fas fa-plus"></i> Thêm ngành</button>
+                </div>
+                <div>
+                    <h3><i class="fas fa-code"></i> Kỹ năng</h3>
+                    <div id="skillList" style="margin-top: 16px;"></div>
+                    <button class="btn-outline btn-sm" onclick="addCategory('skill')"><i class="fas fa-plus"></i> Thêm kỹ năng</button>
+                </div>
+                <div>
+                    <h3><i class="fas fa-map-marker-alt"></i> Địa điểm</h3>
+                    <div id="locationList" style="margin-top: 16px;"></div>
+                    <button class="btn-outline btn-sm" onclick="addCategory('location')"><i class="fas fa-plus"></i> Thêm địa điểm</button>
+                </div>
+                <div>
+                    <h3><i class="fas fa-clock"></i> Loại hình công việc</h3>
+                    <div id="jobTypeList" style="margin-top: 16px;"></div>
+                    <button class="btn-outline btn-sm" onclick="addCategory('jobType')"><i class="fas fa-plus"></i> Thêm loại hình</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: BÁO CÁO & THỐNG KÊ -->
+        <div id="tab-reports" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> Báo cáo & Thống kê</h2>
+            </div>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card"><div class="stat-info"><h3 id="reportTotalUsers">0</h3><p>Tổng người dùng</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="reportTotalJobs">0</h3><p>Tổng việc làm</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="reportTotalApps">0</h3><p>Tổng ứng tuyển</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="reportActiveCompanies">0</h3><p>CT đang hoạt động</p></div></div>
+            </div>
+            <div style="background: white; border-radius: 20px; padding: 20px; margin-top: 24px;">
+                <h3>Danh sách báo cáo</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead><tr><th>STT</th><th>Tên báo cáo</th><th>Ngày tạo</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>Báo cáo tháng 1/2026</td><td>01/02/2026</td><td><span class="status-badge status-active">Hoàn thành</span></td><td><button class="btn-outline btn-sm">Xem</button></td></tr>
+                            <tr><td>2</td><td>Báo cáo quý 4/2025</td><td>05/01/2026</td><td><span class="status-badge status-active">Hoàn thành</span></td><td><button class="btn-outline btn-sm">Xem</button></td></tr>
+                            <tr><td>3</td><td>Thống kê việc làm theo ngành</td><td>15/03/2026</td><td><span class="status-badge status-pending">Đang xử lý</span></td><td><button class="btn-outline btn-sm">Xem</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: QUẢN LÝ NỘI DUNG -->
+        <div id="tab-content" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-newspaper"></i> Quản lý nội dung website</h2>
+                <button class="btn-primary" onclick="openNewsModal()"><i class="fas fa-plus"></i> Thêm tin tức</button>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-news="all">Tất cả</button>
+                <button class="filter-tab" data-news="news">Tin tức</button>
+                <button class="filter-tab" data-news="notice">Thông báo</button>
+                <button class="filter-tab" data-news="banner">Banner</button>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="contentTable">
+                    <thead><tr><th>ID</th><th>Tiêu đề</th><th>Loại</th><th>Ngày đăng</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <tbody id="contentList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB: HỖ TRỢ NGƯỜI DÙNG -->
+        <div id="tab-support" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-headset"></i> Hỗ trợ người dùng</h2>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-support="pending">Chờ xử lý</button>
+                <button class="filter-tab" data-support="processing">Đang xử lý</button>
+                <button class="filter-tab" data-support="resolved">Đã giải quyết</button>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="supportTable">
+                    <thead><tr><th>ID</th><th>Người dùng</th><th>Tiêu đề</th><th>Nội dung</th><th>Ngày gửi</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <tbody id="supportList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB: THỐNG KÊ DOANH THU -->
+        <div id="tab-revenue" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-dollar-sign"></i> Thống kê doanh thu</h2>
+            </div>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card"><div class="stat-info"><h3 id="revenueToday">0đ</h3><p>Hôm nay</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="revenueWeek">0đ</h3><p>Tuần này</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="revenueMonth">0đ</h3><p>Tháng này</p></div></div>
+                <div class="stat-card"><div class="stat-info"><h3 id="revenueYear">0đ</h3><p>Năm nay</p></div></div>
+            </div>
+            <div style="background: white; border-radius: 20px; padding: 20px;">
+                <h3>Chi tiết giao dịch</h3>
+                <div class="table-responsive">
+                    <table class="data-table" id="transactionTable">
+                        <thead><tr><th>Mã GD</th><th>Người dùng</th><th>Gói tin</th><th>Số tiền</th><th>Ngày thanh toán</th><th>Trạng thái</th></tr></thead>
+                        <tbody id="transactionList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL THÊM/SỬA NGƯỜI DÙNG -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 id="userModalTitle">Thêm người dùng</h3><button class="modal-close" onclick="closeUserModal()">×</button></div>
+        <div class="modal-body">
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group"><label>Họ tên</label><input type="text" id="userFullname" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="userEmail" required></div>
+                <div class="form-group"><label>Số điện thoại</label><input type="text" id="userPhone"></div>
+                <div class="form-group"><label>Loại tài khoản</label>
+                    <select id="userRole"><option value="candidate">Ứng viên</option><option value="employer">Nhà tuyển dụng</option><option value="admin">Quản trị viên</option></select>
+                </div>
+                <div class="form-group"><label>Mật khẩu</label><input type="password" id="userPassword" placeholder="Để trống nếu không đổi"></div>
+                <div class="form-group"><label>Trạng thái</label>
+                    <select id="userStatus"><option value="active">Hoạt động</option><option value="banned">Khóa</option></select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer"><button class="btn-outline" onclick="closeUserModal()">Hủy</button><button class="btn-primary" onclick="saveUser()">Lưu</button></div>
+    </div>
+</div>
+
+<!-- MODAL THÊM/SỬA CÔNG TY -->
+<div id="companyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 id="companyModalTitle">Thêm công ty</h3><button class="modal-close" onclick="closeCompanyModal()">×</button></div>
+        <div class="modal-body">
+            <form id="companyForm">
+                <input type="hidden" id="companyId">
+                <div class="form-group"><label>Tên công ty</label><input type="text" id="companyName" required></div>
+                <div class="form-group"><label>Logo URL</label><input type="text" id="companyLogo" placeholder="https://..."></div>
+                <div class="form-group"><label>Địa chỉ</label><input type="text" id="companyAddress"></div>
+                <div class="form-group"><label>Số điện thoại</label><input type="text" id="companyPhone"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="companyEmail"></div>
+                <div class="form-group"><label>Lĩnh vực</label><select id="companyIndustry"><option>-- Chọn --</option></select></div>
+                <div class="form-group"><label>Trạng thái</label>
+                    <select id="companyStatus"><option value="active">Hoạt động</option><option value="pending">Chờ duyệt</option><option value="banned">Khóa</option></select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer"><button class="btn-outline" onclick="closeCompanyModal()">Hủy</button><button class="btn-primary" onclick="saveCompany()">Lưu</button></div>
+    </div>
+</div>
+
+<!-- MODAL DUYỆT BÀI ĐĂNG -->
+<div id="jobApproveModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Duyệt tin tuyển dụng</h3><button class="modal-close" onclick="closeJobApproveModal()">×</button></div>
+        <div class="modal-body">
+            <div id="jobApproveContent"></div>
+            <div class="form-group"><label>Phản hồi (nếu từ chối)</label><textarea id="jobRejectReason" rows="3" placeholder="Nhập lý do từ chối..."></textarea></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-danger" onclick="rejectJob()">Từ chối</button>
+            <button class="btn-primary" onclick="approveJob()">Duyệt & Đăng</button>
+        </div>
+    </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

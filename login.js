@@ -6,9 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberCheckbox = document.getElementById("rememberMe");
   const togglePass = document.querySelector(".toggle-pass");
 
-  // =====================
-  // HR ACCOUNT DEFAULT
-  // =====================
+  // TÀI KHOẢN HR DUY NHẤT
   const HR_USER = {
     id: 1,
     email: "hr@danangwork.com",
@@ -22,25 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // =====================
-  // INIT HR USER
-  // =====================
-  function initHR() {
+  // KHỞI TẠO LOCALSTORAGE
+  function initHRUser() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    const exists = users.some(u => u.email === HR_USER.email);
-
-    if (!exists) {
+    const hrExists = users.some(u => u.email === HR_USER.email);
+    if (!hrExists) {
       users.push(HR_USER);
       localStorage.setItem("users", JSON.stringify(users));
     }
   }
+  initHRUser();
 
-  initHR();
-
-  // =====================
-  // SHOW PASSWORD
-  // =====================
+  // HIỂN THỊ MẬT KHẨU
+  const togglePass = document.querySelector(".toggle-pass");
   if (togglePass) {
     togglePass.addEventListener("click", () => {
       const type = passwordInput.type === "password" ? "text" : "password";
@@ -50,35 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =====================
-  // LOAD REMEMBER USER
-  // =====================
-  const saved = JSON.parse(localStorage.getItem("rememberUser"));
-  if (saved) {
-    emailInput.value = saved.email || "";
-    passwordInput.value = saved.password || "";
+  // TỰ ĐỘNG ĐIỀN TÀI KHOẢN HR
+  const savedUser = JSON.parse(localStorage.getItem("rememberUser"));
+  if (savedUser && savedUser.email && savedUser.password) {
+    emailInput.value = savedUser.email;
+    passwordInput.value = savedUser.password;
     rememberCheckbox.checked = true;
+  } else {
+    emailInput.value = HR_USER.email;
+    passwordInput.value = HR_USER.password;
+    rememberCheckbox.checked = false;
   }
 
-  // =====================
-  // LOGIN FUNCTION
-  // =====================
+  // XỬ LÝ ĐĂNG NHẬP
   function handleLogin() {
 
     const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value.trim();
+    const remember = rememberCheckbox.checked;
 
     if (!email || !password) {
-      alert("Vui lòng nhập email và mật khẩu!");
+      alert("❌ Vui lòng nhập đầy đủ email và mật khẩu!");
       return;
     }
 
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-
+    const users = JSON.parse(localStorage.getItem("users")) || [];
     const user = users.find(u => u.email === email && u.password === password);
 
     if (!user) {
-      alert("Sai email hoặc mật khẩu!");
+      alert("❌ Sai email hoặc mật khẩu. Vui lòng thử lại!");
       return;
     }
 
@@ -89,25 +81,20 @@ document.addEventListener("DOMContentLoaded", () => {
       role: user.role
     };
 
-    if (user.company) {
+    if (user.role === "hr" && user.company) {
       currentUser.company = user.company;
     }
 
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-    // remember
-    if (rememberCheckbox.checked) {
-      localStorage.setItem("rememberUser", JSON.stringify({
-        email,
-        password
-      }));
+    if (remember) {
+      localStorage.setItem("rememberUser", JSON.stringify({ email: user.email, password: user.password }));
     } else {
       localStorage.removeItem("rememberUser");
     }
 
-    alert("Đăng nhập thành công!");
+    alert(`✅ Đăng nhập thành công!\nChào mừng ${currentUser.name}`);
 
-    // redirect
     if (user.role === "hr") {
       window.location.href = "hr-dashboard.html";
     } else {
@@ -115,13 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =====================
-  // EVENT
-  // =====================
   loginBtn.addEventListener("click", handleLogin);
 
-  document.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") handleLogin();
-  });
-
+  // Xử lý phím Enter
+  emailInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleLogin(); });
+  passwordInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleLogin(); });
 });

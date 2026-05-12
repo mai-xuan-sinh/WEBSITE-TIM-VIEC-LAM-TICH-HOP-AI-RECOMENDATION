@@ -5,3 +5,10 @@ maixuansinh1@gmail.com
 beotuyendung1@gmail.com
 123
 nhà tuyển dụng
+
+email: "admin@danangwork.com",
+    password: "Admin@123",
+
+
+email: "hr@danangwork.com",
+        password: "123456",
