@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- ==================== HEADER ==================== -->
     <div class="top-header">
         <div class="container header-flex">
             <div class="logo-area"><h1>DANANG WORK</h1></div>
@@ -33,14 +33,14 @@
         </div>
     </div>
 
-    <!-- PROFILE CONTENT -->
+    <!-- ==================== PROFILE CONTENT ==================== -->
     <div class="profile-wrapper">
         <div class="breadcrumb">
             <a href="index.html">Trang chủ</a> / <span>Hồ sơ cá nhân</span>
         </div>
 
         <div class="profile-grid">
-            <!-- SIDEBAR -->
+            <!-- ==================== SIDEBAR ==================== -->
             <aside class="profile-sidebar">
                 <div class="avatar-wrapper">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" alt="Avatar" class="avatar-img" id="avatarImg">
@@ -64,7 +64,7 @@
                 </div>
             </aside>
 
-            <!-- MAIN CONTENT -->
+            <!-- ==================== MAIN CONTENT ==================== -->
             <main class="profile-main">
                 <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
                 <div id="tab-profile" class="tab-pane active">
@@ -134,40 +134,40 @@
     <script src="jobs-data.js"></script>
     <script src="ai-recommend.js"></script>
     <script>
-        // ===== LẤY THÔNG TIN USER =====
+        // ==================== BIẾN TOÀN CỤC ====================
         let currentUser = null;
         let users = [];
         let savedCVs = [];
         let applications = [];
         let savedJobs = [];
 
+        // ==================== LẤY THÔNG TIN USER ====================
         function loadUserData() {
-    currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    users = JSON.parse(localStorage.getItem('users')) || [];
-    savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-    applications = JSON.parse(localStorage.getItem('applications')) || [];
-    savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            users = JSON.parse(localStorage.getItem('users')) || [];
+            savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+            applications = JSON.parse(localStorage.getItem('applications')) || [];
+            savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
 
-    if (!currentUser) {
-        window.location.href = 'login.html';
-        return;
-    }
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
 
-    const fullUser = users.find(u => u.email === currentUser.email) || currentUser;
+            const fullUser = users.find(u => u.email === currentUser.email) || currentUser;
 
-    // Hiển thị tên người dùng
-    const displayName = fullUser.name || fullUser.fullname || currentUser.name || currentUser.email?.split('@')[0] || 'Người dùng';
-    document.getElementById('sidebarName').innerText = displayName;
-    document.getElementById('sidebarEmail').innerText = fullUser.email;
-    document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
-    document.getElementById('email').value = fullUser.email || '';
-    document.getElementById('phone').value = fullUser.phone || '';
-    document.getElementById('address').value = fullUser.address || '';
-    document.getElementById('bio').value = fullUser.bio || '';
-    document.getElementById('skills').value = (fullUser.skills || []).join(', ');
-    document.getElementById('dob').value = fullUser.dob || '';
-    document.getElementById('experience').value = fullUser.experience || '';
-
+            // Hiển thị tên người dùng
+            const displayName = fullUser.name || fullUser.fullname || currentUser.name || currentUser.email?.split('@')[0] || 'Người dùng';
+            document.getElementById('sidebarName').innerText = displayName;
+            document.getElementById('sidebarEmail').innerText = fullUser.email;
+            document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
+            document.getElementById('email').value = fullUser.email || '';
+            document.getElementById('phone').value = fullUser.phone || '';
+            document.getElementById('address').value = fullUser.address || '';
+            document.getElementById('bio').value = fullUser.bio || '';
+            document.getElementById('skills').value = (fullUser.skills || []).join(', ');
+            document.getElementById('dob').value = fullUser.dob || '';
+            document.getElementById('experience').value = fullUser.experience || '';
 
             const userApplications = applications.filter(app => app.userEmail === currentUser.email);
             const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
@@ -178,12 +178,10 @@
             renderCVList();
             renderApplications();
             renderSavedJobs();
-            
-            // Hiển thị phân tích AI
             renderProfileAnalysis(fullUser);
         }
 
-        // Hiển thị phân tích hồ sơ bằng AI
+        // ==================== PHÂN TÍCH HỒ SƠ AI ====================
         function renderProfileAnalysis(user) {
             const container = document.getElementById('profileAnalysisContainer');
             if (!container) return;
@@ -239,7 +237,7 @@
             document.getElementById('fullName').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // ===== RENDER CV LIST =====
+        // ==================== RENDER CV LIST ====================
         function renderCVList() {
             const container = document.getElementById('cvListContainer');
             if (!container) return;
@@ -255,26 +253,72 @@
             `).join('');
         }
 
-        function viewCV(index) { const cv = savedCVs[index]; alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || 'Chưa cập nhật'}\nVị trí: ${cv.position || 'Chưa cập nhật'}\nEmail: ${cv.email || 'Chưa cập nhật'}\nSĐT: ${cv.phone || 'Chưa cập nhật'}`); }
-        function deleteCV(index) { if (confirm('Bạn có chắc muốn xóa CV này?')) { savedCVs.splice(index, 1); localStorage.setItem('savedCVs', JSON.stringify(savedCVs)); renderCVList(); document.getElementById('statsCV').innerText = savedCVs.length; showAlert('profileAlert', 'Đã xóa CV thành công!', 'success'); } }
+        function viewCV(index) { 
+            const cv = savedCVs[index]; 
+            alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || 'Chưa cập nhật'}\nVị trí: ${cv.position || 'Chưa cập nhật'}\nEmail: ${cv.email || 'Chưa cập nhật'}\nSĐT: ${cv.phone || 'Chưa cập nhật'}`); 
+        }
+        
+        function deleteCV(index) { 
+            if (confirm('Bạn có chắc muốn xóa CV này?')) { 
+                savedCVs.splice(index, 1); 
+                localStorage.setItem('savedCVs', JSON.stringify(savedCVs)); 
+                renderCVList(); 
+                document.getElementById('statsCV').innerText = savedCVs.length; 
+                showAlert('profileAlert', 'Đã xóa CV thành công!', 'success'); 
+            } 
+        }
 
-        // ===== RENDER APPLICATIONS =====
+        // ==================== RENDER APPLICATIONS ====================
         function renderApplications() {
             const container = document.getElementById('applicationsList');
             if (!container) return;
-            const userApplications = applications.filter(app => app.userEmail === currentUser.email);
+            
+            // Lấy danh sách ứng tuyển và đồng bộ trạng thái với hr_candidates
+            let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+            let updatedApplications = JSON.parse(JSON.stringify(applications));
+            
+            // Đồng bộ trạng thái từ hr_candidates
+            updatedApplications.forEach(app => {
+                const hrCandidate = hrCandidates.find(c => 
+                    (c.email === app.userEmail || c.candidateEmail === app.userEmail) && 
+                    c.jobTitle === app.jobTitle
+                );
+                if (hrCandidate && hrCandidate.status !== app.status) {
+                    app.status = hrCandidate.status;
+                }
+            });
+            
+            const userApplications = updatedApplications.filter(app => app.userEmail === currentUser.email);
+            
             if (userApplications.length === 0) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Bạn chưa ứng tuyển công việc nào.</p></div>`;
                 return;
             }
+            
             container.innerHTML = userApplications.map(app => `
-                <div class="application-item"><div><h4>${app.jobTitle}</h4><p style="font-size: 13px; color: #64748b;">${app.company} • ${app.location}</p></div><div><span class="status-badge status-${app.status}">${getStatusText(app.status)}</span><p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date}</p></div></div>
+                <div class="application-item">
+                    <div>
+                        <h4>${app.jobTitle}</h4>
+                        <p style="font-size: 13px; color: #64748b;">${app.company} • ${app.location}</p>
+                    </div>
+                    <div>
+                        <span class="status-badge status-${app.status}">${getStatusText(app.status)}</span>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date}</p>
+                    </div>
+                </div>
             `).join('');
         }
 
-        function getStatusText(status) { switch(status) { case 'pending': return 'Đang xử lý'; case 'approved': return 'Đã duyệt'; case 'rejected': return 'Từ chối'; default: return 'Đã gửi'; } }
+        function getStatusText(status) { 
+            switch(status) { 
+                case 'pending': return 'Đang xử lý'; 
+                case 'approved': return 'Đã duyệt'; 
+                case 'rejected': return 'Từ chối'; 
+                default: return 'Đã gửi'; 
+            } 
+        }
 
-        // ===== RENDER SAVED JOBS =====
+        // ==================== RENDER SAVED JOBS ====================
         function renderSavedJobs() {
             const container = document.getElementById('savedJobsList');
             if (!container) return;
@@ -284,14 +328,35 @@
                 return;
             }
             container.innerHTML = userSavedJobs.map((job, index) => `
-                <div class="application-item"><div><h4>${job.title}</h4><p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p><p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p></div><div class="cv-actions"><button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button><button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button></div></div>
+                <div class="application-item">
+                    <div>
+                        <h4>${job.title}</h4>
+                        <p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p>
+                        <p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p>
+                    </div>
+                    <div class="cv-actions">
+                        <button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                        <button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
             `).join('');
         }
 
-        function viewJobDetail(jobId) { window.location.href = `job-detail.html?id=${jobId}`; }
-        function removeSavedJob(index) { if (confirm('Bỏ lưu công việc này?')) { savedJobs.splice(index, 1); localStorage.setItem('savedJobs', JSON.stringify(savedJobs)); renderSavedJobs(); document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length; showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success'); } }
+        function viewJobDetail(jobId) { 
+            window.location.href = `job-detail.html?id=${jobId}`; 
+        }
+        
+        function removeSavedJob(index) { 
+            if (confirm('Bỏ lưu công việc này?')) { 
+                savedJobs.splice(index, 1); 
+                localStorage.setItem('savedJobs', JSON.stringify(savedJobs)); 
+                renderSavedJobs(); 
+                document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length; 
+                showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success'); 
+            } 
+        }
 
-        // ===== UPDATE PROFILE =====
+        // ==================== UPDATE PROFILE ====================
         function updateProfile(e) {
             e.preventDefault();
             const fullName = document.getElementById('fullName').value.trim();
@@ -310,37 +375,81 @@
                 users[userIndex] = { ...users[userIndex], name: fullName, fullname: fullName, phone: phone, address: address, bio: bio, skills: skills, dob: dob, experience: experience };
                 localStorage.setItem('users', JSON.stringify(users));
             }
-            currentUser.name = fullName; currentUser.fullname = fullName; currentUser.experience = experience;
+            currentUser.name = fullName; 
+            currentUser.fullname = fullName; 
+            currentUser.experience = experience;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             document.getElementById('sidebarName').innerText = fullName;
             
-            // Cập nhật lại phân tích AI
             const updatedUser = users.find(u => u.email === currentUser.email) || currentUser;
             renderProfileAnalysis(updatedUser);
             
             showAlert('profileAlert', 'Cập nhật thông tin thành công!', 'success');
         }
 
-        // ===== CHANGE PASSWORD =====
+        // ==================== CHANGE PASSWORD ====================
         function changePassword(e) {
             e.preventDefault();
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            if (!currentPassword || !newPassword || !confirmPassword) { showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error'); return; }
-            if (newPassword.length < 6) { showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error'); return; }
-            if (newPassword !== confirmPassword) { showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error'); return; }
+            
+            if (!currentPassword || !newPassword || !confirmPassword) { 
+                showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error'); 
+                return; 
+            }
+            if (newPassword.length < 6) { 
+                showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error'); 
+                return; 
+            }
+            if (newPassword !== confirmPassword) { 
+                showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error'); 
+                return; 
+            }
+            
             const userIndex = users.findIndex(u => u.email === currentUser.email);
-            if (userIndex !== -1 && users[userIndex].password !== currentPassword) { showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error'); return; }
-            if (userIndex !== -1) { users[userIndex].password = newPassword; localStorage.setItem('users', JSON.stringify(users)); }
+            if (userIndex !== -1 && users[userIndex].password !== currentPassword) { 
+                showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error'); 
+                return; 
+            }
+            
+            if (userIndex !== -1) { 
+                users[userIndex].password = newPassword; 
+                localStorage.setItem('users', JSON.stringify(users)); 
+            }
+            
             document.getElementById('securityForm').reset();
             showAlert('securityAlert', 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', 'success');
-            setTimeout(() => { localStorage.removeItem('currentUser'); window.location.href = 'login.html'; }, 2000);
+            setTimeout(() => { 
+                localStorage.removeItem('currentUser'); 
+                window.location.href = 'login.html'; 
+            }, 2000);
         }
 
-        function changeAvatar() { const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User'); if (seed) { document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success'); } }
-        function showAlert(alertId, message, type) { const alertDiv = document.getElementById(alertId); if (alertDiv) { alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`; alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; setTimeout(() => { alertDiv.className = 'alert'; alertDiv.innerHTML = ''; }, 3000); } else { alert(message); } }
+        // ==================== UTILITY FUNCTIONS ====================
+        function changeAvatar() { 
+            const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User'); 
+            if (seed) { 
+                document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; 
+                showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success'); 
+            } 
+        }
+        
+        function showAlert(alertId, message, type) { 
+            const alertDiv = document.getElementById(alertId); 
+            if (alertDiv) { 
+                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`; 
+                alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; 
+                setTimeout(() => { 
+                    alertDiv.className = 'alert'; 
+                    alertDiv.innerHTML = ''; 
+                }, 3000); 
+            } else { 
+                alert(message); 
+            } 
+        }
 
+        // ==================== INIT TABS ====================
         function initTabs() {
             const menuItems = document.querySelectorAll('.sidebar-menu li');
             const tabPanes = document.querySelectorAll('.tab-pane');
@@ -355,19 +464,93 @@
             });
         }
 
+        // ==================== AUTH UI ====================
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
             if (!authDiv || !userDiv) return;
-            let isLoggedIn = !!localStorage.getItem('currentUser');
-            let userName = "";
-            if (isLoggedIn && currentUser) { userName = currentUser.name || currentUser.fullname || "User"; authDiv.style.display = 'none'; userDiv.style.display = 'block'; userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${userName.charAt(0).toUpperCase()}</div><span class="user-name">${userName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`; }
-            else { authDiv.style.display = 'flex'; userDiv.style.display = 'none'; }
+            
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (user && user.email) {
+                const displayName = user.name || user.fullname || user.email.split('@')[0];
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+                            ${displayName.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+                            ${displayName}
+                        </span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>`;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
+            }
         }
-        function handleLogout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
+        
+        function goToProfile() {
+            window.location.href = 'profile.html';
+        }
+        
+        function handleLogout() { 
+            localStorage.removeItem('currentUser'); 
+            window.location.href = 'index.html'; 
+        }
 
-        document.addEventListener('DOMContentLoaded', () => { loadUserData(); initTabs(); const profileForm = document.getElementById('profileForm'); const securityForm = document.getElementById('securityForm'); if (profileForm) profileForm.addEventListener('submit', updateProfile); if (securityForm) securityForm.addEventListener('submit', changePassword); updateAuthUI(); });
-        window.viewCV = viewCV; window.deleteCV = deleteCV; window.viewJobDetail = viewJobDetail; window.removeSavedJob = removeSavedJob; window.changeAvatar = changeAvatar; window.handleLogout = handleLogout; window.scrollToProfile = scrollToProfile;
+        // ==================== STORAGE LISTENER (ĐỒNG BỘ VỚI HR) ====================
+        function initStorageListener() {
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'applications' || e.key === 'hr_candidates') {
+                    console.log('🔄 Phát hiện thay đổi dữ liệu, đang cập nhật...');
+                    applications = JSON.parse(localStorage.getItem('applications')) || [];
+                    renderApplications();
+                }
+                if (e.key === 'savedJobs') {
+                    savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+                    renderSavedJobs();
+                    document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser?.email).length;
+                }
+                if (e.key === 'savedCVs') {
+                    savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                    renderCVList();
+                    document.getElementById('statsCV').innerText = savedCVs.length;
+                }
+                if (e.key === 'currentUser') {
+                    updateAuthUI();
+                    loadUserData();
+                }
+            });
+        }
+
+        // ==================== KHỞI TẠO ====================
+        document.addEventListener('DOMContentLoaded', () => { 
+            loadUserData(); 
+            initTabs(); 
+            initStorageListener();
+            
+            const profileForm = document.getElementById('profileForm'); 
+            const securityForm = document.getElementById('securityForm'); 
+            
+            if (profileForm) profileForm.addEventListener('submit', updateProfile); 
+            if (securityForm) securityForm.addEventListener('submit', changePassword); 
+            
+            updateAuthUI(); 
+        });
+        
+        // Export global functions
+        window.viewCV = viewCV; 
+        window.deleteCV = deleteCV; 
+        window.viewJobDetail = viewJobDetail; 
+        window.removeSavedJob = removeSavedJob; 
+        window.changeAvatar = changeAvatar; 
+        window.handleLogout = handleLogout; 
+        window.scrollToProfile = scrollToProfile;
+        window.goToProfile = goToProfile;
     </script>
 
     <style>
@@ -386,9 +569,22 @@
         .course-suggestions { margin-top: 16px; padding-top: 12px; border-top: 1px solid #bae6fd; }
         .course-suggestions ul { margin-top: 8px; padding-left: 20px; }
         .action-buttons-analysis { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-        .btn-outline { background: transparent; border: 1px solid #0ea5e9; color: #0ea5e9; padding: 10px 20px; border-radius: 12px; cursor: pointer; }
+        .btn-outline { background: transparent; border: 1px solid #0ea5e9; color: #0ea5e9; padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        .btn-outline:hover { background: #0ea5e9; color: white; }
         .loading-analysis { text-align: center; padding: 60px; color: #64748b; }
         .analysis-error { text-align: center; padding: 40px; color: #ef4444; }
+        
+        /* Status badges */
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        
+        /* User info styles */
+        .user-info { display: flex; align-items: center; gap: 12px; background: #f1f5f9; padding: 6px 15px; border-radius: 40px; }
+        .user-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .logout-btn { background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 30px; cursor: pointer; }
+        #userBox { display: none; }
     </style>
 </body>
 </html>

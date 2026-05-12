@@ -11,7 +11,7 @@
 <body>
 
 <div class="admin-layout">
-    <!-- SIDEBAR -->
+    <!-- ==================== SIDEBAR ==================== -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>DANANG WORK</h2>
@@ -39,7 +39,7 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- ==================== MAIN CONTENT ==================== -->
     <main class="main-content">
         <div class="top-bar">
             <div class="page-title">
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <!-- TAB: TỔNG QUAN -->
+        <!-- ==================== TAB: TỔNG QUAN ==================== -->
         <div id="tab-dashboard" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-info"><h3 id="totalUsers">0</h3><p>Tổng người dùng</p></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        <!-- TAB: QUẢN LÝ NGƯỜI DÙNG -->
+        <!-- ==================== TAB: QUẢN LÝ NGƯỜI DÙNG ==================== -->
         <div id="tab-users" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-users"></i> Quản lý người dùng</h2>
@@ -82,14 +82,16 @@
             </div>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>ID</th><th>Avatar</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Loại</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+                    <thead>
+                        <tr><th>ID</th><th>Avatar</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Loại</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr>
+                    </thead>
                     <tbody id="userList"></tbody>
                 </table>
             </div>
             <div class="pagination" id="userPagination"></div>
         </div>
 
-        <!-- TAB: QUẢN LÝ VIỆC LÀM (Chỉ xóa, sửa, duyệt - không đăng tin mới) -->
+        <!-- ==================== TAB: QUẢN LÝ VIỆC LÀM ==================== -->
         <div id="tab-jobs" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-briefcase"></i> Quản lý tin tuyển dụng</h2>
@@ -105,14 +107,16 @@
             </div>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>ID</th><th>Tiêu đề</th><th>Công ty</th><th>Lĩnh vực</th><th>Địa điểm</th><th>Trạng thái</th><th>Ngày đăng</th><th>Thao tác</th></tr></thead>
+                    <thead>
+                        <tr><th>ID</th><th>Tiêu đề</th><th>Công ty</th><th>Lĩnh vực</th><th>Địa điểm</th><th>Trạng thái</th><th>Ngày đăng</th><th>Thao tác</th></tr>
+                    </thead>
                     <tbody id="jobList"></tbody>
                 </table>
             </div>
             <div class="pagination" id="jobPagination"></div>
         </div>
 
-        <!-- TAB: QUẢN LÝ CÔNG TY (Thêm, sửa, xóa) -->
+        <!-- ==================== TAB: QUẢN LÝ CÔNG TY ==================== -->
         <div id="tab-companies" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-building"></i> Quản lý công ty</h2>
@@ -123,13 +127,15 @@
             </div>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>ID</th><th>Logo</th><th>Tên công ty</th><th>Địa chỉ</th><th>SĐT</th><th>Lĩnh vực</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <thead>
+                        <tr><th>ID</th><th>Logo</th><th>Tên công ty</th><th>Địa chỉ</th><th>SĐT</th><th>Lĩnh vực</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                    </thead>
                     <tbody id="companyList"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- TAB: QUẢN LÝ CV -->
+        <!-- ==================== TAB: QUẢN LÝ CV ==================== -->
         <div id="tab-cvs" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-file-alt"></i> Quản lý CV / Hồ sơ ứng viên</h2>
@@ -139,13 +145,15 @@
             </div>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Vị trí</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+                    <thead>
+                        <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Vị trí</th><th>Ngày tạo</th><th>Thao tác</th></tr>
+                    </thead>
                     <tbody id="cvList"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- TAB: DANH MỤC HỆ THỐNG -->
+        <!-- ==================== TAB: DANH MỤC HỆ THỐNG ==================== -->
         <div id="tab-categories" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-tags"></i> Quản lý danh mục</h2>
@@ -174,12 +182,11 @@
             </div>
         </div>
 
-        <!-- TAB: BÁO CÁO & THỐNG KÊ (Có thống kê doanh thu) -->
+        <!-- ==================== TAB: BÁO CÁO & THỐNG KÊ ==================== -->
         <div id="tab-reports" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-chart-bar"></i> Báo cáo & Thống kê</h2>
             </div>
-            <!-- Thống kê doanh thu -->
             <div style="background: white; border-radius: 20px; padding: 20px; margin-bottom: 24px;">
                 <h3 style="margin-bottom: 16px;"><i class="fas fa-dollar-sign"></i> Thống kê doanh thu</h3>
                 <div class="stats-grid" style="margin-bottom: 0;">
@@ -189,26 +196,26 @@
                     <div class="stat-card"><div class="stat-info"><h3 id="revenueYear">0đ</h3><p>Năm nay</p></div></div>
                 </div>
             </div>
-            <!-- Thống kê tổng quan -->
             <div class="stats-grid" style="margin-bottom: 24px;">
                 <div class="stat-card"><div class="stat-info"><h3 id="reportTotalUsers">0</h3><p>Tổng người dùng</p></div></div>
                 <div class="stat-card"><div class="stat-info"><h3 id="reportTotalJobs">0</h3><p>Tổng việc làm</p></div></div>
                 <div class="stat-card"><div class="stat-info"><h3 id="reportTotalApps">0</h3><p>Tổng ứng tuyển</p></div></div>
                 <div class="stat-card"><div class="stat-info"><h3 id="reportActiveCompanies">0</h3><p>CT đang hoạt động</p></div></div>
             </div>
-            <!-- Chi tiết giao dịch -->
             <div style="background: white; border-radius: 20px; padding: 20px;">
                 <h3><i class="fas fa-receipt"></i> Chi tiết giao dịch</h3>
                 <div class="table-responsive">
                     <table class="data-table">
-                        <thead><tr><th>Mã GD</th><th>Công ty</th><th>Gói tin</th><th>Số ngày</th><th>Số tiền</th><th>Ngày thanh toán</th><th>Trạng thái</th></tr></thead>
+                        <thead>
+                            <tr><th>Mã GD</th><th>Công ty</th><th>Gói tin</th><th>Số ngày</th><th>Số tiền</th><th>Ngày thanh toán</th><th>Trạng thái</th></tr>
+                        </thead>
                         <tbody id="transactionList"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: HỖ TRỢ NGƯỜI DÙNG -->
+        <!-- ==================== TAB: HỖ TRỢ NGƯỜI DÙNG ==================== -->
         <div id="tab-support" class="tab-content">
             <div class="section-header">
                 <h2><i class="fas fa-headset"></i> Hỗ trợ người dùng</h2>
@@ -220,7 +227,9 @@
             </div>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>ID</th><th>Người dùng</th><th>Tiêu đề</th><th>Nội dung</th><th>Ngày gửi</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <thead>
+                        <tr><th>ID</th><th>Người dùng</th><th>Tiêu đề</th><th>Nội dung</th><th>Ngày gửi</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                    </thead>
                     <tbody id="supportList"></tbody>
                 </table>
             </div>
@@ -228,7 +237,7 @@
     </main>
 </div>
 
-<!-- MODAL THÊM/SỬA NGƯỜI DÙNG -->
+<!-- ==================== MODAL THÊM/SỬA NGƯỜI DÙNG ==================== -->
 <div id="userModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 id="userModalTitle">Thêm người dùng</h3><button class="modal-close" onclick="closeUserModal()">×</button></div>
@@ -251,7 +260,7 @@
     </div>
 </div>
 
-<!-- MODAL THÊM/SỬA CÔNG TY -->
+<!-- ==================== MODAL THÊM/SỬA CÔNG TY ==================== -->
 <div id="companyModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 id="companyModalTitle">Thêm công ty</h3><button class="modal-close" onclick="closeCompanyModal()">×</button></div>
@@ -273,7 +282,7 @@
     </div>
 </div>
 
-<!-- MODAL SỬA VIỆC LÀM -->
+<!-- ==================== MODAL SỬA VIỆC LÀM ==================== -->
 <div id="editJobModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header"><h3>Sửa tin tuyển dụng</h3><button class="modal-close" onclick="closeEditJobModal()">×</button></div>
@@ -295,7 +304,7 @@
     </div>
 </div>
 
-<!-- MODAL DUYỆT BÀI ĐĂNG -->
+<!-- ==================== MODAL DUYỆT BÀI ĐĂNG ==================== -->
 <div id="jobApproveModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3>Duyệt tin tuyển dụng</h3><button class="modal-close" onclick="closeJobApproveModal()">×</button></div>
@@ -309,6 +318,7 @@
         </div>
     </div>
 </div>
+
 <script src="jobs-data.js"></script>
 <script src="data-congty.js"></script>
 <script src="admin.js"></script>

@@ -15,7 +15,6 @@ function forceFixAdminAccount() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     let hasChanges = false;
     
-    // Tìm tài khoản admin
     let adminAccount = users.find(u => u.email === "admin@danangwork.com");
     
     if (!adminAccount) {
@@ -28,7 +27,6 @@ function forceFixAdminAccount() {
         console.log("🔄 Đã sửa role Admin thành 'admin'");
     }
     
-    // Đồng thời kiểm tra currentUser
     let currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (currentUser && currentUser.email === "admin@danangwork.com" && currentUser.role !== "admin") {
         currentUser.role = "admin";
@@ -40,17 +38,13 @@ function forceFixAdminAccount() {
         localStorage.setItem("users", JSON.stringify(users));
     }
 }
-
-// Gọi ngay lập tức
 forceFixAdminAccount();
 
 // ==================== KIỂM TRA ĐĂNG NHẬP ADMIN ====================
 function checkAdminAuth() {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     
-    // Kiểm tra nếu chưa đăng nhập hoặc không phải admin
     if (!currentUser || currentUser.role !== "admin") {
-        // Nếu là admin nhưng role bị lỗi, thử sửa
         if (currentUser && currentUser.email === "admin@danangwork.com") {
             currentUser.role = "admin";
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -67,8 +61,6 @@ function checkAdminAuth() {
 }
 
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
-
-// Đồng bộ việc làm từ allJobs (jobs-data.js)
 function syncJobsFromData() {
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
         let existingJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
@@ -90,13 +82,11 @@ function syncJobsFromData() {
             localStorage.setItem("hr_jobs", JSON.stringify(existingJobs));
             console.log(`✅ Đã đồng bộ ${allJobs.length} việc làm từ jobs-data.js`);
         }
-        
         return existingJobs;
     }
     return JSON.parse(localStorage.getItem("hr_jobs")) || [];
 }
 
-// Đồng bộ công ty từ companyData (data-congty.js)
 function syncCompaniesFromData() {
     if (typeof companyData !== 'undefined') {
         let existingCompanies = JSON.parse(localStorage.getItem("companies")) || [];
@@ -129,19 +119,17 @@ function syncCompaniesFromData() {
             localStorage.setItem("companies", JSON.stringify(existingCompanies));
             console.log(`✅ Đã đồng bộ ${Object.keys(companyData).length} công ty từ data-congty.js`);
         }
-        
         return existingCompanies;
     }
     return JSON.parse(localStorage.getItem("companies")) || [];
 }
 
-// Hàm khởi tạo đồng bộ tổng hợp
 function initSyncData() {
     syncJobsFromData();
     syncCompaniesFromData();
 }
 
-// ==================== KHỞI TẠO DỮ LIỆU ====================
+// ==================== KHỞI TẠO DỮ LIỆU MẪU ====================
 function initAdminAccount() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     const adminExists = users.some(u => u.email === ADMIN_USER.email);
@@ -152,7 +140,6 @@ function initAdminAccount() {
 }
 
 function initSampleData() {
-    // Danh mục ngành nghề
     if (!localStorage.getItem("industries")) {
         localStorage.setItem("industries", JSON.stringify([
             "Công nghệ thông tin", "Du lịch - Khách sạn", "Xây dựng - Bất động sản",
@@ -160,33 +147,28 @@ function initSampleData() {
             "Tài chính - Ngân hàng", "Thiết kế - Sáng tạo"
         ]));
     }
-    // Danh mục kỹ năng
     if (!localStorage.getItem("skills")) {
         localStorage.setItem("skills", JSON.stringify([
             "ReactJS", "NodeJS", "Python", "Java", "PHP", "Flutter",
             "SQL", "MongoDB", "AWS", "Docker", "Figma", "Photoshop"
         ]));
     }
-    // Danh mục địa điểm
     if (!localStorage.getItem("locations")) {
         localStorage.setItem("locations", JSON.stringify([
             "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Sơn Trà", "Cẩm Lệ"
         ]));
     }
-    // Loại hình công việc
     if (!localStorage.getItem("jobTypes")) {
         localStorage.setItem("jobTypes", JSON.stringify([
             "Toàn thời gian", "Bán thời gian", "Thực tập", "Freelance", "Remote"
         ]));
     }
-    // Yêu cầu hỗ trợ
     if (!localStorage.getItem("supportTickets")) {
         localStorage.setItem("supportTickets", JSON.stringify([
             { id: 1, userName: "Nguyễn Văn A", title: "Không thể đăng nhập", content: "Em không thể đăng nhập vào tài khoản", date: "2026-05-10", status: "pending" },
             { id: 2, userName: "Công ty ABC", title: "Tin đăng bị lỗi", content: "Tin đăng của công ty em không hiển thị", date: "2026-05-11", status: "processing" }
         ]));
     }
-    // Giao dịch mẫu
     if (!localStorage.getItem("transactions")) {
         localStorage.setItem("transactions", JSON.stringify([
             { id: "TXN001", companyName: "FPT Software", package: "Premium", days: 30, amount: 1500000, date: "2026-05-01", status: "completed" },
@@ -198,6 +180,15 @@ function initSampleData() {
 }
 
 // ==================== CẬP NHẬT THỐNG KÊ ====================
+function getWeekRange() {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - now.getDay());
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] };
+}
+
 function updateStats() {
     const users = JSON.parse(localStorage.getItem("users")) || [];
     const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
@@ -210,25 +201,22 @@ function updateStats() {
     const pendingJobs = jobs.filter(j => j.status === "pending");
     const totalRevenue = transactions.filter(t => t.status === "completed").reduce((sum, t) => sum + (t.amount || 0), 0);
     
-    const totalUsersEl = document.getElementById("totalUsers");
-    const totalEmployersEl = document.getElementById("totalEmployers");
-    const totalCandidatesEl = document.getElementById("totalCandidates");
-    const totalJobsEl = document.getElementById("totalJobs");
-    const totalApplicationsEl = document.getElementById("totalApplications");
-    const totalCompaniesEl = document.getElementById("totalCompanies");
-    const pendingJobsEl = document.getElementById("pendingJobs");
-    const totalRevenueEl = document.getElementById("totalRevenue");
+    const elements = {
+        totalUsers: users.length,
+        totalEmployers: employers.length,
+        totalCandidates: candidates.length,
+        totalJobs: jobs.length,
+        totalApplications: applications.length,
+        totalCompanies: companies.length,
+        pendingJobs: pendingJobs.length,
+        totalRevenue: totalRevenue.toLocaleString()
+    };
     
-    if (totalUsersEl) totalUsersEl.innerText = users.length;
-    if (totalEmployersEl) totalEmployersEl.innerText = employers.length;
-    if (totalCandidatesEl) totalCandidatesEl.innerText = candidates.length;
-    if (totalJobsEl) totalJobsEl.innerText = jobs.length;
-    if (totalApplicationsEl) totalApplicationsEl.innerText = applications.length;
-    if (totalCompaniesEl) totalCompaniesEl.innerText = companies.length;
-    if (pendingJobsEl) pendingJobsEl.innerText = pendingJobs.length;
-    if (totalRevenueEl) totalRevenueEl.innerText = totalRevenue.toLocaleString();
+    for (const [id, value] of Object.entries(elements)) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value;
+    }
     
-    // Báo cáo
     const reportTotalUsers = document.getElementById("reportTotalUsers");
     const reportTotalJobs = document.getElementById("reportTotalJobs");
     const reportTotalApps = document.getElementById("reportTotalApps");
@@ -239,7 +227,6 @@ function updateStats() {
     if (reportTotalApps) reportTotalApps.innerText = applications.length;
     if (reportActiveCompanies) reportActiveCompanies.innerText = companies.filter(c => c.status === "active").length;
     
-    // Doanh thu
     const today = new Date().toISOString().split('T')[0];
     const thisWeek = getWeekRange();
     const thisMonth = new Date().getMonth();
@@ -250,26 +237,19 @@ function updateStats() {
     const revenueMonth = transactions.filter(t => t.status === "completed" && new Date(t.date).getMonth() === thisMonth).reduce((s, t) => s + t.amount, 0);
     const revenueYear = transactions.filter(t => t.status === "completed" && new Date(t.date).getFullYear() === thisYear).reduce((s, t) => s + t.amount, 0);
     
-    const revenueTodayEl = document.getElementById("revenueToday");
-    const revenueWeekEl = document.getElementById("revenueWeek");
-    const revenueMonthEl = document.getElementById("revenueMonth");
-    const revenueYearEl = document.getElementById("revenueYear");
+    const revenueElements = {
+        revenueToday: revenueToday,
+        revenueWeek: revenueWeek,
+        revenueMonth: revenueMonth,
+        revenueYear: revenueYear
+    };
     
-    if (revenueTodayEl) revenueTodayEl.innerText = revenueToday.toLocaleString() + "đ";
-    if (revenueWeekEl) revenueWeekEl.innerText = revenueWeek.toLocaleString() + "đ";
-    if (revenueMonthEl) revenueMonthEl.innerText = revenueMonth.toLocaleString() + "đ";
-    if (revenueYearEl) revenueYearEl.innerText = revenueYear.toLocaleString() + "đ";
+    for (const [id, value] of Object.entries(revenueElements)) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value.toLocaleString() + "đ";
+    }
     
     renderTransactions();
-}
-
-function getWeekRange() {
-    const now = new Date();
-    const start = new Date(now);
-    start.setDate(now.getDate() - now.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] };
 }
 
 // ==================== QUẢN LÝ NGƯỜI DÙNG ====================
@@ -396,8 +376,8 @@ function toggleUserStatus(id) { let users = JSON.parse(localStorage.getItem("use
 // ==================== QUẢN LÝ VIỆC LÀM ====================
 let currentJobPage = 1;
 const jobsPerPage = 10;
-let pendingJobId = null;
 let editingJobId = null;
+let currentApproveJobId = null;
 
 function renderJobs() {
     let jobs = syncJobsFromData();
@@ -418,13 +398,16 @@ function renderJobs() {
     tbody.innerHTML = paginated.map(job => `
         <tr>
             <td>${job.id}</td>
-            </td><strong>${job.title || "---"}</strong></td>
+            <td><strong>${job.title || "---"}</strong></td>
             <td>${job.company || "---"}</td>
             <td>${job.field || "---"}</td>
             <td>${job.location || job.district || "---"}</td>
-            <td><span class="status-badge ${job.status === "active" ? "status-active" : (job.status === "pending" ? "status-pending" : "status-active")}">${job.status === "active" ? "Đang đăng" : (job.status === "pending" ? "Chờ duyệt" : "Đang đăng")}</span></td>
+            <td><span class="status-badge ${job.status === "active" ? "status-active" : (job.status === "pending" ? "status-pending" : "status-inactive")}">
+                ${job.status === "active" ? "Đang đăng" : (job.status === "pending" ? "Chờ duyệt" : "Đã ẩn")}
+            </span></td>
             <td>${job.postDate || job.date || "---"}</td>
             <td>
+                ${job.status === "pending" ? `<button class="btn-warning btn-sm" onclick="openApproveModal(${job.id})"><i class="fas fa-check-circle"></i> Duyệt</button>` : ''}
                 <button class="btn-outline btn-sm" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-primary btn-sm" onclick="toggleJobStatus(${job.id})"><i class="fas ${job.status === "active" ? "fa-eye-slash" : "fa-eye"}"></i> ${job.status === "active" ? "Ẩn" : "Hiện"}</button>
@@ -514,9 +497,102 @@ function toggleJobStatus(id) {
     if (index !== -1) {
         jobs[index].status = jobs[index].status === "active" ? "inactive" : "active";
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        if (typeof allJobs !== 'undefined') {
+            const originalIndex = allJobs.findIndex(j => j.id == id);
+            if (originalIndex !== -1) allJobs[originalIndex].status = jobs[index].status;
+        }
+        
         renderJobs();
+        updateStats();
         alert(`Đã ${jobs[index].status === "active" ? "hiển thị" : "ẩn"} tin tuyển dụng!`);
     }
+}
+
+// ==================== DUYỆT / TỪ CHỐI BÀI ĐĂNG ====================
+function openApproveModal(jobId) {
+    let jobs = syncJobsFromData();
+    const job = jobs.find(j => j.id == jobId);
+    if (!job) return;
+    
+    currentApproveJobId = jobId;
+    
+    const content = document.getElementById("jobApproveContent");
+    if (content) {
+        content.innerHTML = `
+            <p><strong>Tiêu đề:</strong> ${job.title || "---"}</p>
+            <p><strong>Công ty:</strong> ${job.company || "---"}</p>
+            <p><strong>Lĩnh vực:</strong> ${job.field || "---"}</p>
+            <p><strong>Mức lương:</strong> ${job.salary || "---"}</p>
+            <p><strong>Địa điểm:</strong> ${job.location || job.district || "---"}</p>
+            <p><strong>Mô tả:</strong> ${(job.desc || "Chưa có mô tả").substring(0, 200)}${(job.desc || "").length > 200 ? "..." : ""}</p>
+        `;
+    }
+    
+    document.getElementById("jobApproveModal").classList.add("active");
+}
+
+function approveJob() {
+    if (!currentApproveJobId) {
+        alert("Không có tin tuyển dụng nào được chọn!");
+        return;
+    }
+    
+    let jobs = syncJobsFromData();
+    const index = jobs.findIndex(j => j.id == currentApproveJobId);
+    
+    if (index !== -1) {
+        jobs[index].status = "active";
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        if (typeof allJobs !== 'undefined') {
+            const originalIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
+            if (originalIndex !== -1) allJobs[originalIndex].status = "active";
+        }
+        
+        alert("✅ Đã duyệt và đăng tin thành công!");
+        closeJobApproveModal();
+        renderJobs();
+        updateStats();
+    } else {
+        alert("Không tìm thấy tin tuyển dụng!");
+    }
+}
+
+function rejectJob() {
+    if (!currentApproveJobId) {
+        alert("Không có tin tuyển dụng nào được chọn!");
+        return;
+    }
+    
+    const reason = document.getElementById("jobRejectReason")?.value || "Không có lý do";
+    let jobs = syncJobsFromData();
+    const index = jobs.findIndex(j => j.id == currentApproveJobId);
+    
+    if (index !== -1) {
+        jobs[index].status = "rejected";
+        jobs[index].rejectReason = reason;
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        if (typeof allJobs !== 'undefined') {
+            const originalIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
+            if (originalIndex !== -1) allJobs[originalIndex].status = "rejected";
+        }
+        
+        alert(`❌ Đã từ chối tin tuyển dụng.\nLý do: ${reason}`);
+        closeJobApproveModal();
+        renderJobs();
+        updateStats();
+    } else {
+        alert("Không tìm thấy tin tuyển dụng!");
+    }
+}
+
+function closeJobApproveModal() {
+    document.getElementById("jobApproveModal").classList.remove("active");
+    currentApproveJobId = null;
+    const reasonInput = document.getElementById("jobRejectReason");
+    if (reasonInput) reasonInput.value = "";
 }
 
 // ==================== QUẢN LÝ CÔNG TY ====================
@@ -537,7 +613,9 @@ function renderCompanies() {
             <td>${company.address || "---"}</td>
             <td>${company.phone || "---"}</td>
             <td>${company.industry || "---"}</td>
-            <td><span class="status-badge ${company.status === "active" ? "status-active" : (company.status === "pending" ? "status-pending" : "status-inactive")}">${company.status === "active" ? "Hoạt động" : (company.status === "pending" ? "Chờ duyệt" : "Đã khóa")}</span></td>
+            <td><span class="status-badge ${company.status === "active" ? "status-active" : (company.status === "pending" ? "status-pending" : "status-inactive")}">
+                ${company.status === "active" ? "Hoạt động" : (company.status === "pending" ? "Chờ duyệt" : "Đã khóa")}
+            </span></td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editCompany(${company.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteCompany(${company.id})"><i class="fas fa-trash"></i></button>
@@ -622,12 +700,33 @@ function saveCompany() {
 function editCompany(id) { openCompanyModal(id); }
 
 function deleteCompany(id) {
-    if (confirm("Bạn có chắc muốn xóa công ty này?")) {
+    if (confirm("Bạn có chắc muốn xóa công ty này? Các tin tuyển dụng liên quan cũng sẽ bị xóa!")) {
         let companies = syncCompaniesFromData();
+        const company = companies.find(c => c.id === id);
+        const companyName = company?.name;
+        
         companies = companies.filter(c => c.id !== id);
         localStorage.setItem("companies", JSON.stringify(companies));
+        
+        if (companyName) {
+            let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+            jobs = jobs.filter(j => j.company !== companyName);
+            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+            
+            if (typeof allJobs !== 'undefined') {
+                for (let i = 0; i < allJobs.length; i++) {
+                    if (allJobs[i].company === companyName) {
+                        allJobs.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+        }
+        
         renderCompanies();
-        alert("Đã xóa công ty!");
+        if (typeof renderJobs === 'function') renderJobs();
+        updateStats();
+        alert("Đã xóa công ty và các tin tuyển dụng liên quan!");
     }
 }
 
@@ -639,6 +738,11 @@ function renderCVs() {
     
     const tbody = document.getElementById("cvList");
     if (!tbody) return;
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có CV nào được lưu</td></tr>`;
+        return;
+    }
     
     tbody.innerHTML = filtered.map((cv, i) => `
         <tr>
@@ -660,7 +764,7 @@ function viewCVDetail(index) {
     const cvs = JSON.parse(localStorage.getItem("savedCVs")) || [];
     const cv = cvs[index];
     if (cv) {
-        alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName}\nEmail: ${cv.email}\nSĐT: ${cv.phone}\nVị trí: ${cv.position}\nGiới thiệu: ${cv.intro}\nKỹ năng: ${cv.skills}\nKinh nghiệm: ${cv.experience}`);
+        alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || "---"}\nEmail: ${cv.email || "---"}\nSĐT: ${cv.phone || "---"}\nVị trí: ${cv.position || "---"}\nGiới thiệu: ${cv.intro || "---"}\nKỹ năng: ${cv.skills || "---"}\nKinh nghiệm: ${cv.experience || "---"}`);
     }
 }
 
@@ -731,14 +835,21 @@ function renderSupport() {
     const tbody = document.getElementById("supportList");
     if (!tbody) return;
     
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Không có yêu cầu hỗ trợ nào</td></tr>`;
+        return;
+    }
+    
     tbody.innerHTML = filtered.map(t => `
         <tr>
             <td>${t.id}</td>
             <td>${t.userName}</td>
             <td>${t.title}</td>
-            <td>${t.content.substring(0, 50)}...</td>
+            <td>${t.content.substring(0, 50)}...${t.content.length > 50 ? "" : ""}</td>
             <td>${t.date}</td>
-            <td><span class="status-badge ${t.status === "pending" ? "status-pending" : (t.status === "processing" ? "status-warning" : "status-active")}">${t.status === "pending" ? "Chờ xử lý" : (t.status === "processing" ? "Đang xử lý" : "Đã giải quyết")}</span></td>
+            <td><span class="status-badge ${t.status === "pending" ? "status-pending" : (t.status === "processing" ? "status-warning" : "status-active")}">
+                ${t.status === "pending" ? "Chờ xử lý" : (t.status === "processing" ? "Đang xử lý" : "Đã giải quyết")}
+            </span></td>
             <td>
                 <button class="btn-primary btn-sm" onclick="updateSupportStatus(${t.id},'processing')"><i class="fas fa-spinner"></i> Xử lý</button>
                 <button class="btn-success btn-sm" onclick="updateSupportStatus(${t.id},'resolved')"><i class="fas fa-check"></i> Hoàn thành</button>
@@ -764,17 +875,54 @@ function renderTransactions() {
     const tbody = document.getElementById("transactionList");
     if (!tbody) return;
     
+    if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có giao dịch nào</td></tr>`;
+        return;
+    }
+    
     tbody.innerHTML = transactions.map(t => `
         <tr>
             <td>${t.id}</td>
             <td>${t.companyName}</td>
             <td>${t.package || "Premium"}</td>
-            <td>${t.days || 7} ngày\n
-            <td>${t.amount.toLocaleString()}đ\n
-            <td>${t.date}\n
-            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}</span>\n
+            <td>${t.days || 7} ngày</td>
+            <td>${t.amount.toLocaleString()}đ</td>
+            <td>${t.date}</td>
+            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">
+                ${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}
+            </span></td>
         </tr>
     `).join("");
+}
+
+// ==================== ĐỒNG BỘ DỮ LIỆU TỪ HR ====================
+function initAdminStorageListener() {
+    window.addEventListener("storage", (e) => {
+        if (e.key === "hr_jobs") {
+            console.log("🔄 Phát hiện thay đổi jobs từ HR, đang cập nhật...");
+            renderJobs();
+            updateStats();
+        }
+        if (e.key === "companies") {
+            console.log("🔄 Phát hiện thay đổi companies, đang cập nhật...");
+            renderCompanies();
+            updateStats();
+        }
+        if (e.key === "transactions") {
+            console.log("🔄 Phát hiện thay đổi transactions, đang cập nhật...");
+            updateStats();
+            renderTransactions();
+        }
+        if (e.key === "users") {
+            console.log("🔄 Phát hiện thay đổi users, đang cập nhật...");
+            renderUsers();
+            updateStats();
+        }
+        if (e.key === "applications") {
+            console.log("🔄 Phát hiện thay đổi applications, đang cập nhật...");
+            updateStats();
+        }
+    });
 }
 
 // ==================== UTILITY ====================
@@ -879,6 +1027,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStats();
     initTabs();
     initFilters();
+    initAdminStorageListener();
     
     renderUsers();
     renderJobs();
@@ -903,6 +1052,10 @@ window.closeEditJobModal = closeEditJobModal;
 window.updateJob = updateJob;
 window.deleteJob = deleteJob;
 window.toggleJobStatus = toggleJobStatus;
+window.openApproveModal = openApproveModal;
+window.approveJob = approveJob;
+window.rejectJob = rejectJob;
+window.closeJobApproveModal = closeJobApproveModal;
 window.openCompanyModal = openCompanyModal;
 window.closeCompanyModal = closeCompanyModal;
 window.saveCompany = saveCompany;

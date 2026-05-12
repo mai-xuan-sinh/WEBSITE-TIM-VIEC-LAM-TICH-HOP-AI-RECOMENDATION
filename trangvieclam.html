@@ -462,17 +462,17 @@
 
 
         // ==================== HÀM ỨNG TUYỂN (GỬI VÀO HR) ====================
-function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     
-    if (!currentUser) {
+        if (!currentUser) {
         alert('Vui lòng đăng nhập để ứng tuyển!');
         window.location.href = 'login.html';
         return false;
-    }
+        }
     
-    // Tạo đơn ứng tuyển
-    const application = {
+        // Tạo đơn ứng tuyển
+        const application = {
         id: Date.now(),
         jobId: jobId,
         jobTitle: jobTitle,
@@ -490,20 +490,20 @@ function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
         date: new Date().toISOString(),
         dateDisplay: new Date().toLocaleDateString('vi-VN'),
         status: 'pending' // pending, approved, rejected
-    };
+        };
     
-    // Lưu vào localStorage chung
-    let applications = JSON.parse(localStorage.getItem('applications')) || [];
-    applications.push(application);
-    localStorage.setItem('applications', JSON.stringify(applications));
+        // Lưu vào localStorage chung
+        let applications = JSON.parse(localStorage.getItem('applications')) || [];
+     applications.push(application);
+        localStorage.setItem('applications', JSON.stringify(applications));
     
-    // Đồng thời lưu vào HR candidates
-    let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+        // Đồng thời lưu vào HR candidates
+        let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
     
-    // Kiểm tra xem đã ứng tuyển chưa
-    const existingIndex = hrCandidates.findIndex(c => c.jobId === jobId && c.candidateEmail === currentUser.email);
+        // Kiểm tra xem đã ứng tuyển chưa
+        const existingIndex = hrCandidates.findIndex(c => c.jobId === jobId && c.candidateEmail === currentUser.email);
     
-    if (existingIndex === -1) {
+        if (existingIndex === -1) {
         const newCandidate = {
             id: application.id,
             name: application.candidateName,
@@ -524,11 +524,11 @@ function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
         };
         hrCandidates.push(newCandidate);
         localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
-    }
+        }
     
-    // Tạo thông báo cho HR
-    let notifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
-    notifications.unshift({
+        // Tạo thông báo cho HR
+        let notifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+        notifications.unshift({
         id: Date.now(),
         title: 'Ứng viên mới',
         content: `${application.candidateName} đã ứng tuyển vị trí ${jobTitle} tại ${company}`,
@@ -536,11 +536,11 @@ function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
         time: 'Vừa xong',
         read: false,
         applicationId: application.id
-    });
-    if (notifications.length > 30) notifications.pop();
-    localStorage.setItem('hr_notifications', JSON.stringify(notifications));
+        });
+        if (notifications.length > 30) notifications.pop();
+        localStorage.setItem('hr_notifications', JSON.stringify(notifications));
     
-    return true;
+        return true;
 }
 
 // ==================== CẬP NHẬT HÀM APPLY JOB ====================
@@ -648,6 +648,25 @@ document.getElementById('applyForm')?.addEventListener('submit', function(e) {
         document.getElementById('selectedCVInfo').style.display = 'none';
     }
 });
+
+        // ==================== STORAGE LISTENER ĐỂ ĐỒNG BỘ TRẠNG THÁI ====================
+window.addEventListener('storage', function(e) {
+    if (e.key === 'applications' || e.key === 'hr_candidates') {
+        console.log('🔄 Phát hiện thay đổi ứng tuyển, cập nhật UI...');
+        // Có thể hiển thị thông báo nếu cần
+        const notifyDiv = document.createElement('div');
+        notifyDiv.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:12px 20px; border-radius:8px; z-index:9999; animation:fadeOut 3s ease';
+        notifyDiv.innerHTML = '<i class="fas fa-sync-alt"></i> Có cập nhật trạng thái hồ sơ!';
+        document.body.appendChild(notifyDiv);
+        setTimeout(() => notifyDiv.remove(), 3000);
+    }
+});
+
+// Thêm CSS cho animation fadeOut
+const style = document.createElement('style');
+style.textContent = `@keyframes fadeOut { 0% { opacity: 1; transform: translateX(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateX(100px); } }`;
+document.head.appendChild(style);
+
     </script>
     <script src="floating.js"></script>
 </body>

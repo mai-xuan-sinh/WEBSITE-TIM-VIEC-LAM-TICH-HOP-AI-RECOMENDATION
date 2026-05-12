@@ -845,28 +845,55 @@
     }
     
     function approveCandidate(id) {
-        const index = candidates.findIndex(c => c.id === id);
-        if (index !== -1 && candidates[index].status === 'pending') {
-            candidates[index].status = 'approved';
-            localStorage.setItem("hr_candidates", JSON.stringify(candidates));
-            renderCandidates();
-            addActivity(`✅ Đã duyệt hồ sơ của ${candidates[index].name}`);
-            addNotification("Hồ sơ được duyệt", `${candidates[index].name} đã được duyệt`, "application");
-            alert("✅ Đã duyệt hồ sơ!");
+    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+    const candidate = data.find(c => c.id === id);
+    if (candidate && candidate.status === 'pending') {
+        candidate.status = "approved";
+        localStorage.setItem("hr_candidates", JSON.stringify(data));
+        
+        // ⭐ ĐỒNG BỘ VỚI applications (QUAN TRỌNG)
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        const app = applications.find(a => 
+            a.id === id || 
+            (a.candidateEmail === candidate.email && a.jobTitle === candidate.position)
+        );
+        if (app) {
+            app.status = "approved";
+            localStorage.setItem("applications", JSON.stringify(applications));
         }
+        
+        renderCandidates();
+        addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
+        addNotification('Hồ sơ được duyệt', `Hồ sơ của ${candidate.name} đã được duyệt`, "application");
+        alert('✅ Đã duyệt hồ sơ!');
     }
-    
-    function rejectCandidate(id) {
-        if (!confirm("Từ chối hồ sơ này?")) return;
-        const index = candidates.findIndex(c => c.id === id);
-        if (index !== -1 && candidates[index].status === 'pending') {
-            candidates[index].status = 'rejected';
-            localStorage.setItem("hr_candidates", JSON.stringify(candidates));
-            renderCandidates();
-            addActivity(`❌ Đã từ chối hồ sơ của ${candidates[index].name}`);
-            alert("❌ Đã từ chối hồ sơ!");
+}
+
+function rejectCandidate(id) {
+    if (!confirm("Từ chối hồ sơ này?")) return;
+    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+    const candidate = data.find(c => c.id === id);
+    if (candidate && candidate.status === 'pending') {
+        candidate.status = "rejected";
+        localStorage.setItem("hr_candidates", JSON.stringify(data));
+        
+        // ⭐ ĐỒNG BỘ VỚI applications
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        const app = applications.find(a => 
+            a.id === id || 
+            (a.candidateEmail === candidate.email && a.jobTitle === candidate.position)
+        );
+        if (app) {
+            app.status = "rejected";
+            localStorage.setItem("applications", JSON.stringify(applications));
         }
+        
+        renderCandidates();
+        addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
+        addNotification('Hồ sơ bị từ chối', `Rất tiếc, hồ sơ của ${candidate.name} không phù hợp`, "system");
+        alert('❌ Đã từ chối hồ sơ!');
     }
+}
     
     // ==================== THÔNG BÁO ====================
     function renderNotifications() {
