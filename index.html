@@ -51,7 +51,6 @@
   <div class="hero-section" id="dynamicHero">
     <div class="hero-overlay"></div>
     <div class="container hero-content">
-      
       <h1 class="hero-title">Tìm kiếm việc làm thông minh tại <span class="nowrap">Đà Nẵng</span></h1>
       <p class="hero-desc">Kết nối với hàng ngàn nhà tuyển dụng hàng đầu. Công việc phù hợp với kỹ năng và đam mê của bạn.</p>
     </div>
@@ -107,7 +106,7 @@
         <div class="cat-card"><div class="cat-icon"><i class="fas fa-palette"></i></div><h3>Thiết kế - Sáng tạo</h3><div class="job-count">19 việc làm</div><div class="skills-list"><span>UI/UX</span><span>Graphic</span><span>Video</span></div></div>
       </div>
 
-      <!-- AI RECOMMENDATION - DUY NHẤT -->
+      <!-- AI RECOMMENDATION -->
       <div class="ai-recommend-box">
         <div class="ai-header">
           <div class="ai-title-wrap">
@@ -137,8 +136,8 @@
         <a href="#"><i class="fab fa-youtube"></i></a>
       </div>
     </div>
-    <div class="footer-col"><h3>Dành cho ứng viên</h3><ul><li><a href="#">Tìm việc làm</a></li><li><a href="#">Tạo CV</a></li><li><a href="#">Công ty</a></li><li><a href="#">Kinh nghiệm phỏng vấn</a></li></ul></div>
-    <div class="footer-col"><h3>Dành cho nhà tuyển dụng</h3><ul><li><a href="#">Đăng tin tuyển dụng</a></li><li><a href="#">Tìm ứng viên</a></li><li><a href="#">Giải pháp HR</a></li><li><a href="#">Bảng giá</a></li></ul></div>
+    <div class="footer-col"><h3>Dành cho ứng viên</h3><ul><li><a href="trangvieclam.html">Tìm việc làm</a></li><li><a href="taocv.html">Tạo CV</a></li><li><a href="congty.html">Công ty</a></li><li><a href="huongdan.html">Kinh nghiệm phỏng vấn</a></li></ul></div>
+    <div class="footer-col"><h3>Dành cho nhà tuyển dụng</h3><ul><li><a href="login.html">Đăng tin tuyển dụng</a></li><li><a href="#">Tìm ứng viên</a></li><li><a href="#">Giải pháp HR</a></li><li><a href="#">Bảng giá</a></li></ul></div>
     <div class="footer-col"><h3>Liên hệ</h3><ul><li><i class="fas fa-map-marker-alt"></i> Đà Nẵng, Việt Nam</li><li><i class="fas fa-envelope"></i> support@danangwork.vn</li><li><i class="fas fa-phone"></i> 0123 456 789</li></ul></div>
   </div>
   <div class="footer-bottom"><p>© 2026 DANANG WORK. All rights reserved.</p></div>
@@ -172,22 +171,21 @@
 <div class="notify-panel" id="notifyPanel">
   <div class="notify-header">
     <h3><i class="fas fa-bell"></i> Thông báo</h3>
-    <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
-    <button id="refreshNotifBtn" class="mark-read-btn" style="margin-left:8px;background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+    <div style="display: flex; gap: 8px;">
+      <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
+      <button id="refreshNotifBtn" class="mark-read-btn" style="background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+    </div>
   </div>
   <div id="notifyList" class="notify-list">
     <div class="notify-item empty">📢 Đang tải thông báo...</div>
   </div>
 </div>
 
-<!-- ========== CHỈ SỬA PHẦN NÀY ========== -->
-<!-- Đã xóa các hàm goToProfile, handleLogout, refreshUserBox vì đã có trong notification.js -->
-<!-- Giữ lại sự kiện DOMContentLoaded để khởi tạo UI -->
-
+<!-- ==================== SCRIPT CHÍNH ==================== -->
+<!-- Chỉ giữ lại script cho hero background, các hàm auth và notification đã có trong notification.js -->
 <script>
-// Chỉ giữ lại sự kiện khởi tạo cho hero background
+// Khởi tạo hero background
 document.addEventListener('DOMContentLoaded', function() {
-    // Hero background
     const heroSection = document.getElementById('dynamicHero');
     if (heroSection) {
         heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
@@ -196,13 +194,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<!-- ========== HẾT PHẦN SỬA ========== -->
 
-<!-- Scripts chính - THỨ TỰ QUAN TRỌNG -->
+<!-- Các script chính - THỨ TỰ QUAN TRỌNG -->
 <script src="jobs-data.js"></script>
 <script src="ai-recommend.js"></script>
 <script src="notification.js"></script>
 <script src="index.js"></script>
 <script src="floating.js"></script>
+
 </body>
 </html>
