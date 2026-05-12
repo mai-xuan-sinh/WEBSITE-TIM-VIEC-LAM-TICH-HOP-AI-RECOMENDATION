@@ -385,27 +385,64 @@
     window.removeSkill = function(index) { skillsList.splice(index, 1); renderSkillsTags(); };
     
     function submitJobPost() {
-        const title = document.getElementById('jobTitle').value.trim(), category = document.getElementById('jobCategory').value, salary = document.getElementById('jobSalary').value.trim(), location = document.getElementById('jobLocation').value, startDate = document.getElementById('jobStartDate').value, duration = parseInt(document.getElementById('jobDuration').value), shortDesc = document.getElementById('jobShortDesc').value, fullDesc = document.getElementById('jobFullDesc').value, requirement = document.getElementById('jobRequirement').value, benefits = document.getElementById('jobBenefits').value, skills = skillsList;
-        if (!title) { alert('Vui lòng nhập tiêu đề tin!'); showStep(1); return; }
-        if (!category) { alert('Vui lòng chọn lĩnh vực!'); showStep(1); return; }
-        if (!salary) { alert('Vui lòng nhập mức lương!'); showStep(1); return; }
-        if (!location) { alert('Vui lòng chọn địa điểm!'); showStep(1); return; }
-        if (!startDate) { alert('Vui lòng chọn ngày bắt đầu!'); showStep(1); return; }
-        const today = new Date(); today.setHours(0, 0, 0, 0);
-        if (new Date(startDate) < today) { alert('Ngày bắt đầu không được nhỏ hơn hôm nay!'); showStep(1); return; }
-        if (!fullDesc) { alert('Vui lòng nhập mô tả chi tiết!'); showStep(2); return; }
-        const expiryDate = getEndDate(startDate, duration), totalPrice = calculateTotalPrice(duration), transactionCode = 'DT' + Date.now();
-        document.getElementById('transactionCode').innerText = transactionCode;
-        if (!confirm(`Xác nhận đăng tin với các thông tin:\n\nTiêu đề: ${title}\nThời gian: ${duration} ngày\nTổng phí: ${formatCurrency(totalPrice)}\n\nBạn đã thanh toán thành công?`)) return;
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        const newJob = { id: Date.now(), title: title, field: category, salary: salary, location: location, district: location, startDate: startDate, expiryDate: expiryDate.toISOString(), duration: duration, totalPrice: totalPrice, transactionCode: transactionCode, desc: fullDesc, shortDesc: shortDesc, requirement: requirement, benefits: benefits, skills: skills, company: currentUser?.company?.name || 'Công ty của bạn', status: 'active', createdAt: new Date().toISOString(), postDate: new Date().toLocaleDateString('vi-VN') };
-        jobs.push(newJob); localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-        let transactions = JSON.parse(localStorage.getItem("hr_transactions")) || [];
-        transactions.unshift({ id: transactionCode, jobTitle: title, amount: totalPrice, duration: duration, startDate: startDate, expiryDate: expiryDate.toISOString(), date: new Date().toISOString(), status: 'completed' });
-        localStorage.setItem("hr_transactions", JSON.stringify(transactions));
-        document.getElementById('jobTitle').value = ''; document.getElementById('jobCategory').value = ''; document.getElementById('jobSalary').value = ''; document.getElementById('jobLocation').value = ''; document.getElementById('jobStartDate').value = new Date().toISOString().split('T')[0]; document.getElementById('jobDuration').value = '7'; document.getElementById('jobShortDesc').value = ''; document.getElementById('jobFullDesc').value = ''; document.getElementById('jobRequirement').value = ''; document.getElementById('jobBenefits').value = ''; skillsList = []; renderSkillsTags();
-        document.getElementById('jobPostModal').classList.remove('show'); renderJobs(); addActivity(`📌 Đã đăng tin tuyển dụng mới: ${title} (${duration} ngày - ${formatCurrency(totalPrice)})`); addNotification("Tin tuyển dụng mới", `Tin "${title}" đã được đăng thành công trong ${duration} ngày`, "system"); alert(`✅ Đăng tin thành công!\n\nTiêu đề: ${title}\nThời gian: ${duration} ngày\nTổng phí: ${formatCurrency(totalPrice)}`); showStep(1);
+    const title = document.getElementById('jobTitle').value.trim(),
+          category = document.getElementById('jobCategory').value,
+          salary = document.getElementById('jobSalary').value.trim(),
+          location = document.getElementById('jobLocation').value,
+          startDate = document.getElementById('jobStartDate').value,
+          duration = parseInt(document.getElementById('jobDuration').value),
+          shortDesc = document.getElementById('jobShortDesc').value,
+          fullDesc = document.getElementById('jobFullDesc').value,
+          requirement = document.getElementById('jobRequirement').value,
+          benefits = document.getElementById('jobBenefits').value;
+
+    if (!title || !category || !fullDesc) { 
+        alert('Vui lòng nhập đầy đủ thông tin bắt buộc!'); 
+        return; 
     }
+
+    const expiryDate = getEndDate(startDate, duration);
+    const totalPrice = calculateTotalPrice(duration);
+    const transactionCode = 'DT' + Date.now();
+
+    if (!confirm(`Xác nhận gửi tin tuyển dụng? \nTrạng thái: Chờ Admin phê duyệt.`)) return;
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    const newJob = { 
+        id: Date.now(), 
+        title: title, 
+        field: category, 
+        salary: salary, 
+        location: location, 
+        district: location, 
+        startDate: startDate, 
+        expiryDate: expiryDate.toISOString(), 
+        duration: duration, 
+        desc: fullDesc, 
+        shortDesc: shortDesc, 
+        requirement: requirement, 
+        benefits: benefits, 
+        skills: skillsList, 
+        company: currentUser?.company?.name || 'Công ty Công nghệ Đà Nẵng', 
+        status: 'pending', // 🔥 LUÔN ĐỂ PENDING KHI MỚI TẠO
+        createdAt: new Date().toISOString(), 
+        postDate: new Date().toLocaleDateString('vi-VN') 
+    };
+
+    // LƯU VÀO 'hr_jobs' (Dùng chung cho cả Admin và HR)
+    let allJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    allJobs.unshift(newJob);
+    localStorage.setItem("hr_jobs", JSON.stringify(allJobs));
+
+    // Reset Form
+    document.getElementById('jobPostModal').classList.remove('show');
+    if(typeof renderJobs === 'function') renderJobs();
+    
+    addActivity(`⏳ Đang chờ duyệt tin: ${title}`);
+    alert(`✅ Gửi tin thành công! \nTin tuyển dụng của bạn đang ở trạng thái "Chờ duyệt". \nVui lòng đợi Admin kiểm tra.`);
+    showStep(1);
+}
     
     function renderCandidates() {
         const container = document.getElementById("candidate-list"); if (!container) return;

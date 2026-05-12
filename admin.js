@@ -1067,3 +1067,76 @@ window.addCategory = addCategory;
 window.deleteCategory = deleteCategory;
 window.updateSupportStatus = updateSupportStatus;
 window.handleAdminLogout = handleAdminLogout;
+
+
+
+
+
+
+
+
+
+
+// admin.js
+
+// Biến tạm để lưu ID job đang được chọn trong modal
+let currentApprovingJobId = null;
+
+// Hàm mở modal duyệt (Bạn gọi hàm này khi bấm nút Duyệt ở danh sách Job)
+function openJobApproveModal(jobId) {
+    currentApprovingJobId = jobId;
+    const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    const job = jobs.find(j => j.id == jobId);
+
+    if(job) {
+        document.getElementById('jobApproveContent').innerHTML = `
+            <p><strong>Tiêu đề:</strong> ${job.title}</p>
+            <p><strong>Công ty:</strong> ${job.company}</p>
+        `;
+        document.getElementById('jobApproveModal').style.display = 'block';
+    }
+}
+
+// HÀM QUAN TRỌNG: Duyệt và Đăng
+function approveJob() {
+    if (!currentApprovingJobId) return;
+
+    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    
+    // Tìm và cập nhật trạng thái
+    jobs = jobs.map(job => {
+        if (job.id == currentApprovingJobId) {
+            return { ...job, status: 'active' }; // Chuyển từ pending -> active
+        }
+        return job;
+    });
+
+    // Lưu lại vào localStorage
+    localStorage.setItem('jobs', JSON.stringify(jobs));
+
+    alert("Đã duyệt tin tuyển dụng thành công!");
+    closeJobApproveModal();
+    renderJobs(); // Gọi lại hàm vẽ bảng để cập nhật giao diện admin
+    updateStats(); // Cập nhật lại số lượng ngoài Dashboard
+}
+
+// Hàm từ chối
+function rejectJob() {
+    const reason = document.getElementById('jobRejectReason').value;
+    if(!reason) return alert("Vui lòng nhập lý do từ chối");
+
+    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    jobs = jobs.map(job => {
+        if (job.id == currentApprovingJobId) {
+            return { ...job, status: 'rejected', feedback: reason };
+        }
+        return job;
+    });
+
+    localStorage.setItem('jobs', JSON.stringify(jobs));
+    alert("Đã từ chối bài đăng.");
+    closeJobApproveModal();
+    renderJobs();
+}
+
+
