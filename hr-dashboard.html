@@ -773,24 +773,45 @@ function openCreateInterviewModal(id, name, position) {
     document.getElementById("createInterviewCandidate").value = name;
     document.getElementById("createInterviewPosition").value = position;
     
-    // Lấy email của ứng viên
+    // Lấy email của ứng viên - QUAN TRỌNG
     let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+    let applications = JSON.parse(localStorage.getItem("applications")) || [];
     const candidate = candidates.find(c => c.id === id);
+    let candidateEmail = '';
+    
     if (candidate) {
-        // Thêm trường email nếu chưa có
-        let emailField = document.getElementById("createInterviewCandidateEmail");
-        if (!emailField) {
-            // Tạo thêm trường nếu chưa có
-            const formRow = document.querySelector("#createInterviewForm .form-row");
-            if (formRow) {
-                const newDiv = document.createElement("div");
-                newDiv.className = "form-group";
-                newDiv.innerHTML = `<label>Email ứng viên</label><input type="email" class="form-control" id="createInterviewCandidateEmail" readonly>`;
-                formRow.parentNode.insertBefore(newDiv, formRow.nextSibling);
-            }
-            emailField = document.getElementById("createInterviewCandidateEmail");
+        candidateEmail = candidate.email || candidate.candidateEmail || '';
+    }
+    
+    // Nếu không có trong candidates, tìm trong applications
+    if (!candidateEmail) {
+        const app = applications.find(a => a.id === id || a.candidateId === id);
+        if (app) {
+            candidateEmail = app.userEmail || app.candidateEmail || '';
         }
-        if (emailField) emailField.value = candidate.email || candidate.candidateEmail || '';
+    }
+    
+    // Tạo hoặc cập nhật trường email
+    let emailField = document.getElementById("createInterviewCandidateEmail");
+    if (!emailField) {
+        const formRow = document.querySelector("#createInterviewForm .form-row");
+        if (formRow && formRow.parentNode) {
+            const newDiv = document.createElement("div");
+            newDiv.className = "form-group";
+            newDiv.innerHTML = `<label>Email ứng viên *</label><input type="email" class="form-control" id="createInterviewCandidateEmail" required>`;
+            formRow.parentNode.insertBefore(newDiv, formRow.nextSibling);
+        }
+        emailField = document.getElementById("createInterviewCandidateEmail");
+    }
+    if (emailField) {
+        emailField.value = candidateEmail;
+        emailField.required = true;
+    }
+    
+    // Cảnh báo nếu không có email
+    if (!candidateEmail) {
+        console.warn('⚠️ Không tìm thấy email của ứng viên:', name);
+        alert(`⚠️ Không tìm thấy email của ứng viên "${name}". Vui lòng cập nhật email trước khi tạo lịch phỏng vấn!`);
     }
     
     const tomorrow = new Date(); 
