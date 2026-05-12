@@ -312,48 +312,76 @@
 </div>
 
 <script>
+  // 1. Khai báo hàm điều hướng toàn cục để onclick nhận diện được
+  window.goToProfile = function() {
+    window.location.href = 'profile.html';
+  };
+
   function updateAuthUI() {
     const authDiv = document.getElementById('authButtons');
     const userDiv = document.getElementById('userBox');
     if (!authDiv || !userDiv) return;
+    
     const user = JSON.parse(localStorage.getItem('currentUser'));
+    
     if (user && user.email) {
       const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
       authDiv.style.display = 'none';
       userDiv.style.display = 'block';
-      userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div><span class="user-name">${displayName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+      
+      // Thêm onclick và style cursor cho Avatar và Tên
+      userDiv.innerHTML = `
+        <div class="user-info">
+          <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+            ${displayName.charAt(0).toUpperCase()}
+          </div>
+          <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+            ${displayName}
+          </span>
+          <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+        </div>`;
     } else {
       authDiv.style.display = 'flex';
       userDiv.style.display = 'none';
       userDiv.innerHTML = '';
     }
   }
-  function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); window.location.href = 'index.html'; }
-  document.addEventListener('DOMContentLoaded', updateAuthUI);
+
+  function handleLogout() { 
+    localStorage.removeItem('currentUser'); 
+    localStorage.removeItem('isLoggedIn'); 
+    localStorage.removeItem('userName'); 
+    window.location.href = 'index.html'; 
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAuthUI();
+    
+    // SIDEBAR MENU LOGIC (Giữ nguyên của bạn)
+    const menuItems = document.querySelectorAll('.sidebar ul li');
+    const sections = document.querySelectorAll('.content-section');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        menuItems.forEach(i => i.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        item.classList.add('active');
+        const sectionId = item.dataset.section;
+        document.getElementById(sectionId).classList.add('active');
+      });
+    });
+
+    // FAQ ACCORDION LOGIC (Giữ nguyên của bạn)
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      question.addEventListener('click', () => {
+        faqItems.forEach(i => { if (i !== item) i.classList.remove('active'); });
+        item.classList.toggle('active');
+      });
+    });
+  });
+
   window.addEventListener('storage', updateAuthUI);
-
-  // SIDEBAR MENU
-  const menuItems = document.querySelectorAll('.sidebar ul li');
-  const sections = document.querySelectorAll('.content-section');
-  menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-      menuItems.forEach(i => i.classList.remove('active'));
-      sections.forEach(s => s.classList.remove('active'));
-      item.classList.add('active');
-      const sectionId = item.dataset.section;
-      document.getElementById(sectionId).classList.add('active');
-    });
-  });
-
-  // FAQ ACCORDION
-  const faqItems = document.querySelectorAll('.faq-item');
-  faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    question.addEventListener('click', () => {
-      faqItems.forEach(i => { if (i !== item) i.classList.remove('active'); });
-      item.classList.toggle('active');
-    });
-  });
 </script>
 <script src="floating.js"></script>
 </body>

@@ -684,65 +684,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </div>
 <script>
+// 1. Khai báo hàm chuyển hướng toàn cục
+window.goToProfile = function() {
+    window.location.href = 'profile.html';
+};
 
-let selectedCV = null;
-let avatarBase64 = "";
-
-// mở form
-function openCVForm(cvId) {
-    selectedCV = cvId;
-    document.getElementById("cvModal").style.display = "flex";
-}
-
-// đóng form
-function closeCVForm() {
-    document.getElementById("cvModal").style.display = "none";
-}
-
-// 🔥 xử lý upload ảnh
-document.getElementById("cvAvatar").addEventListener("change", function (e) {
-
-    const file = e.target.files[0];
-
-    const reader = new FileReader();
-
-    reader.onload = function () {
-        avatarBase64 = reader.result;
-    };
-
-    reader.readAsDataURL(file);
-
+document.querySelector(".nav-dropdown").addEventListener("click", function (e) {
+    e.stopPropagation();
+    this.classList.toggle("active");
 });
 
-// lưu CV
-function saveCV() {
+document.addEventListener("click", function () {
+    document.querySelector(".nav-dropdown").classList.remove("active");
+});
 
-    const name = document.getElementById("cvName").value;
-    const job = document.getElementById("cvJob").value;
-    const email = document.getElementById("cvEmail").value;
-    const phone = document.getElementById("cvPhone").value;
+document.addEventListener("DOMContentLoaded", () => {
+    const authDiv = document.getElementById("authButtons");
+    const userBox = document.getElementById("userBox");
 
-    const cvData = {
-        template: selectedCV,
-        name,
-        job,
-        email,
-        phone,
-        avatar: avatarBase64,
-        time: new Date().toLocaleString()
+    function updateAuthUI() {
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+
+        if (user && user.email) {
+            const name = user.name || user.fullname || user.email.split("@")[0];
+
+            authDiv.style.display = "none";
+            userBox.style.display = "flex";
+
+            // CẬP NHẬT: Thêm onclick và style pointer cho Avatar và Tên
+            userBox.innerHTML = `
+                <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                    <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+                        ${name.charAt(0).toUpperCase()}
+                    </div>
+                    <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+                        ${name}
+                    </span>
+                    <button class="logout-btn" onclick="logoutUser()">
+                        Đăng xuất
+                    </button>
+                </div>
+            `;
+        } else {
+            authDiv.style.display = "flex";
+            userBox.style.display = "none";
+            userBox.innerHTML = "";
+        }
+    }
+
+    window.logoutUser = function () {
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("rememberUser");
+        updateAuthUI();
+        window.location.href = "index.html";
     };
 
-    let list = JSON.parse(localStorage.getItem("cvList")) || [];
-
-    list.push(cvData);
-
-    localStorage.setItem("cvList", JSON.stringify(list));
-
-    alert("Tạo CV thành công!");
-
-    closeCVForm();
-}
-
+    updateAuthUI();
+    window.addEventListener("storage", updateAuthUI);
+});
 </script>
 <script>
 function openEditor(template) {

@@ -279,6 +279,11 @@
 </div>
 
 <script>
+  // 1. Khai báo hàm điều hướng toàn cục
+  window.goToProfile = function() {
+    window.location.href = 'profile.html';
+  };
+
   function updateAuthUI() {
     const authDiv = document.getElementById('authButtons');
     const userDiv = document.getElementById('userBox');
@@ -288,45 +293,67 @@
       const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
       authDiv.style.display = 'none';
       userDiv.style.display = 'block';
-      userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div><span class="user-name">${displayName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+      
+      // FIX: Thêm onclick và style cursor pointer cho Avatar và Tên
+      userDiv.innerHTML = `
+        <div class="user-info">
+          <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+            ${displayName.charAt(0).toUpperCase()}
+          </div>
+          <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+            ${displayName}
+          </span>
+          <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+        </div>`;
     } else {
       authDiv.style.display = 'flex';
       userDiv.style.display = 'none';
       userDiv.innerHTML = '';
     }
   }
-  function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); window.location.href = 'index.html'; }
-  document.addEventListener('DOMContentLoaded', updateAuthUI);
-  window.addEventListener('storage', updateAuthUI);
 
-  // FAQ FILTER
-  const faqItems = document.querySelectorAll('details');
-  const searchInput = document.getElementById('searchFAQ');
-  const tagBtns = document.querySelectorAll('.tag');
-  
-  function filterFAQ() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const activeCat = document.querySelector('.tag.active').dataset.cat;
-    faqItems.forEach(item => {
-      const text = item.querySelector('summary').innerText.toLowerCase();
-      let show = text.includes(searchTerm);
-      if (show && activeCat !== 'all') {
-        if (activeCat === 'account') show = text.includes('tài khoản') || text.includes('đăng ký') || text.includes('mật khẩu');
-        else if (activeCat === 'cv') show = text.includes('cv') || text.includes('tạo');
-        else if (activeCat === 'job') show = text.includes('việc') || text.includes('gợi ý');
-        else if (activeCat === 'apply') show = text.includes('ứng tuyển') || text.includes('hồ sơ');
-      }
-      item.style.display = show ? 'block' : 'none';
-    });
+  function handleLogout() { 
+    localStorage.removeItem('currentUser'); 
+    localStorage.removeItem('isLoggedIn'); 
+    localStorage.removeItem('userName'); 
+    window.location.href = 'index.html'; 
   }
-  searchInput.addEventListener('input', filterFAQ);
-  tagBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tagBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterFAQ();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAuthUI();
+
+    // FAQ FILTER LOGIC (Giữ nguyên của bạn)
+    const faqItems = document.querySelectorAll('details');
+    const searchInput = document.getElementById('searchFAQ');
+    const tagBtns = document.querySelectorAll('.tag');
+    
+    function filterFAQ() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const activeCat = document.querySelector('.tag.active').dataset.cat;
+      faqItems.forEach(item => {
+        const text = item.querySelector('summary').innerText.toLowerCase();
+        let show = text.includes(searchTerm);
+        if (show && activeCat !== 'all') {
+          if (activeCat === 'account') show = text.includes('tài khoản') || text.includes('đăng ký') || text.includes('mật khẩu');
+          else if (activeCat === 'cv') show = text.includes('cv') || text.includes('tạo');
+          else if (activeCat === 'job') show = text.includes('việc') || text.includes('gợi ý');
+          else if (activeCat === 'apply') show = text.includes('ứng tuyển') || text.includes('hồ sơ');
+        }
+        item.style.display = show ? 'block' : 'none';
+      });
+    }
+
+    if(searchInput) searchInput.addEventListener('input', filterFAQ);
+    tagBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tagBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterFAQ();
+      });
     });
   });
+
+  window.addEventListener('storage', updateAuthUI);
 </script>
 <script src="floating.js"></script>
 </body>

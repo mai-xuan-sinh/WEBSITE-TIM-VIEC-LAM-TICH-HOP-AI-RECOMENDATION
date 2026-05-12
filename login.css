@@ -242,3 +242,79 @@ body::before {
 .home-btn:active {
   transform: scale(0.9);
 }
+
+
+
+
+
+/* =========================
+/* =========================
+   FORGOT PASSWORD POPUP
+========================= */
+
+.forgot-popup{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75); /* nền đen mờ */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.forgot-box{
+  width: 350px;
+  background: #1e1e1e; /* nền đen */
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* TITLE */
+.forgot-box h3{
+  text-align: center;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+/* INPUT */
+.forgot-box .input-group{
+  background: #2a2a2a;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.forgot-box .input-group input{
+  color: #ffffff;
+}
+
+.forgot-box .input-group input::placeholder{
+  color: #bdbdbd;
+}
+
+.forgot-box .input-group i{
+  color: #bdbdbd;
+}
+
+/* BUTTON */
+.forgot-box .btn-login{
+  margin-top: 10px;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.close-btn:hover{
+  background: #444;
+}

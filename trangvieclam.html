@@ -377,6 +377,11 @@
 
     <!-- AUTH SCRIPT ĐỒNG BỘ -->
     <script>
+        // 1. Khai báo hàm chuyển hướng toàn cục
+        window.goToProfile = function() {
+            window.location.href = 'profile.html';
+        };
+
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
@@ -402,10 +407,15 @@
             if (isLoggedIn) {
                 authDiv.style.display = 'none';
                 userDiv.style.display = 'block';
+                // Thêm onclick="goToProfile()" và style cursor để nhấn được
                 userDiv.innerHTML = `
                     <div class="user-info">
-                        <div class="user-avatar">${userName.charAt(0).toUpperCase()}</div>
-                        <span class="user-name">${userName}</span>
+                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+                            ${userName.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+                            ${userName}
+                        </span>
                         <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
                     </div>
                 `;

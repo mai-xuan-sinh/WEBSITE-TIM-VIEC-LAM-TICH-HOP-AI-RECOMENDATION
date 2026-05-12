@@ -21,27 +21,29 @@
     <p>Đăng nhập để tiếp tục hành trình của bạn</p>
 
     <!-- EMAIL -->
-<div class="input-group">
-  <i class="fa fa-envelope"></i>
-  <input type="email" id="loginEmail" placeholder="Email">
-</div>
+    <div class="input-group">
+      <i class="fa fa-envelope"></i>
+      <input type="email" id="loginEmail" placeholder="Email">
+    </div>
 
-<!-- PASSWORD -->
-<div class="input-group">
-  <i class="fa fa-lock"></i>
-  <input type="password" id="loginPassword" placeholder="Mật khẩu">
-  <i class="fa fa-eye toggle-pass"></i>
-</div>
+    <!-- PASSWORD -->
+    <div class="input-group">
+      <i class="fa fa-lock"></i>
+      <input type="password" id="loginPassword" placeholder="Mật khẩu">
+      <i class="fa fa-eye toggle-pass"></i>
+    </div>
 
-    <!-- OPTIONS (FIX: bỏ duplicate checkbox + label lỗi) -->
+    <!-- OPTIONS -->
     <div class="options">
       <label>
         <input type="checkbox" id="rememberMe"> Ghi nhớ đăng nhập
       </label>
-      <a href="#">Quên mật khẩu?</a>
+
+      <!-- FIX -->
+      <a href="#" id="forgotBtn">Quên mật khẩu?</a>
     </div>
 
-    <!-- BUTTON (FIX: chỉ 1 button) -->
+    <!-- BUTTON -->
     <button class="btn-login" id="loginBtn">Đăng nhập →</button>
 
     <p class="register">
@@ -58,11 +60,174 @@
   </div>
 </div>
 
+<!-- FORM QUÊN MẬT KHẨU -->
+<div class="forgot-popup" id="forgotPopup">
+
+  <div class="forgot-box">
+
+    <h3>Đổi mật khẩu</h3>
+
+    <!-- EMAIL -->
+    <div class="input-group">
+      <i class="fa fa-envelope"></i>
+      <input type="email" id="forgotEmail" placeholder="Nhập gmail tài khoản">
+    </div>
+
+    <!-- NEW PASS -->
+    <div class="input-group">
+      <i class="fa fa-lock"></i>
+      <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+    </div>
+
+    <!-- RE PASS -->
+    <div class="input-group">
+      <i class="fa fa-lock"></i>
+      <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu">
+    </div>
+
+    <button class="btn-login" id="resetPasswordBtn">
+      Hoàn thành
+    </button>
+
+    <button class="close-btn" id="closeForgot">
+      Đóng
+    </button>
+
+  </div>
+
+</div>
+
 <!-- Nút về trang chủ -->
 <a href="index.html" class="home-btn">
   <i class="fa fa-home"></i>
 </a>
 
-<script src="login.js"></script>
+<script>
+
+  // =========================
+  // HIỆN / ẨN PASSWORD
+  // =========================
+
+  document.querySelectorAll(".toggle-pass").forEach(icon => {
+
+    icon.addEventListener("click", () => {
+
+      const input = icon.previousElementSibling;
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+
+    });
+
+  });
+
+
+  // =========================
+  // ĐĂNG NHẬP
+  // =========================
+
+  document.getElementById("loginBtn").addEventListener("click", () => {
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    // Lấy user trong localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Tìm user
+    const user = users.find(u =>
+      u.email === email && u.password === password
+    );
+
+    if (user) {
+
+      // Lưu đăng nhập
+      localStorage.setItem("currentUser", JSON.stringify(user));
+
+      alert("Đăng nhập thành công!");
+
+      window.location.href = "index.html";
+
+    } else {
+      alert("Sai email hoặc mật khẩu!");
+    }
+
+  });
+
+
+  // =========================
+  // QUÊN MẬT KHẨU
+  // =========================
+
+  const forgotPopup = document.getElementById("forgotPopup");
+
+  // Mở popup
+  document.getElementById("forgotBtn").addEventListener("click", (e) => {
+
+    e.preventDefault();
+
+    forgotPopup.style.display = "flex";
+
+  });
+
+  // Đóng popup
+  document.getElementById("closeForgot").addEventListener("click", () => {
+
+    forgotPopup.style.display = "none";
+
+  });
+
+
+  // =========================
+  // ĐỔI MẬT KHẨU
+  // =========================
+
+  document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+
+    const email = document.getElementById("forgotEmail").value.trim();
+    const newPassword = document.getElementById("newPassword").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // CHECK EMAIL
+    const userIndex = users.findIndex(u => u.email === email);
+
+    if (userIndex === -1) {
+      alert("Email không tồn tại!");
+      return;
+    }
+
+    // CHECK PASS
+    if (newPassword.length < 6) {
+      alert("Mật khẩu phải từ 6 ký tự!");
+      return;
+    }
+
+    // CHECK CONFIRM
+    if (newPassword !== confirmPassword) {
+      alert("Mật khẩu nhập lại không khớp!");
+      return;
+    }
+
+    // UPDATE PASSWORD
+    users[userIndex].password = newPassword;
+
+    // SAVE
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Đổi mật khẩu thành công!");
+
+    forgotPopup.style.display = "none";
+
+  });
+
+</script>
+
 </body>
 </html>

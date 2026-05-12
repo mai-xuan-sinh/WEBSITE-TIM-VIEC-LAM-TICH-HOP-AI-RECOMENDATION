@@ -109,28 +109,55 @@
 </main>
 
 <script>
+  // Hàm điều hướng (Để ở ngoài để có phạm vi toàn cục)
+  function goToProfile() {
+    window.location.href = 'profile.html';
+  }
+
   // AUTH UI
   function updateAuthUI() {
     const authDiv = document.getElementById('authButtons');
     const userDiv = document.getElementById('userBox');
     if (!authDiv || !userDiv) return;
+
     const user = JSON.parse(localStorage.getItem('currentUser'));
+
     if (user && user.email) {
       const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+      
       authDiv.style.display = 'none';
       userDiv.style.display = 'block';
-      userDiv.innerHTML = `<div class="user-info"><div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div><span class="user-name">${displayName}</span><button class="logout-btn" onclick="handleLogout()">Đăng xuất</button></div>`;
+      
+      userDiv.innerHTML = `
+        <div class="user-info" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+            ${displayName.charAt(0).toUpperCase()}
+          </div>
+          <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+            ${displayName}
+          </span>
+          <button class="logout-btn" onclick="handleLogout()" style="margin-left: 10px;">
+            Đăng xuất
+          </button>
+        </div>`;
     } else {
       authDiv.style.display = 'flex';
       userDiv.style.display = 'none';
       userDiv.innerHTML = '';
     }
   }
-  function handleLogout() { localStorage.removeItem('currentUser'); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); window.location.href = 'index.html'; }
+
+  function handleLogout() { 
+    localStorage.removeItem('currentUser'); 
+    localStorage.removeItem('isLoggedIn'); 
+    localStorage.removeItem('userName'); 
+    window.location.href = 'index.html'; 
+  }
+
   document.addEventListener('DOMContentLoaded', updateAuthUI);
   window.addEventListener('storage', updateAuthUI);
 
-  // YEAR DATA
+  // --- PHẦN CODE DỮ LIỆU NĂM VÀ TABS GIỮ NGUYÊN ---
   const yearlyData = {
     "2024": { stats: { job: "98,000+", comp: "4,100+", cand: "35,000+", sal: "13.5 Tr" }, banner: { pct: "+15%", comp: "so với 2023", sub: "Phục hồi sau đại dịch" } },
     "2025": { stats: { job: "110,000+", comp: "4,800+", cand: "40,000+", sal: "14.2 Tr" }, banner: { pct: "+18%", comp: "so với 2024", sub: "Tăng trưởng ổn định" } },
@@ -163,7 +190,6 @@
     });
   });
 
-  // TABS
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
   tabBtns.forEach(btn => {
@@ -176,5 +202,6 @@
   });
 </script>
 <script src="floating.js"></script>
+<script src="xuhuong.js"></script>
 </body>
 </html>

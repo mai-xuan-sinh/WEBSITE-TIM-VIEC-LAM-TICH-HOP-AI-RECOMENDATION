@@ -413,6 +413,7 @@
     </div>
 
     <script>
+        // --- CÁC HÀM XỬ LÝ DỮ LIỆU CÔNG TY (GIỮ NGUYÊN) ---
         const companies = [
             { id: "fpt", name: "FPT Software", logo: "img/fpt.jpg", location: "Hải Châu, Đà Nẵng", size: "5000+ nhân viên", rating: 4.5, desc: "Phát triển phần mềm chất lượng cao cho thị trường Nhật Bản và Âu Mỹ.", category: "it" },
             { id: "philong", name: "PhiLong Technology", logo: "img/philong-logo.jpg", location: "Hải Châu, Đà Nẵng", size: "2000+ nhân viên", rating: 4.5, desc: "Môi trường làm việc sáng tạo, tập trung vào các dự án công nghệ mới.", category: "it" },
@@ -468,7 +469,13 @@
         });
         renderCompanies();
 
-        // ===== AUTH UI ĐỒNG BỘ =====
+        // ===== FIX LỖI NHẤN VÀO PROFILE TẠI ĐÂY =====
+
+        // 1. Khai báo hàm điều hướng (Global Scope)
+        window.goToProfile = function() {
+            window.location.href = 'profile.html';
+        };
+
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
@@ -480,10 +487,15 @@
                 const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
                 authDiv.style.display = 'none';
                 userDiv.style.display = 'block';
+                // Thêm sự kiện onclick và cursor pointer cho Avatar + Tên
                 userDiv.innerHTML = `
                     <div class="user-info">
-                        <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
-                        <span class="user-name">${displayName}</span>
+                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+                            ${displayName.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600; color: #334155;">
+                            ${displayName}
+                        </span>
                         <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
                     </div>
                 `;
