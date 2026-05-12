@@ -572,17 +572,35 @@ function approveJob() {
         return;
     }
     
-    let jobs = syncJobsFromData();
+    let jobs = syncJobsFromData();  // lấy từ hr_jobs
     const index = jobs.findIndex(j => j.id == currentApproveJobId);
     
     if (index !== -1) {
         jobs[index].status = "active";
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
+        // 🔥 QUAN TRỌNG: Đồng bộ vào allJobs (cho trang người dùng)
         if (typeof allJobs !== 'undefined') {
-            const originalIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
-            if (originalIndex !== -1) allJobs[originalIndex].status = "active";
+            // Cập nhật hoặc thêm vào allJobs
+            const existingIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
+            if (existingIndex !== -1) {
+                allJobs[existingIndex] = { ...allJobs[existingIndex], ...jobs[index] };
+            } else {
+                allJobs.unshift(jobs[index]);  // thêm mới vào đầu danh sách
+            }
+            // Lưu lại allJobs vào localStorage để các trang khác dùng
+            localStorage.setItem("allJobs", JSON.stringify(allJobs));
         }
+        
+        // 🔥 Lưu vào cả localStorage "jobs" để đồng bộ với các trang khác
+        let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+        const globalIndex = globalJobs.findIndex(j => j.id == currentApproveJobId);
+        if (globalIndex !== -1) {
+            globalJobs[globalIndex] = jobs[index];
+        } else {
+            globalJobs.unshift(jobs[index]);
+        }
+        localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
         alert("✅ Đã duyệt và đăng tin thành công!");
         closeJobApproveModal();
@@ -1102,15 +1120,6 @@ window.deleteCategory = deleteCategory;
 window.updateSupportStatus = updateSupportStatus;
 window.handleAdminLogout = handleAdminLogout;
 
-
-
-
-
-
-
-
-
-
 // admin.js
 
 // Biến tạm để lưu ID job đang được chọn trong modal
@@ -1131,46 +1140,5 @@ function openJobApproveModal(jobId) {
     }
 }
 
-// HÀM QUAN TRỌNG: Duyệt và Đăng
-function approveJob() {
-    if (!currentApprovingJobId) return;
-
-    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    
-    // Tìm và cập nhật trạng thái
-    jobs = jobs.map(job => {
-        if (job.id == currentApprovingJobId) {
-            return { ...job, status: 'active' }; // Chuyển từ pending -> active
-        }
-        return job;
-    });
-
-    // Lưu lại vào localStorage
-    localStorage.setItem('jobs', JSON.stringify(jobs));
-
-    alert("Đã duyệt tin tuyển dụng thành công!");
-    closeJobApproveModal();
-    renderJobs(); // Gọi lại hàm vẽ bảng để cập nhật giao diện admin
-    updateStats(); // Cập nhật lại số lượng ngoài Dashboard
-}
-
-// Hàm từ chối
-function rejectJob() {
-    const reason = document.getElementById('jobRejectReason').value;
-    if(!reason) return alert("Vui lòng nhập lý do từ chối");
-
-    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    jobs = jobs.map(job => {
-        if (job.id == currentApprovingJobId) {
-            return { ...job, status: 'rejected', feedback: reason };
-        }
-        return job;
-    });
-
-    localStorage.setItem('jobs', JSON.stringify(jobs));
-    alert("Đã từ chối bài đăng.");
-    closeJobApproveModal();
-    renderJobs();
-}
 
 
