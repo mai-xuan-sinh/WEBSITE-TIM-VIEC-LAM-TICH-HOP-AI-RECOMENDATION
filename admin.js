@@ -189,67 +189,101 @@ function getWeekRange() {
     return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] };
 }
 
+// admin.js
+
 function updateStats() {
+    // 🔥 FIX 1: Đồng bộ tên Key với bên HR (Sử dụng hr_transactions, hr_jobs)
     const users = JSON.parse(localStorage.getItem("users")) || [];
     const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     const applications = JSON.parse(localStorage.getItem("applications")) || [];
     const companies = JSON.parse(localStorage.getItem("companies")) || [];
-    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     
-    const employers = users.filter(u => u.role === "employer" || u.userType === "employer");
-    const candidates = users.filter(u => u.role === "candidate" || u.userType === "candidate");
-    const pendingJobs = jobs.filter(j => j.status === "pending");
-    const totalRevenue = transactions.filter(t => t.status === "completed").reduce((sum, t) => sum + (t.amount || 0), 0);
+    // HR lưu thanh toán vào 'hr_transactions', nên Admin phải đọc đúng key này
+    const transactions = JSON.parse(localStorage.getItem("hr_transactions")) || 
+                         JSON.parse(localStorage.getItem("transactions")) || [];
     
-    const elements = {
+    // --- 1. Thống kê chung (Tab Tổng quan) ---
+    const stats = {
         totalUsers: users.length,
-        totalEmployers: employers.length,
-        totalCandidates: candidates.length,
+        totalEmployers: users.filter(u => u.role === "employer" || u.role === "hr").length,
+        totalCandidates: users.filter(u => u.role === "candidate").length,
         totalJobs: jobs.length,
         totalApplications: applications.length,
         totalCompanies: companies.length,
-        pendingJobs: pendingJobs.length,
-        totalRevenue: totalRevenue.toLocaleString()
+        pendingJobs: jobs.filter(j => j.status === "pending").length,
+        // Ép kiểu số để tính toán chính xác
+        totalRevenue: transactions.filter(t => t.status === "completed")
+                        .reduce((sum, t) => sum + (Number(t.amount) || 0), 0).toLocaleString()
     };
     
-    for (const [id, value] of Object.entries(elements)) {
+    for (const [id, value] of Object.entries(stats)) {
         const el = document.getElementById(id);
         if (el) el.innerText = value;
     }
+
+    // --- 2. Thống kê chi tiết (Tab Báo cáo & Thống kê) ---
+    const now = new Date();
+    // Chuyển về múi giờ VN để so sánh chính xác ngày hôm nay
+    const todayStr = now.toLocaleDateString('en-CA'); // Trả về YYYY-MM-DD
+
+    const revToday = transactions.filter(t => {
+        // Kiểm tra cả trường 'date' hoặc 'startDate' tùy theo HR lưu
+        const tDate = t.date ? t.date.split('T')[0] : t.startDate;
+        return t.status === "completed" && tDate === todayStr;
+    }).reduce((s, t) => s + (Number(t.amount) || 0), 0);
     
-    const reportTotalUsers = document.getElementById("reportTotalUsers");
-    const reportTotalJobs = document.getElementById("reportTotalJobs");
-    const reportTotalApps = document.getElementById("reportTotalApps");
-    const reportActiveCompanies = document.getElementById("reportActiveCompanies");
-    
-    if (reportTotalUsers) reportTotalUsers.innerText = users.length;
-    if (reportTotalJobs) reportTotalJobs.innerText = jobs.length;
-    if (reportTotalApps) reportTotalApps.innerText = applications.length;
-    if (reportActiveCompanies) reportActiveCompanies.innerText = companies.filter(c => c.status === "active").length;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const thisWeek = getWeekRange();
-    const thisMonth = new Date().getMonth();
-    const thisYear = new Date().getFullYear();
-    
-    const revenueToday = transactions.filter(t => t.status === "completed" && t.date === today).reduce((s, t) => s + t.amount, 0);
-    const revenueWeek = transactions.filter(t => t.status === "completed" && t.date >= thisWeek.start && t.date <= thisWeek.end).reduce((s, t) => s + t.amount, 0);
-    const revenueMonth = transactions.filter(t => t.status === "completed" && new Date(t.date).getMonth() === thisMonth).reduce((s, t) => s + t.amount, 0);
-    const revenueYear = transactions.filter(t => t.status === "completed" && new Date(t.date).getFullYear() === thisYear).reduce((s, t) => s + t.amount, 0);
-    
-    const revenueElements = {
-        revenueToday: revenueToday,
-        revenueWeek: revenueWeek,
-        revenueMonth: revenueMonth,
-        revenueYear: revenueYear
+    const revMonth = transactions.filter(t => {
+        const tDate = new Date(t.date || t.startDate);
+        return t.status === "completed" && 
+               tDate.getMonth() === now.getMonth() && 
+               tDate.getFullYear() === now.getFullYear();
+    }).reduce((s, t) => s + (Number(t.amount) || 0), 0);
+
+    // Hiển thị ra giao diện
+    const uiElements = {
+        "revenueToday": revToday.toLocaleString() + "đ",
+        "revenueMonth": revMonth.toLocaleString() + "đ",
+        "revenueYear": stats.totalRevenue + "đ", // Tạm lấy tổng doanh thu cho năm
+        "reportTotalUsers": users.length,
+        "reportTotalJobs": jobs.length,
+        "reportTotalApps": applications.length,
+        "reportActiveCompanies": companies.filter(c => c.status === "active").length
     };
-    
-    for (const [id, value] of Object.entries(revenueElements)) {
+
+    for (const [id, value] of Object.entries(uiElements)) {
         const el = document.getElementById(id);
-        if (el) el.innerText = value.toLocaleString() + "đ";
+        if (el) el.innerText = value;
     }
-    
-    renderTransactions();
+
+    renderTransactions(transactions);
+}
+
+// 🔥 FIX 2: Đưa hàm render ra ngoài và nhận tham số dữ liệu
+function renderTransactions(data) {
+    const transactions = data || JSON.parse(localStorage.getItem("hr_transactions")) || [];
+    const tbody = document.getElementById("transactionList");
+    if (!tbody) return;
+
+    if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">📢 Chưa có dữ liệu giao dịch</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = transactions.map(t => `
+        <tr>
+            <td><span style="font-family: monospace; font-weight:600;">${t.id || t.transactionCode}</span></td>
+            <td>${t.companyName || t.jobTitle || "Hệ thống"}</td>
+            <td><span class="status-badge" style="background:#f0f9ff; color:#0369a1; border:none;">${t.package || "Đăng tin"}</span></td>
+            <td>${t.duration || t.days || 0} ngày</td>
+            <td style="color: #10b981; font-weight: 700;">${(Number(t.amount) || 0).toLocaleString()}đ</td>
+            <td>${t.date ? new Date(t.date).toLocaleDateString('vi-VN') : (t.startDate || "---")}</td>
+            <td>
+                <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
+                    ${t.status === 'completed' ? 'Thành công' : 'Chờ xử lý'}
+                </span>
+            </td>
+        </tr>
+    `).join("");
 }
 
 // ==================== QUẢN LÝ NGƯỜI DÙNG ====================
