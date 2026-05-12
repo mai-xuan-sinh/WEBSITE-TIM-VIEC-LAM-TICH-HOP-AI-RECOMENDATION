@@ -6,6 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const rememberCheckbox = document.getElementById("rememberMe");
   const togglePass = document.querySelector(".toggle-pass");
 
+  // CHECK DOM AN TOÀN
+  if (!loginBtn || !emailInput || !passwordInput || !rememberCheckbox) {
+    console.error("❌ Missing login elements in DOM");
+    return;
+  }
+
   // TÀI KHOẢN HR DUY NHẤT
   const HR_USER = {
     id: 1,
@@ -20,41 +26,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // KHỞI TẠO LOCALSTORAGE
+  // INIT USER LOCALSTORAGE
   function initHRUser() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     const hrExists = users.some(u => u.email === HR_USER.email);
+
     if (!hrExists) {
       users.push(HR_USER);
       localStorage.setItem("users", JSON.stringify(users));
     }
   }
+
   initHRUser();
 
-  // HIỂN THỊ MẬT KHẨU
-  const togglePass = document.querySelector(".toggle-pass");
-  if (togglePass) {
+  // TOGGLE PASSWORD (FIX SAFE + KHÔNG LỖI NULL)
+  if (togglePass && passwordInput) {
     togglePass.addEventListener("click", () => {
-      const type = passwordInput.type === "password" ? "text" : "password";
-      passwordInput.type = type;
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
 
       togglePass.classList.toggle("fa-eye-slash");
     });
   }
 
-  // TỰ ĐỘNG ĐIỀN TÀI KHOẢN HR
+  // REMEMBER USER
   const savedUser = JSON.parse(localStorage.getItem("rememberUser"));
-  if (savedUser && savedUser.email && savedUser.password) {
+
+  if (savedUser?.email && savedUser?.password) {
     emailInput.value = savedUser.email;
     passwordInput.value = savedUser.password;
     rememberCheckbox.checked = true;
-  } else {
-    emailInput.value = HR_USER.email;
-    passwordInput.value = HR_USER.password;
-    rememberCheckbox.checked = false;
   }
 
-  // XỬ LÝ ĐĂNG NHẬP
+  // LOGIN HANDLER
   function handleLogin() {
 
     const email = emailInput.value.trim().toLowerCase();
@@ -70,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const user = users.find(u => u.email === email && u.password === password);
 
     if (!user) {
-      alert("❌ Sai email hoặc mật khẩu. Vui lòng thử lại!");
+      alert("❌ Sai email hoặc mật khẩu!");
       return;
     }
 
@@ -87,24 +91,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
+    // REMEMBER LOGIN
     if (remember) {
-      localStorage.setItem("rememberUser", JSON.stringify({ email: user.email, password: user.password }));
+      localStorage.setItem(
+        "rememberUser",
+        JSON.stringify({ email: user.email, password: user.password })
+      );
     } else {
       localStorage.removeItem("rememberUser");
     }
 
     alert(`✅ Đăng nhập thành công!\nChào mừng ${currentUser.name}`);
 
-    if (user.role === "hr") {
-      window.location.href = "hr-dashboard.html";
-    } else {
-      window.location.href = "index.html";
-    }
+    // REDIRECT
+    window.location.href =
+      user.role === "hr" ? "hr-dashboard.html" : "index.html";
   }
 
+  // EVENTS
   loginBtn.addEventListener("click", handleLogin);
 
-  // Xử lý phím Enter
-  emailInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleLogin(); });
-  passwordInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleLogin(); });
+  // ENTER KEY (FIX CLEAN)
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleLogin();
+    });
+  });
+
 });

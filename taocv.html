@@ -613,8 +613,58 @@ document.querySelector(".nav-dropdown").addEventListener("click", function (e) {
 document.addEventListener("click", function () {
     document.querySelector(".nav-dropdown").classList.remove("active");
 });
+document.addEventListener("DOMContentLoaded", () => {
+
+  const authDiv = document.getElementById("authButtons");
+  const userBox = document.getElementById("userBox");
+
+  function updateAuthUI() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (user && user.email) {
+
+      const name = user.name || user.fullname || user.email.split("@")[0];
+
+      authDiv.style.display = "none";
+      userBox.style.display = "flex";
+
+      userBox.innerHTML = `
+        <div class="user-info">
+          <div class="user-avatar">
+            ${name.charAt(0).toUpperCase()}
+          </div>
+
+          <span class="user-name">${name}</span>
+
+          <button class="logout-btn" onclick="logoutUser()">
+            Đăng xuất
+          </button>
+        </div>
+      `;
+
+    } else {
+      authDiv.style.display = "flex";
+      userBox.style.display = "none";
+      userBox.innerHTML = "";
+    }
+  }
+
+  window.logoutUser = function () {
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("rememberUser");
+    updateAuthUI();
+    window.location.href = "index.html";
+  };
+
+  updateAuthUI();
+
+  // auto update khi tab khác login
+  window.addEventListener("storage", updateAuthUI);
+
+});
 </script>
 <script src="js/auth.js"></script>
 <script src="floating.js"></script>
+
 </body>
 </html>

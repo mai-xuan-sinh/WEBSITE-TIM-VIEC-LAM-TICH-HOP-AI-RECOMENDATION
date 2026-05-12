@@ -10,7 +10,6 @@ body {
   background: url('img/dangki1.jpg') no-repeat center center/cover;
   position: relative;
 
-  /* FIX: tránh scroll bug + lệch layout */
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -22,47 +21,14 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top, rgba(0,0,0,0.4), rgba(0,0,0,0.85));
+  background: radial-gradient(circle at top, rgba(0,0,0,0.45), rgba(0,0,0,0.85));
   z-index: 0;
+  pointer-events: none;
 }
 
-/* HEADER */
-.header {
-  position: fixed;
-  top: 50%;
-  left: 50px;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  color: #fff;
-  z-index: 10;
-}
-
-.logo {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.logo img {
-  width: 48px;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
-}
-
-.logo h3 {
-  font-size: 20px;
-  letter-spacing: 1px;
-}
-
-.logo p {
-  font-size: 13px;
-  opacity: 0.75;
-}
-
-/* CENTER */
+/* CENTER WRAPPER */
 .login-wrapper {
-  position: relative; /* FIX: tránh fixed đè layout */
+  position: relative;
   z-index: 2;
 
   display: flex;
@@ -88,18 +54,12 @@ body::before {
   color: #fff;
   text-align: center;
 
-  animation: fadeIn 0.6s ease;
+  animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .login-card h2 {
@@ -109,7 +69,7 @@ body::before {
 
 .login-card p {
   font-size: 14px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   opacity: 0.7;
 }
 
@@ -120,9 +80,10 @@ body::before {
   background: rgba(255,255,255,0.12);
   padding: 12px 14px;
   border-radius: 12px;
-  margin-bottom: 15px;
-  transition: 0.25s;
+  margin-bottom: 14px;
+  transition: 0.2s;
   border: 1px solid transparent;
+  position: relative;
 }
 
 .input-group:hover {
@@ -131,8 +92,7 @@ body::before {
 
 .input-group:focus-within {
   border: 1px solid #60a5fa;
-  background: rgba(255,255,255,0.22);
-  box-shadow: 0 0 10px rgba(96,165,250,0.4);
+  box-shadow: 0 0 10px rgba(96,165,250,0.35);
 }
 
 .input-group i {
@@ -140,6 +100,7 @@ body::before {
   opacity: 0.7;
 }
 
+/* INPUT FIX OVERLAY DUPLICATE BUG */
 .input-group input {
   flex: 1;
   border: none;
@@ -147,10 +108,20 @@ body::before {
   color: #fff;
   outline: none;
   font-size: 14px;
+  position: relative;
+  z-index: 2;
 }
 
 .input-group input::placeholder {
   color: rgba(255,255,255,0.5);
+}
+
+/* FIX ICON EYE POSITION */
+.toggle-pass {
+  position: absolute;
+  right: 14px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.6);
 }
 
 /* OPTIONS */
@@ -158,7 +129,8 @@ body::before {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  margin-bottom: 18px;
+  margin: 10px 0 18px;
+  color: rgba(255,255,255,0.8);
 }
 
 .options a {
@@ -182,8 +154,15 @@ body::before {
   font-weight: 600;
   cursor: pointer;
 
-  transition: 0.25s;
+  transition: 0.2s;
   box-shadow: 0 8px 25px rgba(59,130,246,0.5);
+  margin-top: 6px;
+}
+
+/* FIX duplicate button effect visually */
+.btn-login + .btn-login {
+  margin-top: 10px;
+  opacity: 0.95;
 }
 
 .btn-login:hover {
@@ -192,7 +171,7 @@ body::before {
 }
 
 .btn-login:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* REGISTER */
@@ -208,22 +187,25 @@ body::before {
 
 /* STATS */
 .stats {
-  margin-top: 20px;
+  margin-top: 18px;
   font-size: 12px;
   display: flex;
   justify-content: space-between;
   opacity: 0.75;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* MOBILE */
 @media (max-width: 500px) {
   .login-card {
-    width: 90%;
+    width: 92%;
     padding: 25px;
   }
 
-  .header {
-    display: none;
+  .stats {
+    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -255,7 +237,6 @@ body::before {
 
 .home-btn:hover {
   transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(59,130,246,0.7);
 }
 
 .home-btn:active {
