@@ -181,6 +181,69 @@ function deleteCV(index){
 }
 
 </script>
+<script>
+function renderCV() {
 
+    const savedCVs = JSON.parse(localStorage.getItem("savedCVs")) || [];
+    const cvList = document.getElementById("cvList");
+
+    if (savedCVs.length === 0) {
+        cvList.innerHTML = `
+            <div class="empty-box">
+                <i class="fa-solid fa-folder-open"></i>
+                <h2>Chưa có CV nào</h2>
+                <p>Hãy tạo CV để hiển thị tại đây</p>
+            </div>
+        `;
+        return;
+    }
+
+    cvList.innerHTML = savedCVs.map((cv, index) => `
+        <div class="cv-card">
+
+            <div class="cv-top">
+
+                <div class="cv-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+
+                <div>
+                    <h2>${cv.template}</h2>
+                    <span>${cv.createdAt}</span>
+                </div>
+
+            </div>
+
+            <div class="cv-content">
+
+                <p><strong>Họ tên:</strong> ${cv.fullName}</p>
+                <p><strong>Vị trí:</strong> ${cv.position}</p>
+                <p><strong>Liên hệ:</strong> ${cv.contact}</p>
+                <p><strong>Học vấn:</strong> ${cv.education}</p>
+                <p><strong>Kinh nghiệm:</strong> ${cv.experience}</p>
+                <p><strong>Kỹ năng:</strong> ${cv.skills}</p>
+
+                ${cv.avatar ? `<img src="${cv.avatar}" style="width:100px;border-radius:8px;">` : ""}
+
+            </div>
+
+            <div class="cv-actions">
+
+                <button class="btn-delete" onclick="deleteCV(${index})">
+                    <i class="fa-solid fa-trash"></i> Xóa CV
+                </button>
+
+            </div>
+
+        </div>
+    `).join("");
+}
+
+renderCV();
+
+
+
+
+</script>
 </body>
 </html>

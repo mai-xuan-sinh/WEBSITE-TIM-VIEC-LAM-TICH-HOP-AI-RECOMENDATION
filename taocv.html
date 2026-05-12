@@ -183,21 +183,13 @@
 
                 <p>
 
-                    Tạo CV online nhanh chóng với hơn 12 mẫu CV hiện đại,
+                    Tạo CV online nhanh chóng với những mẫu CV hiện đại,
                     giao diện đẹp mắt, phù hợp cho sinh viên, fresher,
                     designer, developer và corporate.
 
                 </p>
 
                 <div class="hero-btns">
-
-                    <button class="btn-white">
-
-                        <i class="fa-solid fa-layer-group"></i>
-
-                        Xem mẫu CV
-
-                    </button>
 
                     <a href="huongdan-cv.html"
                        class="btn-glass">
@@ -255,7 +247,7 @@
                         <div>
 
                             <h4>
-                                Võ Nguyên Hên
+                                Trần Tiển Thắng
                             </h4>
 
                             <p>
@@ -384,9 +376,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv1')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -416,9 +409,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv2')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -454,9 +448,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv3')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -486,9 +481,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv4')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -518,9 +514,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv5')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -556,9 +553,10 @@
 
                         </div>
 
-                        <button class="btn-use-template">
-                            Dùng mẫu
-                        </button>
+                       <button class="btn-use-template"
+        onclick="openEditor('cv6')">
+    Dùng mẫu
+</button>
 
                     </div>
 
@@ -665,6 +663,91 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <script src="js/auth.js"></script>
 <script src="floating.js"></script>
+<div id="cvModal" class="cv-modal">
 
+    <div class="cv-modal-content">
+
+        <h2>Nhập thông tin CV</h2>
+
+        <input id="cvName" placeholder="Họ tên">
+        <input id="cvJob" placeholder="Vị trí ứng tuyển">
+        <input id="cvEmail" placeholder="Email">
+        <input id="cvPhone" placeholder="Số điện thoại">
+
+        <!-- 🔥 THÊM UP ẢNH -->
+        <input type="file" id="cvAvatar" accept="image/*">
+
+        <button onclick="saveCV()">Hoàn thành CV</button>
+        <button onclick="closeCVForm()">Đóng</button>
+
+    </div>
+
+</div>
+<script>
+
+let selectedCV = null;
+let avatarBase64 = "";
+
+// mở form
+function openCVForm(cvId) {
+    selectedCV = cvId;
+    document.getElementById("cvModal").style.display = "flex";
+}
+
+// đóng form
+function closeCVForm() {
+    document.getElementById("cvModal").style.display = "none";
+}
+
+// 🔥 xử lý upload ảnh
+document.getElementById("cvAvatar").addEventListener("change", function (e) {
+
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        avatarBase64 = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+// lưu CV
+function saveCV() {
+
+    const name = document.getElementById("cvName").value;
+    const job = document.getElementById("cvJob").value;
+    const email = document.getElementById("cvEmail").value;
+    const phone = document.getElementById("cvPhone").value;
+
+    const cvData = {
+        template: selectedCV,
+        name,
+        job,
+        email,
+        phone,
+        avatar: avatarBase64,
+        time: new Date().toLocaleString()
+    };
+
+    let list = JSON.parse(localStorage.getItem("cvList")) || [];
+
+    list.push(cvData);
+
+    localStorage.setItem("cvList", JSON.stringify(list));
+
+    alert("Tạo CV thành công!");
+
+    closeCVForm();
+}
+
+</script>
+<script>
+function openEditor(template) {
+    window.location.href = "editorcv.html?template=" + template;
+}
+</script>
 </body>
 </html>
