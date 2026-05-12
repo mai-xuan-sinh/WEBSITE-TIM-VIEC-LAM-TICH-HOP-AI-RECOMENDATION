@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
-        /* Thêm CSS cho ảnh logo */
         .comp-logo {
             width: 55px;
             height: 55px;
@@ -24,13 +23,11 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-
         .comp-logo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .nav-links a.active-link {
             color: #0ea5e9 !important;
             position: relative;
@@ -63,6 +60,7 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            cursor: pointer;
         }
         .logout-btn {
             background: #ef4444;
@@ -78,7 +76,6 @@
 
 <body>
 
-    <!-- HEADER -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo-area">
@@ -99,25 +96,16 @@
                     <a href="login.html">Đăng nhập</a>
                     <a href="register.html">Đăng ký</a>
                 </div>
-                    <div id="userBox">
-                    <a href="profile.html" class="user-info">
-                    <i class="fas fa-user-circle avatar-icon"></i>
-                    <span class="username">Tên người dùng</span>
-                    </a>
-                </div>
+                <div id="userBox"></div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN -->
     <main class="container content-wrapper">
-
-        <!-- BREADCRUMB -->
         <div class="breadcrumb">
             Trang chủ / <strong>Tất cả việc làm phổ thông</strong>
         </div>
 
-        <!-- HEADER -->
         <div class="header-section">
             <div class="title-group">
                 <h1>Tất cả việc làm phổ thông</h1>
@@ -125,16 +113,12 @@
             </div>
         </div>
 
-        <!-- SEARCH -->
         <div class="search-bar">
-            <!-- SEARCH INPUT -->
             <div class="search-item autocomplete-wrapper">
                 <i class="fas fa-briefcase"></i>
                 <input type="text" id="skillInput" placeholder="Vị trí, kỹ năng, công ty..." autocomplete="off">
                 <div id="suggestionsList" class="suggestions-dropdown"></div>
             </div>
-
-            <!-- DISTRICT -->
             <div class="search-item" id="districtSelectWrapper">
                 <i class="fas fa-map-marker-alt"></i>
                 <select id="districtSelect">
@@ -147,24 +131,17 @@
                     <option value="Cẩm Lệ">Quận Cẩm Lệ</option>
                 </select>
             </div>
-
-            <!-- BUTTON -->
             <button class="search-btn" id="searchBtn">
                 Tìm kiếm <i class="fas fa-search"></i>
             </button>
         </div>
 
-        <!-- TAG -->
         <div class="search-suggestions">
             Gợi ý: <text>React</text>, <text>Node.js</text>, <text>Frontend</text>, <text>Backend</text>
         </div>
 
-        <!-- FIELD -->
         <div id="fieldCards" class="field-cards"></div>
-
-        <!-- JOB LIST -->
         <div class="job-list" id="all-jobs-container"></div>
-
     </main>
 
     <!-- APPLY MODAL -->
@@ -186,31 +163,20 @@
                 <div class="form-group"><label>Số điện thoại</label><input type="text" id="applyPhone" required></div>
                 <div class="form-group">
                     <label>Chọn CV đã lưu</label>
-                    <select id="savedCVSelect" required><option value="">-- Chọn CV --</option></select>
+                    <select id="savedCVSelect"><option value="">-- Chọn CV --</option></select>
                 </div>
                 <div class="selected-cv-info" id="selectedCVInfo"></div>
                 <div class="form-group"><label>Giới thiệu bản thân</label><textarea id="applyMessage" rows="4" placeholder="Nhập giới thiệu ngắn..."></textarea></div>
-                <!-- CCCD -->
-<div class="form-group">
-    <label>Tải lên CCCD/CMND (Công dân Việt Nam)</label>
-    <input type="file" 
-           id="applyCCCD" 
-           accept=".jpg,.jpeg,.png,.pdf">
-    <small class="upload-note">
-        Hỗ trợ JPG, PNG hoặc PDF
-    </small>
-</div>
-
-<!-- PASSPORT -->
-<div class="form-group">
-    <label>Tải lên Hộ chiếu (Người nước ngoài)</label>
-    <input type="file" 
-           id="applyPassport" 
-           accept=".jpg,.jpeg,.png,.pdf">
-    <small class="upload-note">
-        Dành cho ứng viên nước ngoài
-    </small>
-</div>
+                <div class="form-group">
+                    <label>Tải lên CCCD/CMND (Công dân Việt Nam)</label>
+                    <input type="file" id="applyCCCD" accept=".jpg,.jpeg,.png,.pdf">
+                    <small class="upload-note">Hỗ trợ JPG, PNG hoặc PDF</small>
+                </div>
+                <div class="form-group">
+                    <label>Tải lên Hộ chiếu (Người nước ngoài)</label>
+                    <input type="file" id="applyPassport" accept=".jpg,.jpeg,.png,.pdf">
+                    <small class="upload-note">Dành cho ứng viên nước ngoài</small>
+                </div>
                 <button type="submit" class="submit-apply-btn"><i class="fas fa-paper-plane"></i> Gửi ứng tuyển</button>
             </form>
         </div>
@@ -225,26 +191,7 @@
             const searchBtn = document.getElementById("searchBtn");
             const suggestionsList = document.getElementById("suggestionsList");
 
-            // =============================
-            // USER LOGIN
-            // =============================
-            const userBox = document.getElementById("userBox");
-            const authButtons = document.getElementById("authButtons");
-            const user = JSON.parse(localStorage.getItem("currentUser"));
-
-            if (user) {
-                authButtons.style.display = "none";
-                userBox.innerHTML = `
-                    <a href="profile.html" class="user-profile">
-                        <i class="fas fa-user-circle"></i>
-                        <span>${user.name || "Tài khoản"}</span>
-                    </a>
-                `;
-            }
-
-            // =============================
-            // RENDER JOB
-            // =============================
+            // ==================== RENDER JOBS ====================
             function renderJobs(jobs) {
                 if (!container) return;
                 if (jobs.length === 0) {
@@ -279,9 +226,7 @@
                 document.querySelector(".results-count").textContent = `Hiển thị ${jobs.length} việc làm`;
             }
 
-            // =============================
-            // FIELD CARD
-            // =============================
+            // ==================== FIELD CARDS ====================
             function renderFieldCards() {
                 const fieldContainer = document.getElementById("fieldCards");
                 if (!fieldContainer) return;
@@ -290,15 +235,12 @@
                 fieldContainer.innerHTML = Object.entries(counts).map(([field, total]) => `<div class="field-card" data-field="${field}"><h3>${field}</h3><p>${total} việc làm</p></div>`).join("");
                 document.querySelectorAll(".field-card").forEach(card => {
                     card.addEventListener("click", () => {
-                        const field = card.dataset.field;
-                        renderJobs(allJobs.filter(job => job.field === field));
+                        renderJobs(allJobs.filter(job => job.field === card.dataset.field));
                     });
                 });
             }
 
-            // =============================
-            // SEARCH FUNCTION
-            // =============================
+            // ==================== SEARCH ====================
             function searchJobs() {
                 const keyword = skillInput.value.toLowerCase().trim();
                 const district = districtSelect.value.toLowerCase().trim();
@@ -310,9 +252,7 @@
                 renderJobs(filtered);
             }
 
-            // =============================
-            // AUTO COMPLETE
-            // =============================
+            // ==================== AUTOCOMPLETE ====================
             skillInput.addEventListener("input", () => {
                 const value = skillInput.value.toLowerCase().trim();
                 if (!value) { suggestionsList.innerHTML = ""; return; }
@@ -333,82 +273,313 @@
                 });
             });
 
-            // =============================
-            // EVENTS
-            // =============================
             searchBtn.addEventListener("click", searchJobs);
             skillInput.addEventListener("keyup", (e) => { if (e.key === "Enter") searchJobs(); });
             districtSelect.addEventListener("change", searchJobs);
 
-            // =============================
-            // GLOBAL FUNCTIONS
-            // =============================
             window.goToJobDetail = function(id) { window.location.href = `job-detail.html?id=${id}`; };
             window.viewDetail = function(event, id) { event.stopPropagation(); window.location.href = `job-detail.html?id=${id}`; };
 
-            // =============================
-            // APPLY MODAL
-            // =============================
-            const applyModal = document.getElementById("applyModal");
-            const closeApply = document.getElementById("closeApply");
-            const applyForm = document.getElementById("applyForm");
-            const savedCVSelect = document.getElementById("savedCVSelect");
-            const selectedCVInfo = document.getElementById("selectedCVInfo");
-            const savedCVs = JSON.parse(localStorage.getItem("savedCVs")) || [];
+            // ==================== HÀM ỨNG TUYỂN CHÍNH ====================
+            function submitApplication(jobId, jobTitle, company, location, salary, cvData, cccdFileName, passportFileName) {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (!currentUser) {
+                    alert('Vui lòng đăng nhập để ứng tuyển!');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                
+                const applicationId = Date.now();
+                const today = new Date();
+                const dateDisplay = today.toLocaleDateString('vi-VN');
+                
+                // Tạo application object - LƯU Ý: dùng userEmail để filter
+                const application = {
+                    id: applicationId,
+                    jobId: jobId,
+                    jobTitle: jobTitle,
+                    company: company,
+                    location: location,
+                    salary: salary,
+                    userEmail: currentUser.email,
+                    candidateEmail: currentUser.email,
+                    userName: cvData.fullName || currentUser.name || currentUser.fullname || 'Ứng viên',
+                    candidateName: cvData.fullName || currentUser.name || currentUser.fullname || 'Ứng viên',
+                    userPhone: cvData.phone || currentUser.phone || '',
+                    phone: cvData.phone || currentUser.phone || '',
+                    skills: cvData.skills || '',
+                    experience: cvData.experience || '',
+                    education: cvData.education || '',
+                    intro: cvData.intro || '',
+                    cccdFileName: cccdFileName,
+                    passportFileName: passportFileName,
+                    date: dateDisplay,
+                    fullDate: today.toISOString(),
+                    status: 'pending'
+                };
+                
+                // Lưu vào applications
+                let applications = JSON.parse(localStorage.getItem('applications')) || [];
+                applications.push(application);
+                localStorage.setItem('applications', JSON.stringify(applications));
+                
+                // Lưu vào hr_candidates
+                let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+                
+                // Kiểm tra trùng lặp
+                const existingIndex = hrCandidates.findIndex(c => 
+                    c.jobId === jobId && (c.email === currentUser.email || c.candidateEmail === currentUser.email)
+                );
+                
+                if (existingIndex === -1) {
+                    const newCandidate = {
+                        id: applicationId,
+                        name: application.userName,
+                        email: currentUser.email,
+                        candidateEmail: currentUser.email,
+                        phone: application.userPhone,
+                        position: jobTitle,
+                        company: company,
+                        jobId: jobId,
+                        skills: cvData.skills ? (typeof cvData.skills === 'string' ? cvData.skills.split(/[,\n]+/).map(s => s.trim()) : cvData.skills) : [],
+                        experience: cvData.experience || '',
+                        education: cvData.education || '',
+                        address: cvData.address || '',
+                        intro: cvData.intro || '',
+                        date: dateDisplay,
+                        fullDate: today.toISOString(),
+                        status: 'pending',
+                        cvData: cvData
+                    };
+                    hrCandidates.push(newCandidate);
+                    localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
+                }
+                
+                // Tạo thông báo cho HR
+                let notifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+                notifications.unshift({
+                    id: Date.now(),
+                    title: '📝 Ứng viên mới',
+                    content: `${application.userName} đã ứng tuyển vị trí "${jobTitle}" tại ${company}`,
+                    type: 'application',
+                    time: 'Vừa xong',
+                    read: false,
+                    applicationId: applicationId,
+                    jobId: jobId
+                });
+                if (notifications.length > 50) notifications.pop();
+                localStorage.setItem('hr_notifications', JSON.stringify(notifications));
+                
+                console.log('✅ Đã lưu application:', application);
+                return true;
+            }
 
-            savedCVs.forEach((cv, index) => { savedCVSelect.innerHTML += `<option value="${index}">${cv.fullName || "CV"} - ${cv.position || "Chưa có vị trí"}</option>`; });
-            savedCVSelect.addEventListener("change", () => {
-                const index = savedCVSelect.value;
-                if (index === "") { selectedCVInfo.style.display = "none"; return; }
-                const cv = savedCVs[index];
-                selectedCVInfo.style.display = "block";
-                selectedCVInfo.innerHTML = `<p><strong>Họ tên:</strong> ${cv.fullName}</p><p><strong>Vị trí:</strong> ${cv.position}</p><p><strong>Email:</strong> ${cv.email}</p><p><strong>SĐT:</strong> ${cv.phone}</p>`;
-            });
-
-            window.applyJob = function(event, id) {
+            // ==================== MỞ MODAL ỨNG TUYỂN ====================
+            window.applyJob = function(event, jobId) {
                 event.stopPropagation();
-                const job = allJobs.find(item => item.id === id);
+                
+                const job = allJobs.find(j => j.id == jobId);
                 if (!job) return;
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (!currentUser) {
+                    alert('Vui lòng đăng nhập để ứng tuyển!');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Cập nhật modal
                 document.getElementById("applyJobTitle").textContent = job.title;
                 document.getElementById("applyCompany").textContent = job.company;
-                document.getElementById("applyLocation").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location}`;
-                document.getElementById("applySalary").innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary}`;
-                applyModal.classList.add("active");
+                document.getElementById("applyLocation").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location || job.district || 'Đà Nẵng'}`;
+                document.getElementById("applySalary").innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary || 'Thỏa thuận'}`;
+                
+                // Tự động điền thông tin user
+                document.getElementById("applyName").value = currentUser.name || currentUser.fullname || '';
+                document.getElementById("applyEmail").value = currentUser.email || '';
+                document.getElementById("applyPhone").value = currentUser.phone || '';
+                document.getElementById("applyMessage").value = '';
+                
+                // Load CV đã lưu
+                const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                const cvSelect = document.getElementById("savedCVSelect");
+                cvSelect.innerHTML = '<option value="">-- Chọn CV đã lưu --</option>';
+                
+                savedCVs.forEach((cv, index) => {
+                    cvSelect.innerHTML += `<option value="${index}">${cv.fullName || 'CV không tên'} - ${cv.position || 'Chưa có vị trí'}</option>`;
+                });
+                
+                // Reset file inputs
+                document.getElementById("applyCCCD").value = '';
+                document.getElementById("applyPassport").value = '';
+                document.getElementById("selectedCVInfo").style.display = 'none';
+                
+                // Lưu job hiện tại
+                window.currentApplyingJob = job;
+                
+                // Hiển thị modal
+                document.getElementById("applyModal").classList.add("active");
             };
-
-            closeApply.addEventListener("click", () => applyModal.classList.remove("active"));
-            applyModal.addEventListener("click", (e) => { if (e.target === applyModal) applyModal.classList.remove("active"); });
-            applyForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const name = document.getElementById("applyName").value;
-                const email = document.getElementById("applyEmail").value;
-                const selectedCV = savedCVSelect.value;
-                alert(`Ứng tuyển thành công!\nHọ tên: ${name}\nEmail: ${email}\nCV đã chọn: ${savedCVs[selectedCV]?.fullName || "Không có"}`);
-                applyForm.reset();
-                applyModal.classList.remove("active");
+            
+            // ==================== HIỂN THỊ THÔNG TIN CV KHI CHỌN ====================
+            document.getElementById("savedCVSelect")?.addEventListener("change", function() {
+                const index = this.value;
+                const infoDiv = document.getElementById("selectedCVInfo");
+                
+                if (index === "") {
+                    infoDiv.style.display = "none";
+                    return;
+                }
+                
+                const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                const cv = savedCVs[index];
+                
+                if (cv) {
+                    infoDiv.style.display = "block";
+                    infoDiv.innerHTML = `
+                        <p><strong>Họ tên:</strong> ${cv.fullName || '---'}</p>
+                        <p><strong>Vị trí:</strong> ${cv.position || '---'}</p>
+                        <p><strong>Kỹ năng:</strong> ${cv.skills || '---'}</p>
+                        <p><strong>Kinh nghiệm:</strong> ${cv.experience || '---'}</p>
+                    `;
+                    
+                    if (cv.fullName) document.getElementById("applyName").value = cv.fullName;
+                    if (cv.phone) document.getElementById("applyPhone").value = cv.phone;
+                    if (cv.intro && !document.getElementById("applyMessage").value) {
+                        document.getElementById("applyMessage").value = cv.intro;
+                    }
+                }
             });
-
-            // =============================
-            // INIT
-            // =============================
+            
+            // ==================== XỬ LÝ SUBMIT ỨNG TUYỂN ====================
+            document.getElementById("applyForm")?.addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const job = window.currentApplyingJob;
+                if (!job) {
+                    alert("Không tìm thấy thông tin công việc!");
+                    return;
+                }
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    alert("Vui lòng đăng nhập!");
+                    window.location.href = "login.html";
+                    return;
+                }
+                
+                // Lấy dữ liệu từ form
+                const name = document.getElementById("applyName").value.trim();
+                const email = document.getElementById("applyEmail").value.trim();
+                const phone = document.getElementById("applyPhone").value.trim();
+                const message = document.getElementById("applyMessage").value.trim();
+                
+                // Xử lý CV đã chọn
+                const selectedCVIndex = document.getElementById("savedCVSelect").value;
+                const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                let cvData = {};
+                
+                if (selectedCVIndex !== "") {
+                    const selectedCV = savedCVs[selectedCVIndex];
+                    cvData = {
+                        fullName: selectedCV.fullName || name,
+                        phone: selectedCV.phone || phone,
+                        skills: selectedCV.skills || '',
+                        experience: selectedCV.experience || '',
+                        education: selectedCV.education || '',
+                        address: selectedCV.address || '',
+                        intro: message || selectedCV.intro || ''
+                    };
+                } else {
+                    cvData = {
+                        fullName: name,
+                        phone: phone,
+                        skills: '',
+                        experience: '',
+                        education: '',
+                        address: '',
+                        intro: message
+                    };
+                }
+                
+                // Xử lý file
+                const cccdFile = document.getElementById("applyCCCD").files[0];
+                const passportFile = document.getElementById("applyPassport").files[0];
+                
+                let cccdFileName = '';
+                let passportFileName = '';
+                
+                if (cccdFile) cccdFileName = cccdFile.name;
+                if (passportFile) passportFileName = passportFile.name;
+                
+                // Kiểm tra file giấy tờ
+                if (!cccdFile && !passportFile) {
+                    alert("Vui lòng tải lên CCCD (Công dân Việt Nam) hoặc Hộ chiếu (Người nước ngoài)!");
+                    return;
+                }
+                
+                // Gửi ứng tuyển
+                const success = submitApplication(
+                    job.id,
+                    job.title,
+                    job.company,
+                    job.location || job.district,
+                    job.salary,
+                    cvData,
+                    cccdFileName,
+                    passportFileName
+                );
+                
+                if (success) {
+                    alert(`✅ Ứng tuyển thành công!\n\nCông việc: ${job.title}\nCông ty: ${job.company}\n\nHồ sơ của bạn đã được gửi đến nhà tuyển dụng.`);
+                    
+                    // Reset form và đóng modal
+                    document.getElementById("applyForm").reset();
+                    document.getElementById("selectedCVInfo").style.display = "none";
+                    document.getElementById("applyModal").classList.remove("active");
+                    
+                    // Reset current job
+                    window.currentApplyingJob = null;
+                } else {
+                    alert("❌ Có lỗi xảy ra, vui lòng thử lại!");
+                }
+            });
+            
+            // ==================== ĐÓNG MODAL ====================
+            document.getElementById("closeApply")?.addEventListener("click", () => {
+                document.getElementById("applyModal").classList.remove("active");
+            });
+            
+            document.getElementById("applyModal")?.addEventListener("click", (e) => {
+                if (e.target === document.getElementById("applyModal")) {
+                    document.getElementById("applyModal").classList.remove("active");
+                }
+            });
+            
+            // ==================== KHỞI TẠO ====================
             renderJobs(allJobs);
             renderFieldCards();
         });
     </script>
 
-    <!-- AUTH SCRIPT ĐỒNG BỘ -->
     <script>
-        // 1. Khai báo hàm chuyển hướng toàn cục
-        window.goToProfile = function() {
-            window.location.href = 'profile.html';
+        window.goToProfile = function() { window.location.href = 'profile.html'; };
+        window.handleLogout = function() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.reload();
         };
-
+        
         function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
             if (!authDiv || !userDiv) return;
             
-            let currentUser = localStorage.getItem('currentUser');
+            const currentUser = localStorage.getItem('currentUser');
             let isLoggedIn = false;
             let userName = "";
             
@@ -428,15 +599,10 @@
             if (isLoggedIn) {
                 authDiv.style.display = 'none';
                 userDiv.style.display = 'block';
-                // Thêm onclick="goToProfile()" và style cursor để nhấn được
                 userDiv.innerHTML = `
                     <div class="user-info">
-                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
-                            ${userName.charAt(0).toUpperCase()}
-                        </div>
-                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
-                            ${userName}
-                        </span>
+                        <div class="user-avatar" onclick="goToProfile()">${userName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">${userName}</span>
                         <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
                     </div>
                 `;
@@ -447,226 +613,8 @@
             }
         }
         
-        function handleLogout() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('rememberUser');
-            window.location.reload();
-        }
-        
         document.addEventListener('DOMContentLoaded', updateAuthUI);
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'currentUser' || e.key === 'isLoggedIn') updateAuthUI();
-        });
-
-
-        // ==================== HÀM ỨNG TUYỂN (GỬI VÀO HR) ====================
-        function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-        if (!currentUser) {
-        alert('Vui lòng đăng nhập để ứng tuyển!');
-        window.location.href = 'login.html';
-        return false;
-        }
-    
-        // Tạo đơn ứng tuyển
-        const application = {
-        id: Date.now(),
-        jobId: jobId,
-        jobTitle: jobTitle,
-        company: company,
-        location: location,
-        salary: salary,
-        candidateId: currentUser.id || Date.now(),
-        candidateName: currentUser.name || currentUser.fullname || 'Ứng viên',
-        candidateEmail: currentUser.email,
-        candidatePhone: currentUser.phone || '',
-        candidateSkills: cvData?.skills || [],
-        candidateExperience: cvData?.experience || '',
-        candidateEducation: cvData?.education || '',
-        cvData: cvData,
-        date: new Date().toISOString(),
-        dateDisplay: new Date().toLocaleDateString('vi-VN'),
-        status: 'pending' // pending, approved, rejected
-        };
-    
-        // Lưu vào localStorage chung
-        let applications = JSON.parse(localStorage.getItem('applications')) || [];
-     applications.push(application);
-        localStorage.setItem('applications', JSON.stringify(applications));
-    
-        // Đồng thời lưu vào HR candidates
-        let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
-    
-        // Kiểm tra xem đã ứng tuyển chưa
-        const existingIndex = hrCandidates.findIndex(c => c.jobId === jobId && c.candidateEmail === currentUser.email);
-    
-        if (existingIndex === -1) {
-        const newCandidate = {
-            id: application.id,
-            name: application.candidateName,
-            email: application.candidateEmail,
-            phone: application.candidatePhone,
-            position: jobTitle,
-            company: company,
-            jobId: jobId,
-            skills: cvData?.skills || [],
-            experience: cvData?.experience || '',
-            education: cvData?.education || '',
-            address: cvData?.address || '',
-            intro: cvData?.intro || '',
-            date: application.dateDisplay,
-            fullDate: application.date,
-            status: 'pending',
-            cvData: cvData
-        };
-        hrCandidates.push(newCandidate);
-        localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
-        }
-    
-        // Tạo thông báo cho HR
-        let notifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
-        notifications.unshift({
-        id: Date.now(),
-        title: 'Ứng viên mới',
-        content: `${application.candidateName} đã ứng tuyển vị trí ${jobTitle} tại ${company}`,
-        type: 'application',
-        time: 'Vừa xong',
-        read: false,
-        applicationId: application.id
-        });
-        if (notifications.length > 30) notifications.pop();
-        localStorage.setItem('hr_notifications', JSON.stringify(notifications));
-    
-        return true;
-}
-
-// ==================== CẬP NHẬT HÀM APPLY JOB ====================
-window.applyJob = function(event, jobId) {
-    event.stopPropagation();
-    
-    const job = allJobs.find(j => j.id == jobId);
-    if (!job) return;
-    
-    // Lấy CV đã lưu của ứng viên
-    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    if (!currentUser) {
-        alert('Vui lòng đăng nhập để ứng tuyển!');
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    // Hiển thị modal chọn CV
-    const modal = document.getElementById('applyModal');
-    const applyJobTitle = document.getElementById('applyJobTitle');
-    const applyCompany = document.getElementById('applyCompany');
-    const applyLocation = document.getElementById('applyLocation');
-    const applySalary = document.getElementById('applySalary');
-    const savedCVSelect = document.getElementById('savedCVSelect');
-    
-    if (applyJobTitle) applyJobTitle.textContent = job.title;
-    if (applyCompany) applyCompany.textContent = job.company;
-    if (applyLocation) applyLocation.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location || job.district || 'Đà Nẵng'}`;
-    if (applySalary) applySalary.innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary || 'Thỏa thuận'}`;
-    
-    // Load danh sách CV của ứng viên
-    if (savedCVSelect) {
-        const userCVs = savedCVs.filter(cv => cv.userEmail === currentUser.email || !cv.userEmail);
-        savedCVSelect.innerHTML = '<option value="">-- Chọn CV đã lưu --</option>';
-        userCVs.forEach((cv, index) => {
-            savedCVSelect.innerHTML += `<option value="${index}">${cv.fullName || 'CV'} - ${cv.position || 'Chưa có vị trí'}</option>`;
-        });
-    }
-    
-    if (modal) modal.classList.add('active');
-    
-    // Lưu job hiện tại để xử lý khi submit
-    window.currentApplyingJob = job;
-};
-
-// Xử lý submit ứng tuyển
-document.getElementById('applyForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const job = window.currentApplyingJob;
-    if (!job) return;
-
-    const selectedCVIndex = document.getElementById('savedCVSelect').value;
-    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-    const cvData = selectedCVIndex !== '' ? savedCVs[selectedCVIndex] : null;
-
-    const name = document.getElementById('applyName').value;
-    const email = document.getElementById('applyEmail').value;
-    const phone = document.getElementById('applyPhone').value;
-    const message = document.getElementById('applyMessage').value;
-
-    // FILE CCCD + PASSPORT
-    const cccdFile = document.getElementById('applyCCCD').files[0];
-    const passportFile = document.getElementById('applyPassport').files[0];
-
-    // Bắt buộc phải có 1 trong 2
-    if (!cccdFile && !passportFile) {
-        alert('Vui lòng tải lên CCCD hoặc Hộ chiếu!');
-        return;
-    }
-
-    const applicationData = {
-        skills: cvData?.skills ? cvData.skills.split(/[,\n]+/).map(s => s.trim()) : [],
-        experience: cvData?.experience || '',
-        education: cvData?.education || '',
-        address: cvData?.address || '',
-        intro: message || cvData?.intro || '',
-        fullName: name,
-        email: email,
-        phone: phone,
-
-        // Lưu tên file
-        cccdFileName: cccdFile ? cccdFile.name : '',
-        passportFileName: passportFile ? passportFile.name : ''
-    };
-
-    const success = submitApplication(
-        job.id,
-        job.title,
-        job.company,
-        job.location || job.district,
-        job.salary,
-        applicationData
-    );
-
-    if (success) {
-        alert('✅ Ứng tuyển thành công!');
-
-        document.getElementById('applyModal').classList.remove('active');
-
-        this.reset();
-
-        document.getElementById('selectedCVInfo').style.display = 'none';
-    }
-});
-
-        // ==================== STORAGE LISTENER ĐỂ ĐỒNG BỘ TRẠNG THÁI ====================
-window.addEventListener('storage', function(e) {
-    if (e.key === 'applications' || e.key === 'hr_candidates') {
-        console.log('🔄 Phát hiện thay đổi ứng tuyển, cập nhật UI...');
-        // Có thể hiển thị thông báo nếu cần
-        const notifyDiv = document.createElement('div');
-        notifyDiv.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:12px 20px; border-radius:8px; z-index:9999; animation:fadeOut 3s ease';
-        notifyDiv.innerHTML = '<i class="fas fa-sync-alt"></i> Có cập nhật trạng thái hồ sơ!';
-        document.body.appendChild(notifyDiv);
-        setTimeout(() => notifyDiv.remove(), 3000);
-    }
-});
-
-// Thêm CSS cho animation fadeOut
-const style = document.createElement('style');
-style.textContent = `@keyframes fadeOut { 0% { opacity: 1; transform: translateX(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateX(100px); } }`;
-document.head.appendChild(style);
-
+        window.addEventListener('storage', updateAuthUI);
     </script>
     <script src="floating.js"></script>
 </body>

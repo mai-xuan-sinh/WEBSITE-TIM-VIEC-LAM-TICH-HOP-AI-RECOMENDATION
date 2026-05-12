@@ -132,427 +132,465 @@
     </div>
 
     <script src="jobs-data.js"></script>
-    <script src="ai-recommend.js"></script>
-    <script>
-        // ==================== BIẾN TOÀN CỤC ====================
-        let currentUser = null;
-        let users = [];
-        let savedCVs = [];
-        let applications = [];
-        let savedJobs = [];
+<script src="ai-recommend.js"></script>
+<script>
+    // ==================== BIẾN TOÀN CỤC ====================
+    let currentUser = null;
+    let users = [];
+    let savedCVs = [];
+    let applications = [];
+    let savedJobs = [];
 
-        // ==================== LẤY THÔNG TIN USER ====================
-        function loadUserData() {
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            users = JSON.parse(localStorage.getItem('users')) || [];
-            savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-            applications = JSON.parse(localStorage.getItem('applications')) || [];
-            savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+    // ==================== LẤY THÔNG TIN USER ====================
+    function loadUserData() {
+        currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        users = JSON.parse(localStorage.getItem('users')) || [];
+        savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+        applications = JSON.parse(localStorage.getItem('applications')) || [];
+        savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
 
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const fullUser = users.find(u => u.email === currentUser.email) || currentUser;
-
-            // Hiển thị tên người dùng
-            const displayName = fullUser.name || fullUser.fullname || currentUser.name || currentUser.email?.split('@')[0] || 'Người dùng';
-            document.getElementById('sidebarName').innerText = displayName;
-            document.getElementById('sidebarEmail').innerText = fullUser.email;
-            document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
-            document.getElementById('email').value = fullUser.email || '';
-            document.getElementById('phone').value = fullUser.phone || '';
-            document.getElementById('address').value = fullUser.address || '';
-            document.getElementById('bio').value = fullUser.bio || '';
-            document.getElementById('skills').value = (fullUser.skills || []).join(', ');
-            document.getElementById('dob').value = fullUser.dob || '';
-            document.getElementById('experience').value = fullUser.experience || '';
-
-            const userApplications = applications.filter(app => app.userEmail === currentUser.email);
-            const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
-            document.getElementById('statsCV').innerText = savedCVs.length;
-            document.getElementById('statsApplied').innerText = userApplications.length;
-            document.getElementById('statsSaved').innerText = userSavedJobs.length;
-
-            renderCVList();
-            renderApplications();
-            renderSavedJobs();
-            renderProfileAnalysis(fullUser);
+        if (!currentUser) {
+            window.location.href = 'login.html';
+            return;
         }
 
-        // ==================== PHÂN TÍCH HỒ SƠ AI ====================
-        function renderProfileAnalysis(user) {
-            const container = document.getElementById('profileAnalysisContainer');
-            if (!container) return;
-            
-            if (typeof aiEngine !== 'undefined' && aiEngine.analyzeCandidateProfile) {
-                const analysis = aiEngine.analyzeCandidateProfile(user);
-                
-                container.innerHTML = `
-                    <div class="ai-analysis-card">
-                        <div class="analysis-header">
-                            <div class="match-circle">
-                                <div class="match-percent">${analysis.matchPercent}%</div>
-                                <div class="match-label">Độ phù hợp</div>
-                            </div>
-                            <div class="analysis-summary">
-                                <h4>Đánh giá tổng quan</h4>
-                                <p>${analysis.matchPercent >= 70 ? 'Hồ sơ của bạn rất tốt! Bạn đã sẵn sàng ứng tuyển.' : analysis.matchPercent >= 40 ? 'Hồ sơ của bạn khá ổn, hãy cập nhật thêm kỹ năng để tăng cơ hội.' : 'Hồ sơ cần được cập nhật thêm thông tin để nhận được gợi ý chính xác hơn.'}</p>
-                            </div>
-                        </div>
-                        <div class="strengths-box">
-                            <h4><i class="fas fa-check-circle"></i> Điểm mạnh</h4>
-                            <ul>${analysis.strengths.map(s => `<li>${s}</li>`).join('')}</ul>
-                        </div>
-                        <div class="weaknesses-box">
-                            <h4><i class="fas fa-exclamation-triangle"></i> Cần cải thiện</h4>
-                            <ul>${analysis.weaknesses.map(w => `<li>${w}</li>`).join('')}</ul>
-                        </div>
-                        ${analysis.missingSkills.length > 0 ? `
-                        <div class="missing-skills-box">
-                            <h4><i class="fas fa-graduation-cap"></i> Kỹ năng nên học thêm</h4>
-                            <div class="skills-tags">
-                                ${analysis.missingSkills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
-                            </div>
-                            <div class="course-suggestions">
-                                <p><i class="fas fa-lightbulb"></i> Gợi ý khóa học:</p>
-                                <ul>${analysis.recommendedCourses.map(c => `<li>📚 ${c.course} trên ${c.platform}</li>`).join('')}</ul>
-                            </div>
-                        </div>
-                        ` : ''}
-                        <div class="action-buttons-analysis">
-                            <a href="trangvieclam.html" class="btn-primary"><i class="fas fa-search"></i> Tìm việc phù hợp</a>
-                            <button onclick="scrollToProfile()" class="btn-outline"><i class="fas fa-edit"></i> Cập nhật hồ sơ</button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `<div class="analysis-error"><i class="fas fa-exclamation-circle"></i> Đang tải AI Engine...</div>`;
-            }
-        }
+        const fullUser = users.find(u => u.email === currentUser.email) || currentUser;
 
-        function scrollToProfile() {
-            document.querySelector('[data-tab="profile"]').click();
-            document.getElementById('fullName').scrollIntoView({ behavior: 'smooth' });
-        }
+        const displayName = fullUser.name || fullUser.fullname || currentUser.name || currentUser.email?.split('@')[0] || 'Người dùng';
+        document.getElementById('sidebarName').innerText = displayName;
+        document.getElementById('sidebarEmail').innerText = fullUser.email;
+        document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
+        document.getElementById('email').value = fullUser.email || '';
+        document.getElementById('phone').value = fullUser.phone || '';
+        document.getElementById('address').value = fullUser.address || '';
+        document.getElementById('bio').value = fullUser.bio || '';
+        document.getElementById('skills').value = (fullUser.skills || []).join(', ');
+        document.getElementById('dob').value = fullUser.dob || '';
+        document.getElementById('experience').value = fullUser.experience || '';
 
-        // ==================== RENDER CV LIST ====================
-        function renderCVList() {
-            const container = document.getElementById('cvListContainer');
-            if (!container) return;
-            if (savedCVs.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Bạn chưa có CV nào. Hãy <a href="taocv.html" style="color: #0ea5e9;">tạo CV ngay</a>!</p></div>`;
-                return;
-            }
-            container.innerHTML = savedCVs.map((cv, index) => `
-                <div class="cv-item">
-                    <div class="cv-info"><h4>${cv.template || 'CV Chuyên nghiệp'}</h4><p>${cv.fullName || 'Chưa có tên'} • ${cv.position || 'Chưa có vị trí'} • ${cv.createdAt || 'Ngày tạo: ' + new Date().toLocaleDateString()}</p></div>
-                    <div class="cv-actions"><button onclick="viewCV(${index})" title="Xem CV"><i class="fas fa-eye"></i></button><button onclick="deleteCV(${index})" class="delete-cv" title="Xóa CV"><i class="fas fa-trash"></i></button></div>
-                </div>
-            `).join('');
-        }
+        const userApplications = applications.filter(app => app.userEmail === currentUser.email || app.candidateEmail === currentUser.email);
+        const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
+        document.getElementById('statsCV').innerText = savedCVs.length;
+        document.getElementById('statsApplied').innerText = userApplications.length;
+        document.getElementById('statsSaved').innerText = userSavedJobs.length;
 
-        function viewCV(index) { 
-            const cv = savedCVs[index]; 
-            alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || 'Chưa cập nhật'}\nVị trí: ${cv.position || 'Chưa cập nhật'}\nEmail: ${cv.email || 'Chưa cập nhật'}\nSĐT: ${cv.phone || 'Chưa cập nhật'}`); 
-        }
+        renderCVList();
+        renderApplications();
+        renderSavedJobs();
+        renderProfileAnalysis(fullUser);
+    }
+
+    // ==================== PHÂN TÍCH HỒ SƠ AI ====================
+    function renderProfileAnalysis(user) {
+        const container = document.getElementById('profileAnalysisContainer');
+        if (!container) return;
         
-        function deleteCV(index) { 
-            if (confirm('Bạn có chắc muốn xóa CV này?')) { 
-                savedCVs.splice(index, 1); 
-                localStorage.setItem('savedCVs', JSON.stringify(savedCVs)); 
-                renderCVList(); 
-                document.getElementById('statsCV').innerText = savedCVs.length; 
-                showAlert('profileAlert', 'Đã xóa CV thành công!', 'success'); 
-            } 
-        }
-
-        // ==================== RENDER APPLICATIONS ====================
-        function renderApplications() {
-            const container = document.getElementById('applicationsList');
-            if (!container) return;
+        if (typeof aiEngine !== 'undefined' && aiEngine.analyzeCandidateProfile) {
+            const analysis = aiEngine.analyzeCandidateProfile(user);
             
-            // Lấy danh sách ứng tuyển và đồng bộ trạng thái với hr_candidates
-            let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
-            let updatedApplications = JSON.parse(JSON.stringify(applications));
-            
-            // Đồng bộ trạng thái từ hr_candidates
-            updatedApplications.forEach(app => {
-                const hrCandidate = hrCandidates.find(c => 
-                    (c.email === app.userEmail || c.candidateEmail === app.userEmail) && 
-                    c.jobTitle === app.jobTitle
-                );
-                if (hrCandidate && hrCandidate.status !== app.status) {
-                    app.status = hrCandidate.status;
-                }
-            });
-            
-            const userApplications = updatedApplications.filter(app => app.userEmail === currentUser.email);
-            
-            if (userApplications.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Bạn chưa ứng tuyển công việc nào.</p></div>`;
-                return;
-            }
-            
-            container.innerHTML = userApplications.map(app => `
-                <div class="application-item">
-                    <div>
-                        <h4>${app.jobTitle}</h4>
-                        <p style="font-size: 13px; color: #64748b;">${app.company} • ${app.location}</p>
+            container.innerHTML = `
+                <div class="ai-analysis-card">
+                    <div class="analysis-header">
+                        <div class="match-circle">
+                            <div class="match-percent">${analysis.matchPercent}%</div>
+                            <div class="match-label">Độ phù hợp</div>
+                        </div>
+                        <div class="analysis-summary">
+                            <h4>Đánh giá tổng quan</h4>
+                            <p>${analysis.matchPercent >= 70 ? 'Hồ sơ của bạn rất tốt! Bạn đã sẵn sàng ứng tuyển.' : analysis.matchPercent >= 40 ? 'Hồ sơ của bạn khá ổn, hãy cập nhật thêm kỹ năng để tăng cơ hội.' : 'Hồ sơ cần được cập nhật thêm thông tin để nhận được gợi ý chính xác hơn.'}</p>
+                        </div>
                     </div>
-                    <div>
-                        <span class="status-badge status-${app.status}">${getStatusText(app.status)}</span>
-                        <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date}</p>
+                    <div class="strengths-box">
+                        <h4><i class="fas fa-check-circle"></i> Điểm mạnh</h4>
+                        <ul>${analysis.strengths.map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                    <div class="weaknesses-box">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Cần cải thiện</h4>
+                        <ul>${analysis.weaknesses.map(w => `<li>${w}</li>`).join('')}</ul>
+                    </div>
+                    ${analysis.missingSkills.length > 0 ? `
+                    <div class="missing-skills-box">
+                        <h4><i class="fas fa-graduation-cap"></i> Kỹ năng nên học thêm</h4>
+                        <div class="skills-tags">
+                            ${analysis.missingSkills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                        </div>
+                        <div class="course-suggestions">
+                            <p><i class="fas fa-lightbulb"></i> Gợi ý khóa học:</p>
+                            <ul>${analysis.recommendedCourses.map(c => `<li>📚 ${c.course} trên ${c.platform}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="action-buttons-analysis">
+                        <a href="trangvieclam.html" class="btn-primary"><i class="fas fa-search"></i> Tìm việc phù hợp</a>
+                        <button onclick="scrollToProfile()" class="btn-outline"><i class="fas fa-edit"></i> Cập nhật hồ sơ</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+        } else {
+            container.innerHTML = `<div class="analysis-error"><i class="fas fa-exclamation-circle"></i> Đang tải AI Engine...</div>`;
         }
+    }
 
-        function getStatusText(status) { 
-            switch(status) { 
-                case 'pending': return 'Đang xử lý'; 
-                case 'approved': return 'Đã duyệt'; 
-                case 'rejected': return 'Từ chối'; 
-                default: return 'Đã gửi'; 
-            } 
+    function scrollToProfile() {
+        document.querySelector('[data-tab="profile"]').click();
+        document.getElementById('fullName').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ==================== RENDER CV LIST ====================
+    function renderCVList() {
+        const container = document.getElementById('cvListContainer');
+        if (!container) return;
+        if (savedCVs.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Bạn chưa có CV nào. Hãy <a href="taocv.html" style="color: #0ea5e9;">tạo CV ngay</a>!</p></div>`;
+            return;
         }
+        container.innerHTML = savedCVs.map((cv, index) => `
+            <div class="cv-item">
+                <div class="cv-info"><h4>${cv.template || 'CV Chuyên nghiệp'}</h4><p>${cv.fullName || 'Chưa có tên'} • ${cv.position || 'Chưa có vị trí'} • ${cv.createdAt || 'Ngày tạo: ' + new Date().toLocaleDateString()}</p></div>
+                <div class="cv-actions"><button onclick="viewCV(${index})" title="Xem CV"><i class="fas fa-eye"></i></button><button onclick="deleteCV(${index})" class="delete-cv" title="Xóa CV"><i class="fas fa-trash"></i></button></div>
+            </div>
+        `).join('');
+    }
 
-        // ==================== RENDER SAVED JOBS ====================
-        function renderSavedJobs() {
-            const container = document.getElementById('savedJobsList');
-            if (!container) return;
-            const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
-            if (userSavedJobs.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Bạn chưa lưu công việc nào.</p></div>`;
-                return;
-            }
-            container.innerHTML = userSavedJobs.map((job, index) => `
-                <div class="application-item">
-                    <div>
-                        <h4>${job.title}</h4>
-                        <p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p>
-                        <p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p>
-                    </div>
-                    <div class="cv-actions">
-                        <button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
-                        <button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
+    function viewCV(index) { 
+        const cv = savedCVs[index]; 
+        alert(`📄 THÔNG TIN CV\n\nHọ tên: ${cv.fullName || 'Chưa cập nhật'}\nVị trí: ${cv.position || 'Chưa cập nhật'}\nEmail: ${cv.email || 'Chưa cập nhật'}\nSĐT: ${cv.phone || 'Chưa cập nhật'}`); 
+    }
+    
+    function deleteCV(index) { 
+        if (confirm('Bạn có chắc muốn xóa CV này?')) { 
+            savedCVs.splice(index, 1); 
+            localStorage.setItem('savedCVs', JSON.stringify(savedCVs)); 
+            renderCVList(); 
+            document.getElementById('statsCV').innerText = savedCVs.length; 
+            showAlert('profileAlert', 'Đã xóa CV thành công!', 'success'); 
+        } 
+    }
 
-        function viewJobDetail(jobId) { 
-            window.location.href = `job-detail.html?id=${jobId}`; 
+    // ==================== RENDER APPLICATIONS (QUAN TRỌNG - ĐÃ SỬA) ====================
+    function renderApplications() {
+        const container = document.getElementById('applicationsList');
+        if (!container) return;
+        
+        if (!currentUser) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Vui lòng đăng nhập để xem lịch sử ứng tuyển.</p></div>`;
+            return;
         }
         
-        function removeSavedJob(index) { 
-            if (confirm('Bỏ lưu công việc này?')) { 
-                savedJobs.splice(index, 1); 
-                localStorage.setItem('savedJobs', JSON.stringify(savedJobs)); 
-                renderSavedJobs(); 
-                document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length; 
-                showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success'); 
-            } 
-        }
-
-        // ==================== UPDATE PROFILE ====================
-        function updateProfile(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('fullName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const bio = document.getElementById('bio').value.trim();
-            const skillsInput = document.getElementById('skills').value.trim();
-            const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
-            const dob = document.getElementById('dob').value;
-            const experience = document.getElementById('experience').value;
-
-            if (!fullName) { showAlert('profileAlert', 'Vui lòng nhập họ và tên!', 'error'); return; }
-
-            const userIndex = users.findIndex(u => u.email === currentUser.email);
-            if (userIndex !== -1) {
-                users[userIndex] = { ...users[userIndex], name: fullName, fullname: fullName, phone: phone, address: address, bio: bio, skills: skills, dob: dob, experience: experience };
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-            currentUser.name = fullName; 
-            currentUser.fullname = fullName; 
-            currentUser.experience = experience;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            document.getElementById('sidebarName').innerText = fullName;
-            
-            const updatedUser = users.find(u => u.email === currentUser.email) || currentUser;
-            renderProfileAnalysis(updatedUser);
-            
-            showAlert('profileAlert', 'Cập nhật thông tin thành công!', 'success');
-        }
-
-        // ==================== CHANGE PASSWORD ====================
-        function changePassword(e) {
-            e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (!currentPassword || !newPassword || !confirmPassword) { 
-                showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error'); 
-                return; 
-            }
-            if (newPassword.length < 6) { 
-                showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error'); 
-                return; 
-            }
-            if (newPassword !== confirmPassword) { 
-                showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error'); 
-                return; 
-            }
-            
-            const userIndex = users.findIndex(u => u.email === currentUser.email);
-            if (userIndex !== -1 && users[userIndex].password !== currentPassword) { 
-                showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error'); 
-                return; 
-            }
-            
-            if (userIndex !== -1) { 
-                users[userIndex].password = newPassword; 
-                localStorage.setItem('users', JSON.stringify(users)); 
-            }
-            
-            document.getElementById('securityForm').reset();
-            showAlert('securityAlert', 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', 'success');
-            setTimeout(() => { 
-                localStorage.removeItem('currentUser'); 
-                window.location.href = 'login.html'; 
-            }, 2000);
-        }
-
-        // ==================== UTILITY FUNCTIONS ====================
-        function changeAvatar() { 
-            const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User'); 
-            if (seed) { 
-                document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; 
-                showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success'); 
-            } 
-        }
+        // Lấy danh sách từ applications và hr_candidates
+        let allApplications = JSON.parse(localStorage.getItem('applications')) || [];
+        let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
         
-        function showAlert(alertId, message, type) { 
-            const alertDiv = document.getElementById(alertId); 
-            if (alertDiv) { 
-                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`; 
-                alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; 
-                setTimeout(() => { 
-                    alertDiv.className = 'alert'; 
-                    alertDiv.innerHTML = ''; 
-                }, 3000); 
-            } else { 
-                alert(message); 
-            } 
-        }
-
-        // ==================== INIT TABS ====================
-        function initTabs() {
-            const menuItems = document.querySelectorAll('.sidebar-menu li');
-            const tabPanes = document.querySelectorAll('.tab-pane');
-            menuItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    const tabId = item.getAttribute('data-tab');
-                    tabPanes.forEach(pane => pane.classList.remove('active'));
-                    document.getElementById(`tab-${tabId}`).classList.add('active');
-                });
-            });
-        }
-
-        // ==================== AUTH UI ====================
-        function updateAuthUI() {
-            const authDiv = document.getElementById('authButtons');
-            const userDiv = document.getElementById('userBox');
-            if (!authDiv || !userDiv) return;
-            
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            
-            if (user && user.email) {
-                const displayName = user.name || user.fullname || user.email.split('@')[0];
-                authDiv.style.display = 'none';
-                userDiv.style.display = 'block';
-                userDiv.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
-                            ${displayName.charAt(0).toUpperCase()}
-                        </div>
-                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
-                            ${displayName}
-                        </span>
-                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-                    </div>`;
-            } else {
-                authDiv.style.display = 'flex';
-                userDiv.style.display = 'none';
-                userDiv.innerHTML = '';
+        // Lọc theo user hiện tại - QUAN TRỌNG: dùng userEmail hoặc candidateEmail
+        let userApplications = allApplications.filter(app => 
+            app.userEmail === currentUser.email || 
+            app.candidateEmail === currentUser.email
+        );
+        
+        // Đồng bộ trạng thái từ hr_candidates
+        userApplications = userApplications.map(app => {
+            const hrMatch = hrCandidates.find(c => 
+                (c.email === currentUser.email || c.candidateEmail === currentUser.email) && 
+                c.jobId === app.jobId &&
+                c.position === app.jobTitle
+            );
+            if (hrMatch && hrMatch.status) {
+                app.status = hrMatch.status;
             }
-        }
-        
-        function goToProfile() {
-            window.location.href = 'profile.html';
-        }
-        
-        function handleLogout() { 
-            localStorage.removeItem('currentUser'); 
-            window.location.href = 'index.html'; 
-        }
-
-        // ==================== STORAGE LISTENER (ĐỒNG BỘ VỚI HR) ====================
-        function initStorageListener() {
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'applications' || e.key === 'hr_candidates') {
-                    console.log('🔄 Phát hiện thay đổi dữ liệu, đang cập nhật...');
-                    applications = JSON.parse(localStorage.getItem('applications')) || [];
-                    renderApplications();
-                }
-                if (e.key === 'savedJobs') {
-                    savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
-                    renderSavedJobs();
-                    document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser?.email).length;
-                }
-                if (e.key === 'savedCVs') {
-                    savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-                    renderCVList();
-                    document.getElementById('statsCV').innerText = savedCVs.length;
-                }
-                if (e.key === 'currentUser') {
-                    updateAuthUI();
-                    loadUserData();
-                }
-            });
-        }
-
-        // ==================== KHỞI TẠO ====================
-        document.addEventListener('DOMContentLoaded', () => { 
-            loadUserData(); 
-            initTabs(); 
-            initStorageListener();
-            
-            const profileForm = document.getElementById('profileForm'); 
-            const securityForm = document.getElementById('securityForm'); 
-            
-            if (profileForm) profileForm.addEventListener('submit', updateProfile); 
-            if (securityForm) securityForm.addEventListener('submit', changePassword); 
-            
-            updateAuthUI(); 
+            return app;
         });
         
-        // Export global functions
-        window.viewCV = viewCV; 
-        window.deleteCV = deleteCV; 
-        window.viewJobDetail = viewJobDetail; 
-        window.removeSavedJob = removeSavedJob; 
-        window.changeAvatar = changeAvatar; 
-        window.handleLogout = handleLogout; 
-        window.scrollToProfile = scrollToProfile;
-        window.goToProfile = goToProfile;
-    </script>
+        if (userApplications.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Bạn chưa ứng tuyển công việc nào.</p><a href="trangvieclam.html" class="btn-primary" style="display: inline-block; margin-top: 16px; text-decoration: none;">Tìm việc ngay</a></div>`;
+            document.getElementById('statsApplied').innerText = 0;
+            return;
+        }
+        
+        container.innerHTML = userApplications.map((app, index) => `
+            <div class="application-item">
+                <div>
+                    <h4>${app.jobTitle || '---'}</h4>
+                    <p style="font-size: 13px; color: #64748b;">${app.company || '---'} • ${app.location || 'Đà Nẵng'}</p>
+                    <p style="font-size: 12px; color: #64748b;">💰 ${app.salary || 'Thỏa thuận'}</p>
+                </div>
+                <div style="text-align: right;">
+                    <span class="status-badge status-${app.status || 'pending'}">
+                        ${getStatusText(app.status || 'pending')}
+                    </span>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date || '---'}</p>
+                    <button onclick="viewApplicationDetail(${index})" class="btn-outline btn-sm" style="margin-top: 8px; padding: 4px 12px; font-size: 12px;"><i class="fas fa-eye"></i> Chi tiết</button>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('statsApplied').innerText = userApplications.length;
+    }
 
+    function getStatusText(status) { 
+        switch(status) { 
+            case 'pending': return '⏳ Đang xử lý'; 
+            case 'approved': return '✅ Đã duyệt'; 
+            case 'rejected': return '❌ Từ chối'; 
+            default: return '📤 Đã gửi'; 
+        } 
+    }
+    
+    function viewApplicationDetail(index) {
+        let allApplications = JSON.parse(localStorage.getItem('applications')) || [];
+        let userApplications = allApplications.filter(app => 
+            app.userEmail === currentUser?.email || 
+            app.candidateEmail === currentUser?.email
+        );
+        const app = userApplications[index];
+        
+        if (app) {
+            let statusText = getStatusText(app.status);
+            alert(`📋 CHI TIẾT ỨNG TUYỂN\n\n` +
+                  `Công việc: ${app.jobTitle}\n` +
+                  `Công ty: ${app.company}\n` +
+                  `Địa điểm: ${app.location}\n` +
+                  `Mức lương: ${app.salary}\n` +
+                  `Ngày ứng tuyển: ${app.date}\n` +
+                  `Trạng thái: ${statusText}\n\n` +
+                  `💡 Nhà tuyển dụng sẽ liên hệ với bạn trong thời gian sớm nhất!`);
+        }
+    }
+
+    // ==================== RENDER SAVED JOBS ====================
+    function renderSavedJobs() {
+        const container = document.getElementById('savedJobsList');
+        if (!container) return;
+        const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
+        if (userSavedJobs.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Bạn chưa lưu công việc nào.</p></div>`;
+            return;
+        }
+        container.innerHTML = userSavedJobs.map((job, index) => `
+            <div class="application-item">
+                <div>
+                    <h4>${job.title}</h4>
+                    <p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p>
+                    <p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p>
+                </div>
+                <div class="cv-actions">
+                    <button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                    <button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function viewJobDetail(jobId) { 
+        window.location.href = `job-detail.html?id=${jobId}`; 
+    }
+    
+    function removeSavedJob(index) { 
+        if (confirm('Bỏ lưu công việc này?')) { 
+            savedJobs.splice(index, 1); 
+            localStorage.setItem('savedJobs', JSON.stringify(savedJobs)); 
+            renderSavedJobs(); 
+            document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length; 
+            showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success'); 
+        } 
+    }
+
+    // ==================== UPDATE PROFILE ====================
+    function updateProfile(e) {
+        e.preventDefault();
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const bio = document.getElementById('bio').value.trim();
+        const skillsInput = document.getElementById('skills').value.trim();
+        const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
+        const dob = document.getElementById('dob').value;
+        const experience = document.getElementById('experience').value;
+
+        if (!fullName) { showAlert('profileAlert', 'Vui lòng nhập họ và tên!', 'error'); return; }
+
+        const userIndex = users.findIndex(u => u.email === currentUser.email);
+        if (userIndex !== -1) {
+            users[userIndex] = { ...users[userIndex], name: fullName, fullname: fullName, phone: phone, address: address, bio: bio, skills: skills, dob: dob, experience: experience };
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        currentUser.name = fullName; 
+        currentUser.fullname = fullName; 
+        currentUser.experience = experience;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        document.getElementById('sidebarName').innerText = fullName;
+        
+        const updatedUser = users.find(u => u.email === currentUser.email) || currentUser;
+        renderProfileAnalysis(updatedUser);
+        
+        showAlert('profileAlert', 'Cập nhật thông tin thành công!', 'success');
+    }
+
+    // ==================== CHANGE PASSWORD ====================
+    function changePassword(e) {
+        e.preventDefault();
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (!currentPassword || !newPassword || !confirmPassword) { 
+            showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error'); 
+            return; 
+        }
+        if (newPassword.length < 6) { 
+            showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error'); 
+            return; 
+        }
+        if (newPassword !== confirmPassword) { 
+            showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error'); 
+            return; 
+        }
+        
+        const userIndex = users.findIndex(u => u.email === currentUser.email);
+        if (userIndex !== -1 && users[userIndex].password !== currentPassword) { 
+            showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error'); 
+            return; 
+        }
+        
+        if (userIndex !== -1) { 
+            users[userIndex].password = newPassword; 
+            localStorage.setItem('users', JSON.stringify(users)); 
+        }
+        
+        document.getElementById('securityForm').reset();
+        showAlert('securityAlert', 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', 'success');
+        setTimeout(() => { 
+            localStorage.removeItem('currentUser'); 
+            window.location.href = 'login.html'; 
+        }, 2000);
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function changeAvatar() { 
+        const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User'); 
+        if (seed) { 
+            document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; 
+            showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success'); 
+        } 
+    }
+    
+    function showAlert(alertId, message, type) { 
+        const alertDiv = document.getElementById(alertId); 
+        if (alertDiv) { 
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`; 
+            alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; 
+            setTimeout(() => { 
+                alertDiv.className = 'alert'; 
+                alertDiv.innerHTML = ''; 
+            }, 3000); 
+        } else { 
+            alert(message); 
+        } 
+    }
+
+    // ==================== INIT TABS ====================
+    function initTabs() {
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                menuItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const tabId = item.getAttribute('data-tab');
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+    }
+
+    // ==================== AUTH UI ====================
+    function updateAuthUI() {
+        const authDiv = document.getElementById('authButtons');
+        const userDiv = document.getElementById('userBox');
+        if (!authDiv || !userDiv) return;
+        
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (user && user.email) {
+            const displayName = user.name || user.fullname || user.email.split('@')[0];
+            authDiv.style.display = 'none';
+            userDiv.style.display = 'block';
+            userDiv.innerHTML = `
+                <div class="user-info">
+                    <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
+                        ${displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">
+                        ${displayName}
+                    </span>
+                    <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                </div>`;
+        } else {
+            authDiv.style.display = 'flex';
+            userDiv.style.display = 'none';
+            userDiv.innerHTML = '';
+        }
+    }
+    
+    function goToProfile() {
+        window.location.href = 'profile.html';
+    }
+    
+    function handleLogout() { 
+        localStorage.removeItem('currentUser'); 
+        window.location.href = 'index.html'; 
+    }
+
+    // ==================== STORAGE LISTENER ====================
+    function initStorageListener() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'applications' || e.key === 'hr_candidates') {
+                console.log('🔄 Phát hiện thay đổi dữ liệu, đang cập nhật...');
+                applications = JSON.parse(localStorage.getItem('applications')) || [];
+                renderApplications();
+            }
+            if (e.key === 'savedJobs') {
+                savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+                renderSavedJobs();
+                document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser?.email).length;
+            }
+            if (e.key === 'savedCVs') {
+                savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                renderCVList();
+                document.getElementById('statsCV').innerText = savedCVs.length;
+            }
+            if (e.key === 'currentUser') {
+                updateAuthUI();
+                loadUserData();
+            }
+        });
+    }
+
+    // ==================== KHỞI TẠO ====================
+    document.addEventListener('DOMContentLoaded', () => { 
+        loadUserData(); 
+        initTabs(); 
+        initStorageListener();
+        
+        const profileForm = document.getElementById('profileForm'); 
+        const securityForm = document.getElementById('securityForm'); 
+        
+        if (profileForm) profileForm.addEventListener('submit', updateProfile); 
+        if (securityForm) securityForm.addEventListener('submit', changePassword); 
+        
+        updateAuthUI(); 
+    });
+    
+    // Export global functions
+    window.viewCV = viewCV; 
+    window.deleteCV = deleteCV; 
+    window.viewJobDetail = viewJobDetail; 
+    window.removeSavedJob = removeSavedJob; 
+    window.changeAvatar = changeAvatar; 
+    window.handleLogout = handleLogout; 
+    window.scrollToProfile = scrollToProfile;
+    window.goToProfile = goToProfile;
+    window.viewApplicationDetail = viewApplicationDetail;
+</script>
     <style>
         .ai-analysis-card { background: white; border-radius: 24px; padding: 24px; }
         .analysis-header { display: flex; gap: 24px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }

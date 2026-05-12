@@ -784,48 +784,102 @@
     
     // ==================== CÁC HÀM KHÁC ====================
     function renderCandidates() {
-        const container = document.getElementById("candidate-list");
-        if (!container) return;
+    const container = document.getElementById("candidate-list");
+    if (!container) return;
+    
+    // Lấy dữ liệu từ cả hai nguồn và đồng bộ
+    let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+    let applications = JSON.parse(localStorage.getItem("applications")) || [];
+    
+    // Đồng bộ: cập nhật hr_candidates từ applications nếu có ứng viên mới
+    let hasChanges = false;
+    
+    applications.forEach(app => {
+        // Kiểm tra xem ứng viên đã có trong hr_candidates chưa
+        const exists = hrCandidates.some(c => 
+            c.email === app.userEmail && 
+            c.jobId === app.jobId
+        );
         
-        const filterValue = document.getElementById("candidateFilter")?.value || "all";
-        const positionValue = document.getElementById("positionFilter")?.value || "all";
-        
-        let filtered = [...candidates];
-        if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
-        if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
-        
-        if (filtered.length === 0) {
-            container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">📭 Chưa có ứng viên nào</td></tr>';
-            return;
+        if (!exists) {
+            // Thêm ứng viên mới vào hr_candidates
+            const newCandidate = {
+                id: app.id,
+                name: app.userName,
+                email: app.userEmail,
+                phone: app.userPhone || '',
+                position: app.jobTitle,
+                company: app.company,
+                jobId: app.jobId,
+                skills: app.skills ? (Array.isArray(app.skills) ? app.skills : app.skills.split(/[,\n]+/).map(s => s.trim())) : [],
+                experience: app.experience || '',
+                education: app.education || '',
+                address: app.address || '',
+                intro: app.intro || '',
+                date: app.date,
+                fullDate: app.fullDate || new Date().toISOString(),
+                status: app.status || 'pending'
+            };
+            hrCandidates.push(newCandidate);
+            hasChanges = true;
         }
-        
-        container.innerHTML = filtered.map(c => {
-            const statusText = c.status === 'pending' ? 'Chờ duyệt' : (c.status === 'approved' ? 'Đã duyệt' : 'Từ chối');
-            const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger');
-            return `
-                <tr>
-                    <td><strong>${escapeHtml(c.name)}</strong><br><small>${escapeHtml(c.email)}</small></td>
-                    <td>${escapeHtml(c.position)}</td>
-                    <td>${c.date}</td>
-                    <td><span class="tag ${statusClass}">${statusText}</span></td>
-                    <td>
-                        <button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>
-                        ${c.status === 'pending' ? `
-                            <button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button>
-                            <button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>
-                        ` : ''}
-                        ${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> PV</button>` : ''}
-                    </td>
-                </tr>
-            `;
-        }).join('');
-        
-        document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(candidates.find(c => c.id === parseInt(btn.dataset.id))));
-        document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
-        document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => rejectCandidate(parseInt(btn.dataset.id)));
-        document.querySelectorAll(".create-interview-btn").forEach(btn => btn.onclick = () => openCreateInterviewModal(parseInt(btn.dataset.id), btn.dataset.name, btn.dataset.position));
-        updateStats();
+    });
+    
+    if (hasChanges) {
+        localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
     }
+    
+    // Lọc theo filter
+    const filterValue = document.getElementById("candidateFilter")?.value || "all";
+    const positionValue = document.getElementById("positionFilter")?.value || "all";
+    
+    let filtered = [...hrCandidates];
+    if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
+    if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></tr>';
+        updateStats();
+        return;
+    }
+    
+    container.innerHTML = filtered.map(c => {
+        const statusText = c.status === 'pending' ? '⏳ Chờ duyệt' : (c.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối');
+        const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger');
+        
+        return `
+            <tr>
+                <td>
+                    <strong>${escapeHtml(c.name)}</strong><br>
+                    <small>${escapeHtml(c.email)}</small><br>
+                    <small>📞 ${escapeHtml(c.phone) || 'Chưa cập nhật'}</small>
+                </td>
+                <td>
+                    <strong>${escapeHtml(c.position)}</strong><br>
+                    <small>🏢 ${escapeHtml(c.company)}</small>
+                </td>
+                <td>${c.date || '---'}</td>
+                <td><span class="tag ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>
+                    ${c.status === 'pending' ? `
+                        <button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button>
+                        <button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>
+                    ` : ''}
+                    ${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> Phỏng vấn</button>` : ''}
+                 </td>
+            </tr>
+        `;
+    }).join('');
+    
+    // Gắn sự kiện cho các nút
+    document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(hrCandidates.find(c => c.id === parseInt(btn.dataset.id))));
+    document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
+    document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => rejectCandidate(parseInt(btn.dataset.id)));
+    document.querySelectorAll(".create-interview-btn").forEach(btn => btn.onclick = () => openCreateInterviewModal(parseInt(btn.dataset.id), btn.dataset.name, btn.dataset.position));
+    
+    updateStats();
+}
     
     function showCVModal(candidate) {
         if (!candidate) return;
