@@ -144,8 +144,6 @@
   <div class="footer-bottom"><p>© 2026 DANANG WORK. All rights reserved.</p></div>
 </footer>
 
-
-
 <style>
   .loading-ai {
     text-align: center;
@@ -158,6 +156,7 @@
     margin-right: 10px;
   }
 </style>
+
 <!-- FLOATING ACTION BUTTONS -->
 <div class="floating-actions">
   <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
@@ -181,61 +180,29 @@
   </div>
 </div>
 
+<!-- ========== CHỈ SỬA PHẦN NÀY ========== -->
+<!-- Đã xóa các hàm goToProfile, handleLogout, refreshUserBox vì đã có trong notification.js -->
+<!-- Giữ lại sự kiện DOMContentLoaded để khởi tạo UI -->
+
 <script>
-// 1. Định nghĩa hàm chuyển hướng (Global)
-window.goToProfile = function() {
-    window.location.href = 'profile.html';
-};
-
-// 2. Định nghĩa hàm đăng xuất (Global)
-window.handleLogout = function() {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isLoggedIn');
-    window.location.href = 'index.html';
-};
-
-// 3. Hàm cập nhật giao diện người dùng
-function refreshUserBox() {
-    const userBox = document.getElementById('userBox');
-    const authButtons = document.getElementById('authButtons');
-    if (!userBox || !authButtons) return;
-
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-
-    if (user) {
-        const displayName = user.name || user.fullname || user.email.split('@')[0];
-        authButtons.style.display = 'none';
-        userBox.style.display = 'block';
-        userBox.innerHTML = `
-            <div class="user-info" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <div class="user-avatar" onclick="goToProfile()" style="background: #3b82f6; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                    ${displayName.charAt(0).toUpperCase()}
-                </div>
-                <span class="user-name" onclick="goToProfile()" style="font-weight: 600; color: #334155;">
-                    ${displayName}
-                </span>
-                <button class="logout-btn" onclick="handleLogout()" style="margin-left: 5px; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd; background: #fff;">
-                    Đăng xuất
-                </button>
-            </div>
-        `;
-    } else {
-        authButtons.style.display = 'flex';
-        userBox.style.display = 'none';
+// Chỉ giữ lại sự kiện khởi tạo cho hero background
+document.addEventListener('DOMContentLoaded', function() {
+    // Hero background
+    const heroSection = document.getElementById('dynamicHero');
+    if (heroSection) {
+        heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
+        heroSection.style.backgroundSize = "cover";
+        heroSection.style.backgroundPosition = "center";
     }
-}
-
-// Chạy ngay khi load và khi có thay đổi từ tab khác
-document.addEventListener('DOMContentLoaded', refreshUserBox);
-window.addEventListener('storage', refreshUserBox);
+});
 </script>
+<!-- ========== HẾT PHẦN SỬA ========== -->
 
 <!-- Scripts chính - THỨ TỰ QUAN TRỌNG -->
 <script src="jobs-data.js"></script>
 <script src="ai-recommend.js"></script>
+<script src="notification.js"></script>
 <script src="index.js"></script>
-<script src="auth.js"></script>
-<script src="notify-bridge.js"></script>
 <script src="floating.js"></script>
 </body>
 </html>

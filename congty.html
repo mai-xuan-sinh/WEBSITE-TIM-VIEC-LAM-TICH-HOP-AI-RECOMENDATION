@@ -72,7 +72,6 @@
             color: #0ea5e9;
         }
 
-        /* ACTIVE STYLE: CHỮ XANH + GẠCH CHÂN, KHÔNG NỀN */
         .nav-links a.active {
             color: #0ea5e9 !important;
             background: transparent !important;
@@ -95,7 +94,6 @@
             gap: 12px;
         }
 
-        /* ===== AUTH BUTTONS ĐỒNG BỘ ===== */
         #authButtons {
             display: flex;
             gap: 8px;
@@ -131,7 +129,6 @@
             box-shadow: 0 8px 18px rgba(14,165,233,0.4);
         }
 
-        /* ===== USER INFO ===== */
         .user-info {
             display: flex;
             align-items: center;
@@ -151,7 +148,7 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 12px;
+            cursor: pointer;
         }
 
         .logout-btn {
@@ -365,7 +362,7 @@
 </head>
 <body>
 
-    <!-- HEADER GIỐNG INDEX -->
+    <!-- HEADER -->
     <div class="top-header">
         <div class="header-flex">
             <div class="logo-area">
@@ -412,8 +409,33 @@
         <div class="company-grid" id="companyGrid"></div>
     </div>
 
+    <!-- FLOATING ACTION BUTTONS -->
+    <div class="floating-actions">
+        <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
+            <i class="fas fa-heart"></i>
+        </a>
+        <div class="fab fab-bell" id="notifyBtn" title="Thông báo">
+            <i class="fas fa-bell"></i>
+            <span class="dot" id="notifyDot"></span>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION PANEL -->
+    <div class="notify-panel" id="notifyPanel">
+        <div class="notify-header">
+            <h3><i class="fas fa-bell"></i> Thông báo</h3>
+            <div style="display: flex; gap: 8px;">
+                <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
+                <button id="refreshNotifBtn" class="mark-read-btn" style="background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+            </div>
+        </div>
+        <div id="notifyList" class="notify-list">
+            <div class="notify-item empty">📢 Đang tải thông báo...</div>
+        </div>
+    </div>
+
     <script>
-        // --- CÁC HÀM XỬ LÝ DỮ LIỆU CÔNG TY (GIỮ NGUYÊN) ---
+        // Dữ liệu công ty
         const companies = [
             { id: "fpt", name: "FPT Software", logo: "img/fpt.jpg", location: "Hải Châu, Đà Nẵng", size: "5000+ nhân viên", rating: 4.5, desc: "Phát triển phần mềm chất lượng cao cho thị trường Nhật Bản và Âu Mỹ.", category: "it" },
             { id: "philong", name: "PhiLong Technology", logo: "img/philong-logo.jpg", location: "Hải Châu, Đà Nẵng", size: "2000+ nhân viên", rating: 4.5, desc: "Môi trường làm việc sáng tạo, tập trung vào các dự án công nghệ mới.", category: "it" },
@@ -440,6 +462,7 @@
         function renderCompanies(filter = "all") {
             const grid = document.getElementById("companyGrid");
             const filtered = filter === "all" ? companies : companies.filter(c => c.category === filter);
+            if (!grid) return;
             grid.innerHTML = filtered.map(company => `
                 <div class="company-card">
                     <div class="card-top">
@@ -459,6 +482,7 @@
             `).join("");
         }
 
+        // Filter buttons
         const filterBtns = document.querySelectorAll(".filter-btn");
         filterBtns.forEach(btn => {
             btn.addEventListener("click", () => {
@@ -468,80 +492,11 @@
             });
         });
         renderCompanies();
-
-        // ===== FIX LỖI NHẤN VÀO PROFILE TẠI ĐÂY =====
-
-        // 1. Khai báo hàm điều hướng (Global Scope)
-        window.goToProfile = function() {
-            window.location.href = 'profile.html';
-        };
-
-        function updateAuthUI() {
-            const authDiv = document.getElementById('authButtons');
-            const userDiv = document.getElementById('userBox');
-            if (!authDiv || !userDiv) return;
-            
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            
-            if (user && user.email) {
-                const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
-                authDiv.style.display = 'none';
-                userDiv.style.display = 'block';
-                // Thêm sự kiện onclick và cursor pointer cho Avatar + Tên
-                userDiv.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">
-                            ${displayName.charAt(0).toUpperCase()}
-                        </div>
-                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600; color: #334155;">
-                            ${displayName}
-                        </span>
-                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-                    </div>
-                `;
-            } else {
-                authDiv.style.display = 'flex';
-                userDiv.style.display = 'none';
-                userDiv.innerHTML = '';
-            }
-        }
-        
-        function handleLogout() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('rememberUser');
-            window.location.href = 'index.html';
-        }
-        
-        document.addEventListener('DOMContentLoaded', updateAuthUI);
-        window.addEventListener('storage', updateAuthUI);
     </script>
-    <!-- FLOATING ACTION BUTTONS -->
-<div class="floating-actions">
 
-  <!-- FAVORITE -->
-  <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
-    <i class="fas fa-heart"></i>
-  </a>
-
-  <!-- NOTIFICATION -->
-  <div class="fab fab-bell" id="notifyBtn" title="Thông báo">
-    <i class="fas fa-bell"></i>
-    <span class="dot" id="notifyDot"></span>
-  </div>
-
-</div>
-
-<!-- NOTIFICATION PANEL -->
-<div class="notify-panel" id="notifyPanel">
-  <h3>Thông báo</h3>
-  <div class="notify-item">📢 Có 5 việc làm mới phù hợp với bạn</div>
-  <div class="notify-item">🏢 FPT Software vừa đăng tuyển Developer</div>
-  <div class="notify-item">🔥 CV của bạn đã được xem 12 lần</div>
-</div>
-<script src="floating.js"></script>
-<script src="notify-bridge.js"></script>
-
+    <!-- Scripts - THỨ TỰ QUAN TRỌNG -->
+    <script src="notification.js"></script>
+    <script src="floating.js"></script>
+    <script src="notify-bridge.js"></script>
 </body>
 </html>
