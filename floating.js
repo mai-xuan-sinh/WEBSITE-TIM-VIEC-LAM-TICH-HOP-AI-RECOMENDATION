@@ -1,4 +1,4 @@
-// floating.js - Phiên bản ổn định cho tất cả trang
+// floating.js - Phiên bản ổn định cho tất cả trang (FULLY FIXED)
 (function() {
     if (window._floatingLoaded) return;
     window._floatingLoaded = true;
@@ -62,13 +62,13 @@
             setTimeout(function() {
                 toast.style.animation = 'slideOut 0.3s ease';
                 setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
-            }, 4000);
+            }, 5000);
         }
 
         if (!document.querySelector('#toast-animation')) {
             const style = document.createElement('style');
             style.id = 'toast-animation';
-            style.textContent = '@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
+            style.textContent = '@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } } @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
             document.head.appendChild(style);
         }
 
@@ -85,6 +85,7 @@
 
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             let userNotifs = [];
+            
             for (var i = 0; i < allNotifs.length; i++) {
                 if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase()) {
                     userNotifs.push(allNotifs[i]);
@@ -101,8 +102,12 @@
             }
 
             if (notifyDot) {
-                notifyDot.style.display = unreadCount > 0 ? 'block' : 'none';
-                if (unreadCount > 0) notifyDot.setAttribute('data-count', unreadCount);
+                if (unreadCount > 0) {
+                    notifyDot.style.display = 'block';
+                    notifyDot.setAttribute('data-count', unreadCount);
+                } else {
+                    notifyDot.style.display = 'none';
+                }
             }
 
             if (userNotifs.length === 0) {
@@ -137,16 +142,20 @@
         window.handleNotifyClick = function(index) {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) return;
+            
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             let userNotifs = [];
+            
             for (var i = 0; i < allNotifs.length; i++) {
                 if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase()) {
                     userNotifs.push(allNotifs[i]);
                 }
             }
+            
             var notif = userNotifs[index];
             if (!notif) return;
             
+            // Đánh dấu đã đọc
             if (!notif.read) {
                 for (var j = 0; j < allNotifs.length; j++) {
                     if (allNotifs[j].id === notif.id) {
@@ -157,46 +166,64 @@
                 localStorage.setItem('candidate_notifications', JSON.stringify(allNotifs));
             }
             
+            // Hiển thị chi tiết thông báo
             if (notif.type === 'interview' && notif.interviewDetails) {
                 var d = notif.interviewDetails;
-                alert('📅 CHI TIẾT LỊCH PHỎNG VẤN\n\nVị trí: ' + d.position + '\nThời gian: ' + d.time + ' - Ngày ' + new Date(d.date).toLocaleDateString('vi-VN') + '\nHình thức: ' + (d.type === 'online' ? 'Online' : 'Trực tiếp') + '\nĐịa điểm: ' + d.location + (d.note ? '\nGhi chú: ' + d.note : ''));
+                alert('📅 CHI TIẾT LỊCH PHỎNG VẤN\n\n' +
+                    'Vị trí: ' + d.position + '\n' +
+                    'Thời gian: ' + d.time + ' - Ngày ' + new Date(d.date).toLocaleDateString('vi-VN') + '\n' +
+                    'Hình thức: ' + (d.type === 'online' ? 'Online' : 'Trực tiếp') + '\n' +
+                    'Địa điểm: ' + d.location + 
+                    (d.note ? '\nGhi chú: ' + d.note : ''));
             } else if (notif.type === 'approved') {
-                alert('✅ ' + notif.title + '\n\n' + notif.content);
+                alert('✅ ' + notif.title + '\n\n' + notif.content + '\n\n💡 Nhà tuyển dụng sẽ liên hệ với bạn để sắp xếp lịch phỏng vấn.');
+            } else if (notif.type === 'rejected') {
+                alert('❌ ' + notif.title + '\n\n' + notif.content + '\n\n💡 Đừng nản lòng! Hãy tiếp tục ứng tuyển các vị trí khác nhé!');
             } else {
                 alert('📢 ' + notif.title + '\n\n' + notif.content);
             }
+            
             loadNotifications();
         };
 
         window.markAllNotificationsRead = function() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) return;
+            
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             var changed = false;
+            
             for (var i = 0; i < allNotifs.length; i++) {
                 if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase() && !allNotifs[i].read) {
                     allNotifs[i].read = true;
                     changed = true;
                 }
             }
+            
             if (changed) {
                 localStorage.setItem('candidate_notifications', JSON.stringify(allNotifs));
                 loadNotifications();
                 showToast('Đã đánh dấu tất cả là đã đọc', 'success');
+            } else {
+                showToast('Không có thông báo chưa đọc', 'info');
             }
         };
 
         window.refreshNotifications = function() {
             loadNotifications();
-            showToast('Đã làm mới thông báo', 'info');
+            showToast('Đã làm mới thông báo', 'success');
         };
 
         if (notifyBtn) {
             notifyBtn.onclick = function(e) {
                 e.stopPropagation();
                 loadNotifications();
-                notifyPanel.style.display = notifyPanel.style.display === 'flex' ? 'none' : 'flex';
-                if (notifyDot) notifyDot.style.display = 'none';
+                if (notifyPanel.style.display === 'flex') {
+                    notifyPanel.style.display = 'none';
+                } else {
+                    notifyPanel.style.display = 'flex';
+                    if (notifyDot) notifyDot.style.display = 'none';
+                }
             };
         }
 
@@ -206,30 +233,63 @@
             }
         });
 
-        document.getElementById('markAllReadBtn')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.markAllNotificationsRead();
-        });
-        document.getElementById('refreshNotifBtn')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.refreshNotifications();
-        });
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+        const refreshNotifBtn = document.getElementById('refreshNotifBtn');
+        
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                window.markAllNotificationsRead();
+            });
+        }
+        
+        if (refreshNotifBtn) {
+            refreshNotifBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                window.refreshNotifications();
+            });
+        }
 
+        // Lắng nghe storage event từ các tab khác
         window.addEventListener('storage', function(e) {
             if (e.key === 'candidate_notifications' || e.key === 'currentUser') {
-                console.log('🔄 Phát hiện thay đổi thông báo, cập nhật...');
+                console.log('🔄 Phát hiện thay đổi storage, cập nhật thông báo...');
                 loadNotifications();
+                
+                // Hiển thị toast cho thông báo mới
+                if (e.key === 'candidate_notifications' && e.newValue) {
+                    try {
+                        const newNotifs = JSON.parse(e.newValue);
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                        if (currentUser && newNotifs.length > 0) {
+                            const newNotif = newNotifs[0];
+                            if (newNotif.userId === currentUser.email && !newNotif.read) {
+                                const icon = newNotif.type === 'approved' ? '✅' : (newNotif.type === 'interview' ? '📅' : '📢');
+                                showToast(icon + ' ' + newNotif.title, 'info');
+                            }
+                        }
+                    } catch(err) {}
+                }
             }
         });
 
+        // Lắng nghe custom event realtime
         window.addEventListener('realtime-notification', function(e) {
             console.log('📢 Nhận thông báo realtime:', e.detail);
             loadNotifications();
-            if (e.detail && e.detail.title) showToast('📢 ' + e.detail.title, 'info');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (e.detail && e.detail.userId === currentUser?.email) {
+                const icon = e.detail.type === 'approved' ? '✅' : (e.detail.type === 'interview' ? '📅' : '📢');
+                showToast(icon + ' ' + e.detail.title, 'info');
+            }
         });
 
+        // Polling mỗi 3 giây để đảm bảo đồng bộ
         setInterval(loadNotifications, 3000);
+        
+        // Khởi tạo lần đầu
         loadNotifications();
+        
         console.log('🔔 Floating notifications ready');
     });
 })();

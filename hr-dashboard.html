@@ -486,9 +486,9 @@
     // ==================== DỮ LIỆU ====================
     let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [
-    { id: 1, name: "Trần Văn A", email: "a@email.com", candidateEmail: "a@email.com", phone: "0912345678", position: "Frontend Developer", company: "FPT Software", skills: ["ReactJS", "JavaScript"], experience: "3 năm", date: "15/05/2026", status: "pending" },
-    { id: 2, name: "Lê Thị B", email: "b@email.com", candidateEmail: "b@email.com", phone: "0923456789", position: "UI/UX Designer", company: "Rikkeisoft", skills: ["Figma", "Adobe XD"], experience: "4 năm", date: "14/05/2026", status: "pending" }
-];
+        { id: 1, name: "Trần Văn A", email: "a@email.com", candidateEmail: "a@email.com", phone: "0912345678", position: "Frontend Developer", company: "FPT Software", skills: ["ReactJS", "JavaScript"], experience: "3 năm", date: "15/05/2026", status: "pending" },
+        { id: 2, name: "Lê Thị B", email: "b@email.com", candidateEmail: "b@email.com", phone: "0923456789", position: "UI/UX Designer", company: "Rikkeisoft", skills: ["Figma", "Adobe XD"], experience: "4 năm", date: "14/05/2026", status: "pending" }
+    ];
     let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
     let notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Dashboard"];
@@ -524,8 +524,59 @@
         if (badge) badge.innerText = unreadCount > 0 ? unreadCount : "0";
     }
     
+    // ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN (REALTIME) ====================
+    function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails = null) {
+        if (!candidateEmail) {
+            console.warn('⚠️ Không có email ứng viên để gửi thông báo');
+            return;
+        }
+        
+        let candidateNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
+        
+        const newNotif = {
+            id: Date.now(),
+            userId: candidateEmail,
+            title: title,
+            content: content,
+            type: type,
+            read: false,
+            createdAt: new Date().toISOString(),
+            time: "Vừa xong"
+        };
+        
+        if (interviewDetails) {
+            newNotif.interviewDetails = interviewDetails;
+        }
+        
+        candidateNotifs.unshift(newNotif);
+        
+        if (candidateNotifs.length > 50) candidateNotifs.pop();
+        
+        localStorage.setItem('candidate_notifications', JSON.stringify(candidateNotifs));
+        
+        // Kích hoạt storage event cho các tab khác
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'candidate_notifications',
+            newValue: JSON.stringify(candidateNotifs),
+            oldValue: JSON.stringify(candidateNotifs.slice(1))
+        }));
+        
+        // BroadcastChannel cho realtime cross-tab
+        try {
+            if (!window.broadcastChannel) {
+                window.broadcastChannel = new BroadcastChannel('notify_channel');
+            }
+            window.broadcastChannel.postMessage({
+                type: 'NEW_NOTIFICATION',
+                data: newNotif
+            });
+        } catch(e) {}
+        
+        console.log(`📢 Đã gửi thông báo đến ${candidateEmail}: ${title}`);
+    }
+    
     // ==================== TÍNH TOÁN PHÍ ĐĂNG TIN ====================
-    const PRICE_PER_DAY = 50000; // 50,000đ/ngày
+    const PRICE_PER_DAY = 50000;
     
     function calculateTotalPrice(durationDays) {
         return durationDays * PRICE_PER_DAY;
@@ -546,7 +597,6 @@
         return d.toLocaleDateString('vi-VN');
     }
     
-    // Cập nhật hiển thị giá và ngày khi thay đổi duration hoặc start date
     function updatePriceAndDate() {
         const startDate = document.getElementById('jobStartDate').value;
         const duration = parseInt(document.getElementById('jobDuration').value);
@@ -564,7 +614,6 @@
         }
     }
     
-    // Thiết lập min date cho input date (không cho chọn ngày trong quá khứ)
     function setMinDate() {
         const today = new Date().toISOString().split('T')[0];
         const startDateInput = document.getElementById('jobStartDate');
@@ -578,15 +627,6 @@
     function renderJobs() {
         const container = document.getElementById("job-cards-container");
         if (!container) return;
-        
-        // Lọc các tin còn hạn
-        const activeJobs = jobs.filter(job => {
-            if (job.status !== 'active') return false;
-            if (job.expiryDate) {
-                return new Date(job.expiryDate) >= new Date();
-            }
-            return true;
-        });
         
         if (jobs.length === 0) {
             container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-briefcase"></i><h3>Chưa có tin tuyển dụng</h3><p>Nhấn "Đăng tin mới" để tạo tin đầu tiên</p></div>';
@@ -628,78 +668,23 @@
             addNotification("Đã xóa tin", `Tin "${title}" đã được xóa`, "system");
         }
     }
-    // ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN ====================
-// ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN (CẬP NHẬT REALTIME) ====================
-function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails = null) {
-    if (!candidateEmail) return;
     
-    let candidateNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
-    
-    const newNotif = {
-        id: Date.now(),
-        userId: candidateEmail,
-        title: title,
-        content: content,
-        type: type, // 'approved', 'rejected', 'interview'
-        read: false,
-        createdAt: new Date().toISOString(),
-        time: "Vừa xong"
-    };
-    
-    if (interviewDetails) {
-        newNotif.interviewDetails = interviewDetails;
-    }
-    
-    candidateNotifs.unshift(newNotif);
-    
-    // Giới hạn 50 thông báo
-    if (candidateNotifs.length > 50) candidateNotifs.pop();
-    
-    localStorage.setItem('candidate_notifications', JSON.stringify(candidateNotifs));
-    
-    // ========== REALTIME: Kích hoạt sự kiện storage cho tất cả tab ==========
-    // Phương pháp 1: Dispatch storage event
-    window.dispatchEvent(new StorageEvent('storage', {
-        key: 'candidate_notifications',
-        newValue: JSON.stringify(candidateNotifs),
-        oldValue: JSON.stringify(candidateNotifs.slice(1))
-    }));
-    
-    // Phương pháp 2: BroadcastChannel cho realtime cross-tab
-    if (window.broadcastChannel) {
-        try {
-            window.broadcastChannel.postMessage({
-                type: 'NEW_NOTIFICATION',
-                data: newNotif
-            });
-        } catch(e) {}
-    } else {
-        // Tạo BroadcastChannel nếu chưa có
-        try {
-            window.broadcastChannel = new BroadcastChannel('notify_channel');
-            window.broadcastChannel.postMessage({
-                type: 'NEW_NOTIFICATION',
-                data: newNotif
-            });
-        } catch(e) {}
-    }
-    
-    // Phương pháp 3: Custom event cho cùng tab
-    if (typeof window.dispatchCustomNotificationEvent === 'function') {
-        window.dispatchCustomNotificationEvent(newNotif);
-    }
-    
-    console.log(`📢 Đã gửi thông báo đến ${candidateEmail}: ${title}`);
-}
-
-// ==================== CẬP NHẬT HÀM approveCandidate ====================
-// Tìm hàm approveCandidate và thay thế bằng code dưới đây
-// (hoặc thêm dòng gửi thông báo vào hàm hiện có)
-
-function approveCandidate(id) {
-    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
-    const candidate = data.find(c => c.id === id);
-    if (candidate && candidate.status === 'pending') {
+    // ==================== APPROVE CANDIDATE (CÓ GỬI THÔNG BÁO) ====================
+    function approveCandidate(id) {
+        let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+        const candidate = data.find(c => c.id === id);
+        
+        if (!candidate) {
+            alert("❌ Không tìm thấy ứng viên!");
+            return;
+        }
+        
+        if (candidate.status !== 'pending') {
+            alert(`⚠️ Hồ sơ này đã được ${candidate.status === 'approved' ? 'duyệt' : 'từ chối'} trước đó!`);
+            return;
+        }
+        
+        // Cập nhật trạng thái
         candidate.status = "approved";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
         
@@ -717,7 +702,7 @@ function approveCandidate(id) {
         
         // ===== GỬI THÔNG BÁO CHO ỨNG VIÊN =====
         sendNotificationToCandidate(
-            candidate.email,
+            candidate.email || candidate.candidateEmail,
             "✅ Hồ sơ được duyệt",
             `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt. Vui lòng chờ lịch phỏng vấn từ nhà tuyển dụng.`,
             "approved"
@@ -726,16 +711,31 @@ function approveCandidate(id) {
         renderCandidates();
         addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
         addNotification('Hồ sơ được duyệt', `Hồ sơ của ${candidate.name} đã được duyệt`, "application");
-        alert('✅ Đã duyệt hồ sơ và gửi thông báo cho ứng viên!');
+        
+        // Hiển thị thông báo và hỏi có muốn tạo lịch phỏng vấn không
+        const confirmed = confirm(`✅ Đã duyệt hồ sơ của ${candidate.name}!\n\n📧 Thông báo đã được gửi đến email: ${candidate.email}\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`);
+        if (confirmed) {
+            openCreateInterviewModal(candidate.id, candidate.name, candidate.position);
+        }
     }
-}
-
-// ==================== CẬP NHẬT HÀM rejectCandidate ====================
-function rejectCandidate(id) {
-    if (!confirm("Từ chối hồ sơ này?")) return;
-    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
-    const candidate = data.find(c => c.id === id);
-    if (candidate && candidate.status === 'pending') {
+    
+    // ==================== REJECT CANDIDATE (CÓ GỬI THÔNG BÁO) ====================
+    function rejectCandidate(id) {
+        if (!confirm("❌ Từ chối hồ sơ này?")) return;
+        
+        let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+        const candidate = data.find(c => c.id === id);
+        
+        if (!candidate) {
+            alert("❌ Không tìm thấy ứng viên!");
+            return;
+        }
+        
+        if (candidate.status !== 'pending') {
+            alert(`⚠️ Hồ sơ này đã được ${candidate.status === 'approved' ? 'duyệt' : 'từ chối'} trước đó!`);
+            return;
+        }
+        
         candidate.status = "rejected";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
         
@@ -753,7 +753,7 @@ function rejectCandidate(id) {
         
         // ===== GỬI THÔNG BÁO CHO ỨNG VIÊN =====
         sendNotificationToCandidate(
-            candidate.email,
+            candidate.email || candidate.candidateEmail,
             "❌ Hồ sơ không được duyệt",
             `Rất tiếc, hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} không phù hợp với yêu cầu. Chúc bạn may mắn với các cơ hội khác!`,
             "rejected"
@@ -762,134 +762,137 @@ function rejectCandidate(id) {
         renderCandidates();
         addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
         addNotification('Hồ sơ bị từ chối', `Rất tiếc, hồ sơ của ${candidate.name} không phù hợp`, "system");
-        alert('❌ Đã từ chối hồ sơ và gửi thông báo cho ứng viên!');
-    }
-}
-
-// ==================== CẬP NHẬT HÀM openCreateInterviewModal ====================
-function openCreateInterviewModal(id, name, position) {
-    const modal = document.getElementById("createInterviewModal");
-    document.getElementById("createInterviewCandidateId").value = id;
-    document.getElementById("createInterviewCandidate").value = name;
-    document.getElementById("createInterviewPosition").value = position;
-    
-    // Lấy email của ứng viên - QUAN TRỌNG
-    let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
-    let applications = JSON.parse(localStorage.getItem("applications")) || [];
-    const candidate = candidates.find(c => c.id === id);
-    let candidateEmail = '';
-    
-    if (candidate) {
-        candidateEmail = candidate.email || candidate.candidateEmail || '';
+        
+        alert(`❌ Đã từ chối hồ sơ của ${candidate.name}!\n\n📧 Thông báo đã được gửi đến email: ${candidate.email}`);
     }
     
-    // Nếu không có trong candidates, tìm trong applications
-    if (!candidateEmail) {
-        const app = applications.find(a => a.id === id || a.candidateId === id);
-        if (app) {
-            candidateEmail = app.userEmail || app.candidateEmail || '';
+    // ==================== MỞ MODAL TẠO LỊCH PHỎNG VẤN ====================
+    function openCreateInterviewModal(id, name, position) {
+        const modal = document.getElementById("createInterviewModal");
+        if (!modal) return;
+        
+        document.getElementById("createInterviewCandidateId").value = id;
+        document.getElementById("createInterviewCandidate").value = name;
+        document.getElementById("createInterviewPosition").value = position;
+        
+        // Lấy email của ứng viên
+        let candidatesList = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+        let applicationsList = JSON.parse(localStorage.getItem("applications")) || [];
+        const candidate = candidatesList.find(c => c.id === id);
+        let candidateEmail = '';
+        
+        if (candidate) {
+            candidateEmail = candidate.email || candidate.candidateEmail || '';
         }
-    }
-    
-    // Tạo hoặc cập nhật trường email
-    let emailField = document.getElementById("createInterviewCandidateEmail");
-    if (!emailField) {
-        const formRow = document.querySelector("#createInterviewForm .form-row");
-        if (formRow && formRow.parentNode) {
-            const newDiv = document.createElement("div");
-            newDiv.className = "form-group";
-            newDiv.innerHTML = `<label>Email ứng viên *</label><input type="email" class="form-control" id="createInterviewCandidateEmail" required>`;
-            formRow.parentNode.insertBefore(newDiv, formRow.nextSibling);
+        
+        if (!candidateEmail) {
+            const app = applicationsList.find(a => a.id === id || a.candidateId === id);
+            if (app) {
+                candidateEmail = app.userEmail || app.candidateEmail || '';
+            }
         }
-        emailField = document.getElementById("createInterviewCandidateEmail");
-    }
-    if (emailField) {
-        emailField.value = candidateEmail;
-        emailField.required = true;
-    }
-    
-    // Cảnh báo nếu không có email
-    if (!candidateEmail) {
-        console.warn('⚠️ Không tìm thấy email của ứng viên:', name);
-        alert(`⚠️ Không tìm thấy email của ứng viên "${name}". Vui lòng cập nhật email trước khi tạo lịch phỏng vấn!`);
-    }
-    
-    const tomorrow = new Date(); 
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
-    document.getElementById("createInterviewTime").value = "09:00";
-    modal.classList.add("show");
-}
-
-// ==================== CẬP NHẬT FORM TẠO LỊCH PHỎNG VẤN ====================
-// Tìm và thay thế hàm xử lý submit của form createInterviewForm
-
-// Xóa event listener cũ nếu có và thêm mới
-document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const candidateId = document.getElementById("createInterviewCandidateId").value;
-    const candidateName = document.getElementById("createInterviewCandidate").value;
-    const candidateEmail = document.getElementById("createInterviewCandidateEmail")?.value || '';
-    const position = document.getElementById("createInterviewPosition").value;
-    const interviewDate = document.getElementById("createInterviewDate").value;
-    const interviewTime = document.getElementById("createInterviewTime").value;
-    const interviewType = document.getElementById("createInterviewType").value;
-    const interviewLocation = document.getElementById("createInterviewLocation").value;
-    const note = document.getElementById("createInterviewNote").value;
-    
-    if (!candidateName || !position || !interviewDate || !interviewTime) {
-        alert("❌ Vui lòng điền đầy đủ thông tin bắt buộc!");
-        return;
+        
+        // Tạo hoặc cập nhật trường email
+        let emailField = document.getElementById("createInterviewCandidateEmail");
+        if (!emailField) {
+            const formRow = document.querySelector("#createInterviewForm .form-row");
+            if (formRow && formRow.parentNode) {
+                const newDiv = document.createElement("div");
+                newDiv.className = "form-group";
+                newDiv.innerHTML = `<label>Email ứng viên *</label><input type="email" class="form-control" id="createInterviewCandidateEmail" required>`;
+                formRow.parentNode.insertBefore(newDiv, formRow.nextSibling);
+            }
+            emailField = document.getElementById("createInterviewCandidateEmail");
+        }
+        if (emailField) {
+            emailField.value = candidateEmail;
+            emailField.required = true;
+        }
+        
+        if (!candidateEmail) {
+            console.warn('⚠️ Không tìm thấy email của ứng viên:', name);
+            alert(`⚠️ Không tìm thấy email của ứng viên "${name}". Vui lòng cập nhật email trước khi tạo lịch phỏng vấn!`);
+        }
+        
+        const tomorrow = new Date(); 
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
+        document.getElementById("createInterviewTime").value = "09:00";
+        modal.classList.add("show");
     }
     
-    const interviewId = Date.now();
-    const newInterview = {
-        id: interviewId,
-        candidateId: candidateId,
-        candidateName: candidateName,
-        candidateEmail: candidateEmail,
-        position: position,
-        date: interviewDate,
-        time: interviewTime,
-        type: interviewType,
-        location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'),
-        note: note || '',
-        status: "upcoming",
-        createdAt: new Date().toISOString()
-    };
-    
-    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
-    allInterviews.push(newInterview);
-    localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
-    interviews = allInterviews;
-    
-    // Format ngày cho thông báo
-    const formattedDate = new Date(interviewDate).toLocaleDateString('vi-VN');
-    
-    // ===== GỬI THÔNG BÁO LỊCH PHỎNG VẤN CHO ỨNG VIÊN =====
-    sendNotificationToCandidate(
-        candidateEmail,
-        "📅 Lịch phỏng vấn",
-        `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}. Hình thức: ${interviewType === 'online' ? 'Online' : 'Trực tiếp'}. Địa điểm: ${newInterview.location}`,
-        "interview",
-        {
+    // ==================== XỬ LÝ FORM TẠO LỊCH PHỎNG VẤN ====================
+    document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const candidateId = document.getElementById("createInterviewCandidateId").value;
+        const candidateName = document.getElementById("createInterviewCandidate").value;
+        const candidateEmail = document.getElementById("createInterviewCandidateEmail")?.value || '';
+        const position = document.getElementById("createInterviewPosition").value;
+        const interviewDate = document.getElementById("createInterviewDate").value;
+        const interviewTime = document.getElementById("createInterviewTime").value;
+        const interviewType = document.getElementById("createInterviewType").value;
+        const interviewLocation = document.getElementById("createInterviewLocation").value;
+        const note = document.getElementById("createInterviewNote").value;
+        
+        if (!candidateName || !position || !interviewDate || !interviewTime) {
+            alert("❌ Vui lòng điền đầy đủ thông tin bắt buộc!");
+            return;
+        }
+        
+        if (!candidateEmail) {
+            alert("❌ Vui lòng nhập email của ứng viên!");
+            return;
+        }
+        
+        const interviewId = Date.now();
+        const newInterview = {
+            id: interviewId,
+            candidateId: candidateId,
+            candidateName: candidateName,
+            candidateEmail: candidateEmail,
+            position: position,
             date: interviewDate,
             time: interviewTime,
             type: interviewType,
-            location: newInterview.location,
-            position: position,
-            note: note
-        }
-    );
-    
-    renderInterviews();
-    addActivity(`📅 Đã tạo lịch phỏng vấn cho ${candidateName}`);
-    addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${candidateName} lúc ${interviewTime} ngày ${interviewDate}`, "interview");
-    document.getElementById("createInterviewModal").classList.remove("show");
-    alert("✅ Đã tạo lịch phỏng vấn và gửi thông báo cho ứng viên!");
-    this.reset();
-});
+            location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'),
+            note: note || '',
+            status: "upcoming",
+            createdAt: new Date().toISOString()
+        };
+        
+        let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+        allInterviews.push(newInterview);
+        localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
+        interviews = allInterviews;
+        
+        const formattedDate = new Date(interviewDate).toLocaleDateString('vi-VN');
+        
+        // ===== GỬI THÔNG BÁO LỊCH PHỎNG VẤN CHO ỨNG VIÊN =====
+        sendNotificationToCandidate(
+            candidateEmail,
+            "📅 Lịch phỏng vấn",
+            `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}. Hình thức: ${interviewType === 'online' ? 'Online' : 'Trực tiếp'}. Địa điểm: ${newInterview.location}`,
+            "interview",
+            {
+                date: interviewDate,
+                time: interviewTime,
+                type: interviewType,
+                location: newInterview.location,
+                position: position,
+                note: note
+            }
+        );
+        
+        renderInterviews();
+        addActivity(`📅 Đã tạo lịch phỏng vấn cho ${candidateName}`);
+        addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${candidateName} lúc ${interviewTime} ngày ${interviewDate}`, "interview");
+        document.getElementById("createInterviewModal").classList.remove("show");
+        
+        alert(`✅ Đã tạo lịch phỏng vấn cho ${candidateName}!\n\n📧 Thông báo đã được gửi đến email: ${candidateEmail}\n\n⏰ Thời gian: ${interviewTime} - ${formattedDate}\n📍 Địa điểm: ${newInterview.location}`);
+        
+        this.reset();
+    });
     
     // ==================== ĐĂNG TIN MỚI ====================
     let currentStep = 1;
@@ -903,7 +906,6 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
             el.classList.toggle('active', i + 1 === step);
         });
         
-        // Cập nhật summary ở step 3
         if (step === 3) {
             document.getElementById('summaryTitle').innerText = document.getElementById('jobTitle').value || '---';
             document.getElementById('summaryCategory').innerText = document.getElementById('jobCategory').value || '---';
@@ -913,7 +915,6 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         }
     }
     
-    // Xử lý thêm kỹ năng
     function renderSkillsTags() {
         const container = document.getElementById('skillsList');
         if (!container) return;
@@ -932,9 +933,7 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         renderSkillsTags();
     };
     
-    // Xử lý đăng tin
     function submitJobPost() {
-        // Lấy dữ liệu từ form
         const title = document.getElementById('jobTitle').value.trim();
         const category = document.getElementById('jobCategory').value;
         const salary = document.getElementById('jobSalary').value.trim();
@@ -947,14 +946,12 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         const benefits = document.getElementById('jobBenefits').value;
         const skills = skillsList;
         
-        // Validate
         if (!title) { alert('Vui lòng nhập tiêu đề tin!'); showStep(1); return; }
         if (!category) { alert('Vui lòng chọn lĩnh vực!'); showStep(1); return; }
         if (!salary) { alert('Vui lòng nhập mức lương!'); showStep(1); return; }
         if (!location) { alert('Vui lòng chọn địa điểm!'); showStep(1); return; }
         if (!startDate) { alert('Vui lòng chọn ngày bắt đầu!'); showStep(1); return; }
         
-        // Kiểm tra ngày bắt đầu không được nhỏ hơn hôm nay
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const selectedDate = new Date(startDate);
@@ -966,20 +963,15 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         
         if (!fullDesc) { alert('Vui lòng nhập mô tả chi tiết!'); showStep(2); return; }
         
-        // Tính ngày hết hạn
         const expiryDate = getEndDate(startDate, duration);
         const totalPrice = calculateTotalPrice(duration);
-        
-        // Tạo mã giao dịch
         const transactionCode = 'DT' + Date.now();
         document.getElementById('transactionCode').innerText = transactionCode;
         
-        // Xác nhận thanh toán (mô phỏng)
         const confirmPayment = confirm(`Xác nhận đăng tin với các thông tin:\n\nTiêu đề: ${title}\nThời gian: ${duration} ngày\nTổng phí: ${formatCurrency(totalPrice)}\n\nMã giao dịch: ${transactionCode}\nNgân hàng: Vietcombank\nSố TK: 1234567890\n\nSau khi thanh toán, tin sẽ được đăng ngay. Bạn đã chuyển khoản thành công?`);
         
         if (!confirmPayment) return;
         
-        // Tạo job mới
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         const newJob = {
             id: Date.now(),
@@ -1007,7 +999,6 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         jobs.push(newJob);
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
-        // Lưu giao dịch vào lịch sử
         let transactions = JSON.parse(localStorage.getItem("hr_transactions")) || [];
         transactions.unshift({
             id: transactionCode,
@@ -1021,7 +1012,6 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         });
         localStorage.setItem("hr_transactions", JSON.stringify(transactions));
         
-        // Reset form
         document.getElementById('jobTitle').value = '';
         document.getElementById('jobCategory').value = '';
         document.getElementById('jobSalary').value = '';
@@ -1035,7 +1025,6 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         skillsList = [];
         renderSkillsTags();
         
-        // Đóng modal và refresh
         document.getElementById('jobPostModal').classList.remove('show');
         renderJobs();
         addActivity(`📌 Đã đăng tin tuyển dụng mới: ${title} (${duration} ngày - ${formatCurrency(totalPrice)})`);
@@ -1044,104 +1033,94 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         showStep(1);
     }
     
-    // ==================== CÁC HÀM KHÁC ====================
+    // ==================== RENDER CANDIDATES ====================
     function renderCandidates() {
-    const container = document.getElementById("candidate-list");
-    if (!container) return;
-    
-    // Lấy dữ liệu từ cả hai nguồn và đồng bộ
-    let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
-    let applications = JSON.parse(localStorage.getItem("applications")) || [];
-    
-    // Đồng bộ: cập nhật hr_candidates từ applications nếu có ứng viên mới
-    let hasChanges = false;
-    
-    applications.forEach(app => {
-        // Kiểm tra xem ứng viên đã có trong hr_candidates chưa
-        const exists = hrCandidates.some(c => 
-            c.email === app.userEmail && 
-            c.jobId === app.jobId
-        );
+        const container = document.getElementById("candidate-list");
+        if (!container) return;
         
-        if (!exists) {
-            // Thêm ứng viên mới vào hr_candidates
-            const newCandidate = {
-                id: app.id,
-                name: app.userName,
-                email: app.userEmail,
-                phone: app.userPhone || '',
-                position: app.jobTitle,
-                company: app.company,
-                jobId: app.jobId,
-                skills: app.skills ? (Array.isArray(app.skills) ? app.skills : app.skills.split(/[,\n]+/).map(s => s.trim())) : [],
-                experience: app.experience || '',
-                education: app.education || '',
-                address: app.address || '',
-                intro: app.intro || '',
-                date: app.date,
-                fullDate: app.fullDate || new Date().toISOString(),
-                status: app.status || 'pending'
-            };
-            hrCandidates.push(newCandidate);
-            hasChanges = true;
+        let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        
+        let hasChanges = false;
+        
+        applications.forEach(app => {
+            const exists = hrCandidates.some(c => c.email === app.userEmail && c.jobId === app.jobId);
+            if (!exists) {
+                const newCandidate = {
+                    id: app.id,
+                    name: app.userName,
+                    email: app.userEmail,
+                    phone: app.userPhone || '',
+                    position: app.jobTitle,
+                    company: app.company,
+                    jobId: app.jobId,
+                    skills: app.skills ? (Array.isArray(app.skills) ? app.skills : app.skills.split(/[,\n]+/).map(s => s.trim())) : [],
+                    experience: app.experience || '',
+                    education: app.education || '',
+                    address: app.address || '',
+                    intro: app.intro || '',
+                    date: app.date,
+                    fullDate: app.fullDate || new Date().toISOString(),
+                    status: app.status || 'pending'
+                };
+                hrCandidates.push(newCandidate);
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
         }
-    });
-    
-    if (hasChanges) {
-        localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
-    }
-    
-    // Lọc theo filter
-    const filterValue = document.getElementById("candidateFilter")?.value || "all";
-    const positionValue = document.getElementById("positionFilter")?.value || "all";
-    
-    let filtered = [...hrCandidates];
-    if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
-    if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></tr>';
-        updateStats();
-        return;
-    }
-    
-    container.innerHTML = filtered.map(c => {
-        const statusText = c.status === 'pending' ? '⏳ Chờ duyệt' : (c.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối');
-        const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger');
         
-        return `
-            <tr>
-                <td>
-                    <strong>${escapeHtml(c.name)}</strong><br>
-                    <small>${escapeHtml(c.email)}</small><br>
-                    <small>📞 ${escapeHtml(c.phone) || 'Chưa cập nhật'}</small>
-                </td>
-                <td>
-                    <strong>${escapeHtml(c.position)}</strong><br>
-                    <small>🏢 ${escapeHtml(c.company)}</small>
-                </td>
-                <td>${c.date || '---'}</td>
-                <td><span class="tag ${statusClass}">${statusText}</span></td>
-                <td>
-                    <button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>
-                    ${c.status === 'pending' ? `
-                        <button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button>
-                        <button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>
-                    ` : ''}
-                    ${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> Phỏng vấn</button>` : ''}
-                 </td>
-            </tr>
-        `;
-    }).join('');
-    
-    // Gắn sự kiện cho các nút
-    document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(hrCandidates.find(c => c.id === parseInt(btn.dataset.id))));
-    document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
-    document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => rejectCandidate(parseInt(btn.dataset.id)));
-    document.querySelectorAll(".create-interview-btn").forEach(btn => btn.onclick = () => openCreateInterviewModal(parseInt(btn.dataset.id), btn.dataset.name, btn.dataset.position));
-    
-    updateStats();
-}
+        const filterValue = document.getElementById("candidateFilter")?.value || "all";
+        const positionValue = document.getElementById("positionFilter")?.value || "all";
+        
+        let filtered = [...hrCandidates];
+        if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
+        if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></tr>';
+            updateStats();
+            return;
+        }
+        
+        container.innerHTML = filtered.map(c => {
+            const statusText = c.status === 'pending' ? '⏳ Chờ duyệt' : (c.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối');
+            const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger');
+            
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(c.name)}</strong><br>
+                        <small>${escapeHtml(c.email)}</small><br>
+                        <small>📞 ${escapeHtml(c.phone) || 'Chưa cập nhật'}</small>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(c.position)}</strong><br>
+                        <small>🏢 ${escapeHtml(c.company)}</small>
+                    </td>
+                    <td>${c.date || '---'}</td>
+                    <td><span class="tag ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>
+                        ${c.status === 'pending' ? `
+                            <button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button>
+                            <button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>
+                        ` : ''}
+                        ${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> Phỏng vấn</button>` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(hrCandidates.find(c => c.id === parseInt(btn.dataset.id))));
+        document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
+        document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => rejectCandidate(parseInt(btn.dataset.id)));
+        document.querySelectorAll(".create-interview-btn").forEach(btn => btn.onclick = () => openCreateInterviewModal(parseInt(btn.dataset.id), btn.dataset.name, btn.dataset.position));
+        
+        updateStats();
+    }
     
     function showCVModal(candidate) {
         if (!candidate) return;
@@ -1160,58 +1139,7 @@ document.getElementById("createInterviewForm")?.addEventListener("submit", funct
         modal.classList.add("show");
     }
     
-    function approveCandidate(id) {
-    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
-    const candidate = data.find(c => c.id === id);
-    if (candidate && candidate.status === 'pending') {
-        candidate.status = "approved";
-        localStorage.setItem("hr_candidates", JSON.stringify(data));
-        
-        // ⭐ ĐỒNG BỘ VỚI applications (QUAN TRỌNG)
-        let applications = JSON.parse(localStorage.getItem("applications")) || [];
-        const app = applications.find(a => 
-            a.id === id || 
-            (a.candidateEmail === candidate.email && a.jobTitle === candidate.position)
-        );
-        if (app) {
-            app.status = "approved";
-            localStorage.setItem("applications", JSON.stringify(applications));
-        }
-        
-        renderCandidates();
-        addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
-        addNotification('Hồ sơ được duyệt', `Hồ sơ của ${candidate.name} đã được duyệt`, "application");
-        alert('✅ Đã duyệt hồ sơ!');
-    }
-}
-
-function rejectCandidate(id) {
-    if (!confirm("Từ chối hồ sơ này?")) return;
-    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
-    const candidate = data.find(c => c.id === id);
-    if (candidate && candidate.status === 'pending') {
-        candidate.status = "rejected";
-        localStorage.setItem("hr_candidates", JSON.stringify(data));
-        
-        // ⭐ ĐỒNG BỘ VỚI applications
-        let applications = JSON.parse(localStorage.getItem("applications")) || [];
-        const app = applications.find(a => 
-            a.id === id || 
-            (a.candidateEmail === candidate.email && a.jobTitle === candidate.position)
-        );
-        if (app) {
-            app.status = "rejected";
-            localStorage.setItem("applications", JSON.stringify(applications));
-        }
-        
-        renderCandidates();
-        addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
-        addNotification('Hồ sơ bị từ chối', `Rất tiếc, hồ sơ của ${candidate.name} không phù hợp`, "system");
-        alert('❌ Đã từ chối hồ sơ!');
-    }
-}
-    
-    // ==================== THÔNG BÁO ====================
+    // ==================== THÔNG BÁO TRONG HR ====================
     function renderNotifications() {
         const container = document.getElementById("notification-list");
         if (!container) return;
@@ -1275,40 +1203,6 @@ function rejectCandidate(id) {
     }
     
     // ==================== LỊCH PHỎNG VẤN ====================
-    function openCreateInterviewModal(id, name, position) {
-        const modal = document.getElementById("createInterviewModal");
-        document.getElementById("createInterviewCandidateId").value = id;
-        document.getElementById("createInterviewCandidate").value = name;
-        document.getElementById("createInterviewPosition").value = position;
-        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
-        document.getElementById("createInterviewTime").value = "09:00";
-        modal.classList.add("show");
-    }
-    
-    document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const newInterview = {
-            id: Date.now(),
-            candidate: document.getElementById("createInterviewCandidate").value,
-            position: document.getElementById("createInterviewPosition").value,
-            date: document.getElementById("createInterviewDate").value,
-            time: document.getElementById("createInterviewTime").value,
-            type: document.getElementById("createInterviewType").value,
-            location: document.getElementById("createInterviewLocation").value || "Văn phòng công ty",
-            note: document.getElementById("createInterviewNote").value,
-            status: "upcoming"
-        };
-        interviews.push(newInterview);
-        localStorage.setItem("hr_interviews", JSON.stringify(interviews));
-        renderInterviews();
-        addActivity(`📅 Đã tạo lịch phỏng vấn cho ${newInterview.candidate}`);
-        addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${newInterview.candidate} lúc ${newInterview.time} ngày ${newInterview.date}`, "interview");
-        document.getElementById("createInterviewModal").classList.remove("show");
-        alert("✅ Đã tạo lịch phỏng vấn!");
-        this.reset();
-    });
-    
     function renderInterviews() {
         const container = document.getElementById("interviews-container");
         if (!container) return;
@@ -1353,7 +1247,6 @@ function rejectCandidate(id) {
         document.getElementById("backToStep2")?.addEventListener("click", () => showStep(2));
         document.getElementById("submitJobPost")?.addEventListener("click", submitJobPost);
         
-        // Sự kiện khi thay đổi duration hoặc start date
         document.getElementById("jobDuration")?.addEventListener("change", updatePriceAndDate);
         document.getElementById("jobStartDate")?.addEventListener("change", updatePriceAndDate);
         
@@ -1415,6 +1308,7 @@ function rejectCandidate(id) {
     
     init();
     
+    // Export global functions
     window.searchCandidates = searchCandidates;
     window.toggleNotificationPanel = toggleNotificationPanel;
     window.markAllNotificationsRead = markAllNotificationsRead;
@@ -1423,6 +1317,8 @@ function rejectCandidate(id) {
     window.deleteInterview = deleteInterview;
     window.deleteJob = deleteJob;
     window.removeSkill = removeSkill;
+    window.approveCandidate = approveCandidate;
+    window.rejectCandidate = rejectCandidate;
 </script>
 </body>
 </html>
