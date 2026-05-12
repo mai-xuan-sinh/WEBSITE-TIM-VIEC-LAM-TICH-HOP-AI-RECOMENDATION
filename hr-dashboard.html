@@ -486,9 +486,9 @@
     // ==================== DỮ LIỆU ====================
     let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [
-        { id: 1, name: "Trần Văn A", email: "a@email.com", phone: "0912345678", position: "Frontend Developer", company: "FPT Software", skills: ["ReactJS", "JavaScript"], experience: "3 năm", date: "15/05/2026", status: "pending" },
-        { id: 2, name: "Lê Thị B", email: "b@email.com", phone: "0923456789", position: "UI/UX Designer", company: "Rikkeisoft", skills: ["Figma", "Adobe XD"], experience: "4 năm", date: "14/05/2026", status: "pending" }
-    ];
+    { id: 1, name: "Trần Văn A", email: "a@email.com", candidateEmail: "a@email.com", phone: "0912345678", position: "Frontend Developer", company: "FPT Software", skills: ["ReactJS", "JavaScript"], experience: "3 năm", date: "15/05/2026", status: "pending" },
+    { id: 2, name: "Lê Thị B", email: "b@email.com", candidateEmail: "b@email.com", phone: "0923456789", position: "UI/UX Designer", company: "Rikkeisoft", skills: ["Figma", "Adobe XD"], experience: "4 năm", date: "14/05/2026", status: "pending" }
+];
     let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
     let notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Dashboard"];
