@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>DANANG WORK - CV Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="templates.css">
+    <style>
+        body { background: #e2e8f0; display: flex; margin: 0; padding: 20px; gap: 20px; height: 100vh; font-family: 'Inter', sans-serif; }
+        .editor-panel { width: 380px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow-y: auto; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
+        textarea { height: 70px; resize: none; }
+        .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-save { background: #10b981; }
+        .btn-pdf { background: #3b82f6; }
+        .btn-back { background: #64748b; }
+        #cv-preview-container { flex: 1; overflow-y: auto; display: flex; justify-content: center; background: #cbd5e1; padding: 40px; border-radius: 12px; }
+        #cv-render { transform: scale(0.85); transform-origin: top center; }
+    </style>
+</head>
+<body>
+
+    <div class="editor-panel">
+        <h2 style="margin-top:0;">Thiết kế CV</h2>
+        <div class="input-group"><label>Ảnh thẻ</label><input type="file" id="in-img" accept="image/*"></div>
+        <div class="input-group"><label>Họ tên</label><input type="text" id="in-name" oninput="update()"></div>
+        <div class="input-group"><label>Vị trí</label><input type="text" id="in-job" oninput="update()"></div>
+        <div class="input-group"><label>Liên hệ</label><textarea id="in-contact" oninput="update()"></textarea></div>
+        <div class="input-group"><label>Học vấn</label><textarea id="in-edu" oninput="update()"></textarea></div>
+        <div class="input-group"><label>Kinh nghiệm</label><textarea id="in-exp" style="height: 120px;" oninput="update()"></textarea></div>
+        <div class="input-group"><label>Kỹ năng</label><input type="text" id="in-skills" oninput="update()"></div>
+
+        <div class="actions">
+            <button class="btn btn-save" onclick="saveData()">💾 Lưu Dữ Liệu</button>
+            <button class="btn btn-pdf" onclick="exportPDF()">📄 Xuất File PDF</button>
+            <button class="btn btn-back" onclick="history.back()">⬅ Quay lại</button>
+        </div>
+    </div>
+
+    <div id="cv-preview-container">
+        <div id="cv-render">
+            <div class="cv-layout">
+                <div class="cv-sidebar">
+                    <div class="cv-avatar-w"><img id="out-img" src=""></div>
+                    <div class="cv-side-block">
+                        <div class="cv-side-title">Liên hệ</div>
+                        <div class="cv-side-text" id="out-contact"></div>
+                    </div>
+                    <div class="cv-side-block block-edu-sidebar">
+                        <div class="cv-side-title">Học vấn</div>
+                        <div class="cv-side-text" id="out-edu-sidebar"></div>
+                    </div>
+                </div>
+
+                <div class="cv-main">
+                    <div class="cv-header">
+                        <h1 id="out-name">Họ Tên Của Bạn</h1>
+                        <p id="out-job" class="job-title"></p>
+                    </div>
+                    <div class="cv-section section-edu-main">
+                        <div class="cv-main-title">Học vấn</div>
+                        <div class="cv-main-text" id="out-edu-main"></div>
+                    </div>
+                    <div class="cv-section">
+                        <div class="cv-main-title">Kinh nghiệm</div>
+                        <div class="cv-main-text" id="out-exp"></div>
+                    </div>
+                    <div class="cv-section">
+                        <div class="cv-main-title">Kỹ năng</div>
+                        <div class="cv-main-text" id="out-skills"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const tid = params.get('template') || 'cv1';
+        document.getElementById('cv-render').className = 'template-' + tid;
+
+        function update() {
+            const name = document.getElementById('in-name').value || "HỌ TÊN CỦA BẠN";
+            document.getElementById('out-name').innerText = name;
+            document.getElementById('out-job').innerText = document.getElementById('in-job').value;
+            document.getElementById('out-contact').innerText = document.getElementById('in-contact').value;
+            
+            // Đổ dữ liệu vào cả 2 nơi (Sidebar và Main)
+            const eduVal = document.getElementById('in-edu').value;
+            document.getElementById('out-edu-sidebar').innerText = eduVal;
+            document.getElementById('out-edu-main').innerText = eduVal;
+            
+            document.getElementById('out-exp').innerText = document.getElementById('in-exp').value;
+            document.getElementById('out-skills').innerText = document.getElementById('in-skills').value;
+        }
+
+        document.getElementById('in-img').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = () => { document.getElementById('out-img').src = reader.result; document.getElementById('out-img').style.display='block'; };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+       function exportPDF() {
+
+    if (!validateCV()) return;
+
+    const element = document.getElementById('cv-render');
+
+    html2pdf().set({
+        margin: 0,
+        filename: 'CV.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { format: 'a4' }
+    }).from(element).save();
+}
+        function saveData() {
+
+    if (!validateCV()) return;
+
+    const cv = {
+        template: tid,
+
+        fullName: document.getElementById("in-name").value.trim(),
+        position: document.getElementById("in-job").value.trim(),
+        contact: document.getElementById("in-contact").value.trim(),
+        education: document.getElementById("in-edu").value.trim(),
+        experience: document.getElementById("in-exp").value.trim(),
+        skills: document.getElementById("in-skills").value.trim(),
+        avatar: document.getElementById("out-img").src,
+
+        createdAt: new Date().toLocaleString()
+    };
+
+    let saved = JSON.parse(localStorage.getItem("savedCVs")) || [];
+
+    saved.push(cv);
+
+    localStorage.setItem("savedCVs", JSON.stringify(saved));
+
+    alert("💾 Đã lưu CV thành công!");
+}
+function validateCV() {
+
+    const name = document.getElementById("in-name").value.trim();
+    const job = document.getElementById("in-job").value.trim();
+    const contact = document.getElementById("in-contact").value.trim();
+    const edu = document.getElementById("in-edu").value.trim();
+    const exp = document.getElementById("in-exp").value.trim();
+    const skills = document.getElementById("in-skills").value.trim();
+    const avatar = document.getElementById("out-img").src;
+
+    if (!name || !job || !contact || !edu || !exp || !skills) {
+        alert("⚠️ Vui lòng nhập đầy đủ tất cả thông tin CV!");
+        return false;
+    }
+
+    if (!avatar || avatar.includes("undefined") || avatar === "") {
+        alert("⚠️ Vui lòng tải ảnh CV!");
+        return false;
+    }
+
+    return true;
+}
+    </script>
+    
+</body>
+</html>
