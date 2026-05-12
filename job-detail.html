@@ -42,6 +42,53 @@
             margin-right: 8px;
             margin-bottom: 8px;
         }
+        /* User info styles */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f1f5f9;
+            padding: 6px 15px;
+            border-radius: 40px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        #userBox { display: none; }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .user-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+        }
     </style>
 </head>
 <body>
@@ -178,10 +225,67 @@
 
     <script src="jobs-data.js"></script>
     <script>
+        // ==================== LẤY JOBS TỪ NHIỀU NGUỒN ====================
+        function getAllJobsFromStorage() {
+            let combined = [];
+            
+            // 1. Lấy từ jobs-data.js (static data)
+            if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+                combined = [...allJobs];
+            }
+            
+            // 2. Lấy từ localStorage jobs (nơi Admin duyệt)
+            const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+            
+            // 3. Lấy từ hr_jobs (nơi HR đăng tin)
+            const hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+            
+            // Gộp tất cả
+            combined = [...combined, ...storedJobs, ...hrJobs];
+            
+            // Lọc chỉ lấy jobs có status = "active" hoặc "approved"
+            const activeJobs = combined.filter(job => {
+                if (job.status && job.status !== 'active' && job.status !== 'approved') {
+                    return false;
+                }
+                return job.title && job.title.trim() !== '';
+            });
+            
+            // Loại bỏ trùng lặp theo id
+            const uniqueJobs = [];
+            const ids = new Set();
+            for (const job of activeJobs) {
+                if (!ids.has(job.id)) {
+                    ids.add(job.id);
+                    uniqueJobs.push(job);
+                }
+            }
+            
+            console.log(`📊 job-detail: Đã tải ${uniqueJobs.length} việc làm`);
+            return uniqueJobs;
+        }
+
         // Hàm lấy thông tin job từ URL
         function getJobIdFromURL() {
             const params = new URLSearchParams(window.location.search);
             return params.get('id');
+        }
+
+        // Hàm tìm job trong tất cả nguồn dữ liệu
+        function findJobById(jobId) {
+            const allJobsList = getAllJobsFromStorage();
+            return allJobsList.find(j => j.id == jobId);
+        }
+
+        // Hàm escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
 
         // Hàm hiển thị chi tiết job
@@ -197,8 +301,8 @@
                 return;
             }
             
-            // Tìm job trong allJobs (từ jobs-data.js)
-            const job = allJobs.find(j => j.id == jobId);
+            // Tìm job trong tất cả nguồn dữ liệu
+            const job = findJobById(parseInt(jobId));
             
             if (!job) {
                 loadingDiv.style.display = 'none';
@@ -214,7 +318,7 @@
             document.title = `${job.title} - Danang Work`;
             
             // Job Header
-            document.getElementById('jobTitle').innerHTML = `${job.title} <i class="fas fa-check-circle verified-icon" style="color: #2b4cc4;"></i>`;
+            document.getElementById('jobTitle').innerHTML = `${escapeHtml(job.title)} <i class="fas fa-check-circle verified-icon" style="color: #2b4cc4;"></i>`;
             
             // Job Meta
             const jobMeta = document.getElementById('jobMeta');
@@ -223,28 +327,28 @@
                     <div class="meta-icon"><i class="fas fa-dollar-sign"></i></div>
                     <div class="meta-text">
                         <span class="label">Mức lương</span>
-                        <span class="value salary-range">${job.salary || 'Thỏa thuận'}</span>
+                        <span class="value salary-range">${escapeHtml(job.salary || 'Thỏa thuận')}</span>
                     </div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-icon"><i class="fas fa-map-marker-alt"></i></div>
                     <div class="meta-text">
                         <span class="label">Địa điểm</span>
-                        <span class="value">${job.location || job.district || 'Đà Nẵng'}</span>
+                        <span class="value">${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
                     </div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-icon"><i class="fas fa-briefcase"></i></div>
                     <div class="meta-text">
                         <span class="label">Kinh nghiệm</span>
-                        <span class="value">${job.experience || 'Không yêu cầu'}</span>
+                        <span class="value">${escapeHtml(job.experience || 'Không yêu cầu')}</span>
                     </div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-icon"><i class="fas fa-graduation-cap"></i></div>
                     <div class="meta-text">
                         <span class="label">Học vấn</span>
-                        <span class="value">${job.education || 'Đại học'}</span>
+                        <span class="value">${escapeHtml(job.education || 'Đại học')}</span>
                     </div>
                 </div>
             `;
@@ -254,8 +358,8 @@
             if (job.experience || job.education) {
                 requirementsRow.style.display = 'flex';
                 document.getElementById('requirementsTags').innerHTML = `
-                    <span class="tag">${job.experience || 'Không yêu cầu kinh nghiệm'}</span>
-                    <span class="tag">${job.education || 'Đại học'}</span>
+                    <span class="tag">${escapeHtml(job.experience || 'Không yêu cầu kinh nghiệm')}</span>
+                    <span class="tag">${escapeHtml(job.education || 'Đại học')}</span>
                 `;
             } else {
                 requirementsRow.style.display = 'none';
@@ -265,7 +369,7 @@
             if (job.skills && job.skills.length > 0) {
                 document.getElementById('skillsRow').style.display = 'flex';
                 document.getElementById('skillsTags').innerHTML = job.skills.map(skill => 
-                    `<span class="skill-tag">${skill}</span>`
+                    `<span class="skill-tag">${escapeHtml(skill)}</span>`
                 ).join('');
             } else {
                 document.getElementById('skillsRow').style.display = 'none';
@@ -280,15 +384,15 @@
                     <li>Tham gia các hoạt động đào tạo nâng cao kỹ năng</li>
                 </ul>
             `;
-            document.getElementById('jobDescText').innerHTML = typeof descHtml === 'string' ? descHtml : `<ul>${descHtml.map(d => `<li>${d}</li>`).join('')}</ul>`;
+            document.getElementById('jobDescText').innerHTML = typeof descHtml === 'string' ? descHtml : `<ul>${descHtml.map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ul>`;
             
             // Yêu cầu ứng viên
             const requirementsHtml = `
                 <ul>
-                    <li><strong>Kỹ năng:</strong> ${job.skills ? job.skills.join(', ') : 'Không yêu cầu cụ thể'}</li>
-                    <li><strong>Kinh nghiệm:</strong> ${job.experience || 'Không yêu cầu'}</li>
-                    <li><strong>Học vấn:</strong> ${job.education || 'Đại học'}</li>
-                    <li><strong>Ngoại ngữ:</strong> ${job.language || 'Tiếng Anh cơ bản'}</li>
+                    <li><strong>Kỹ năng:</strong> ${job.skills ? job.skills.map(s => escapeHtml(s)).join(', ') : 'Không yêu cầu cụ thể'}</li>
+                    <li><strong>Kinh nghiệm:</strong> ${escapeHtml(job.experience || 'Không yêu cầu')}</li>
+                    <li><strong>Học vấn:</strong> ${escapeHtml(job.education || 'Đại học')}</li>
+                    <li><strong>Ngoại ngữ:</strong> ${escapeHtml(job.language || 'Tiếng Anh cơ bản')}</li>
                     <li><strong>Chủ động, sáng tạo và có trách nhiệm với công việc</strong></li>
                 </ul>
             `;
@@ -297,7 +401,7 @@
             // Quyền lợi
             const benefitsHtml = `
                 <ul>
-                    <li>💰 Lương cạnh tranh: ${job.salary || 'Thỏa thuận theo năng lực'}</li>
+                    <li>💰 Lương cạnh tranh: ${escapeHtml(job.salary || 'Thỏa thuận theo năng lực')}</li>
                     <li>🏥 Đóng BHXH, BHYT, BHTN đầy đủ theo quy định</li>
                     <li>🎉 Thưởng lễ, Tết và các dịp đặc biệt</li>
                     <li>📚 Cơ hội đào tạo và thăng tiến rõ ràng</li>
@@ -307,7 +411,7 @@
             document.getElementById('jobBenefitsText').innerHTML = benefitsHtml;
             
             // Company Card
-            document.getElementById('companyName').innerHTML = job.company || 'Công ty';
+            document.getElementById('companyName').innerHTML = escapeHtml(job.company || 'Công ty');
             const companyLogo = document.getElementById('companyLogo');
             if (job.image) {
                 companyLogo.src = job.image;
@@ -318,15 +422,15 @@
             companyInfo.innerHTML = `
                 <div class="info-item">
                     <i class="fas fa-building"></i>
-                    <span>Lĩnh vực: ${job.field || 'Đa ngành'}</span>
+                    <span>Lĩnh vực: ${escapeHtml(job.field || 'Đa ngành')}</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>Địa chỉ: ${job.location || job.district || 'Đà Nẵng'}</span>
+                    <span>Địa chỉ: ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Quy mô: ${job.size || '100-499 nhân viên'}</span>
+                    <span>Quy mô: ${escapeHtml(job.size || '100-499 nhân viên')}</span>
                 </div>
             `;
             
@@ -337,14 +441,14 @@
                     <div class="icon-circle green"><i class="fas fa-user-tie"></i></div>
                     <div class="info-detail">
                         <span class="label">Cấp bậc</span>
-                        <span class="value">${job.level || 'Nhân viên'}</span>
+                        <span class="value">${escapeHtml(job.level || 'Nhân viên')}</span>
                     </div>
                 </div>
                 <div class="info-list-item">
                     <div class="icon-circle green"><i class="fas fa-calendar-alt"></i></div>
                     <div class="info-detail">
                         <span class="label">Hình thức</span>
-                        <span class="value">${job.type || 'Toàn thời gian'}</span>
+                        <span class="value">${escapeHtml(job.type || 'Toàn thời gian')}</span>
                     </div>
                 </div>
                 <div class="info-list-item">
@@ -358,15 +462,16 @@
             
             // Related Jobs (cùng lĩnh vực)
             const relatedJobsContainer = document.getElementById('relatedJobs');
-            const relatedJobs = allJobs.filter(j => j.field === job.field && j.id != job.id).slice(0, 4);
+            const allJobsList = getAllJobsFromStorage();
+            const relatedJobs = allJobsList.filter(j => j.field === job.field && j.id != job.id).slice(0, 4);
             
             if (relatedJobs.length > 0) {
                 relatedJobsContainer.innerHTML = relatedJobs.map(relJob => `
                     <div class="company-item" onclick="location.href='job-detail.html?id=${relJob.id}'">
-                        <img src="${relJob.image || 'https://img.icons8.com/clouds/100/000000/company.png'}" alt="${relJob.company}">
+                        <img src="${relJob.image || 'https://img.icons8.com/clouds/100/000000/company.png'}" alt="${escapeHtml(relJob.company)}">
                         <div class="company-info">
-                            <h4>${relJob.title}</h4>
-                            <span>${relJob.company}</span>
+                            <h4>${escapeHtml(relJob.title)}</h4>
+                            <span>${escapeHtml(relJob.company)}</span>
                         </div>
                     </div>
                 `).join('');
@@ -382,9 +487,8 @@
         // Hàm ứng tuyển
         function applyForJob() {
             const jobId = document.getElementById('applyNowBtn').getAttribute('data-job-id');
-            const job = allJobs.find(j => j.id == jobId);
+            const job = findJobById(parseInt(jobId));
             if (job) {
-                // Lưu thông tin ứng tuyển vào localStorage
                 const applications = JSON.parse(localStorage.getItem('applications')) || [];
                 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 
@@ -401,12 +505,41 @@
                         status: 'pending'
                     };
                     
-                    // Kiểm tra đã ứng tuyển chưa
                     const alreadyApplied = applications.some(app => app.jobId === job.id && app.userEmail === currentUser.email);
                     
                     if (!alreadyApplied) {
                         applications.push(newApplication);
                         localStorage.setItem('applications', JSON.stringify(applications));
+                        
+                        // Cập nhật hr_candidates
+                        let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+                        const existingIndex = hrCandidates.findIndex(c => 
+                            c.jobId === job.id && (c.email === currentUser.email || c.candidateEmail === currentUser.email)
+                        );
+                        
+                        if (existingIndex === -1) {
+                            const newCandidate = {
+                                id: newApplication.id,
+                                name: newApplication.userName,
+                                email: currentUser.email,
+                                candidateEmail: currentUser.email,
+                                phone: currentUser.phone || '',
+                                position: job.title,
+                                company: job.company,
+                                jobId: job.id,
+                                skills: [],
+                                experience: '',
+                                education: '',
+                                address: '',
+                                intro: '',
+                                date: newApplication.date,
+                                fullDate: new Date().toISOString(),
+                                status: 'pending'
+                            };
+                            hrCandidates.push(newCandidate);
+                            localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
+                        }
+                        
                         alert(`✅ Ứng tuyển thành công!\n\nVị trí: ${job.title}\nCông ty: ${job.company}\n\nChúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất!`);
                     } else {
                         alert(`⚠️ Bạn đã ứng tuyển vị trí này trước đó rồi!`);
@@ -416,13 +549,15 @@
                         window.location.href = 'login.html';
                     }
                 }
+            } else {
+                alert("❌ Không tìm thấy thông tin công việc!");
             }
         }
         
         // Hàm lưu tin
         function saveJob() {
             const jobId = document.getElementById('saveJobBtn').getAttribute('data-job-id');
-            const job = allJobs.find(j => j.id == jobId);
+            const job = findJobById(parseInt(jobId));
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             
             if (currentUser) {
@@ -468,7 +603,7 @@
                 userBox.innerHTML = `
                     <a href="profile.html" class="user-profile">
                         <i class="fas fa-user-circle"></i>
-                        <span class="username">${userName}</span>
+                        <span class="username">${escapeHtml(userName)}</span>
                     </a>
                     <button class="logout-btn" onclick="logoutUser()">
                         <i class="fas fa-sign-out-alt"></i>
@@ -489,6 +624,17 @@
             }
         }
         
+        // Hàm escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
         // Khởi tạo khi load trang
         document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra allJobs đã load chưa
@@ -502,6 +648,12 @@
                         displayJobDetail();
                     }
                 }, 100);
+                
+                // Timeout sau 3 giây
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    displayJobDetail();
+                }, 3000);
             }
             
             // Gán sự kiện cho nút
@@ -517,10 +669,18 @@
             
             // Cập nhật UI auth
             updateAuthUI();
+            
+            // Lắng nghe storage event
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'currentUser' || e.key === 'isLoggedIn') {
+                    updateAuthUI();
+                }
+            });
         });
         
         // Global functions
         window.logoutUser = logoutUser;
+        window.goToProfile = function() { window.location.href = 'profile.html'; };
     </script>
 </body>
 </html>

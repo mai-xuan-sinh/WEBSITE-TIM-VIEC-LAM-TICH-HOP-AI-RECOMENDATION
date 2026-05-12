@@ -189,89 +189,83 @@ function getWeekRange() {
     return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] };
 }
 
-// admin.js
-
 function updateStats() {
-    // 🔥 FIX 1: Đồng bộ tên Key với bên HR (Sử dụng hr_transactions, hr_jobs)
     const users = JSON.parse(localStorage.getItem("users")) || [];
     const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     const applications = JSON.parse(localStorage.getItem("applications")) || [];
     const companies = JSON.parse(localStorage.getItem("companies")) || [];
+    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     
-    // HR lưu thanh toán vào 'hr_transactions', nên Admin phải đọc đúng key này
-    const transactions = JSON.parse(localStorage.getItem("hr_transactions")) || 
-                         JSON.parse(localStorage.getItem("transactions")) || [];
+    const employers = users.filter(u => u.role === "employer" || u.userType === "employer" || u.role === "hr");
+    const candidates = users.filter(u => u.role === "candidate");
+    const pendingJobs = jobs.filter(j => j.status === "pending");
+    const totalRevenue = transactions.filter(t => t.status === "completed").reduce((sum, t) => sum + (t.amount || 0), 0);
     
-    // --- 1. Thống kê chung (Tab Tổng quan) ---
-    const stats = {
+    const elements = {
         totalUsers: users.length,
-        totalEmployers: users.filter(u => u.role === "employer" || u.role === "hr").length,
-        totalCandidates: users.filter(u => u.role === "candidate").length,
+        totalEmployers: employers.length,
+        totalCandidates: candidates.length,
         totalJobs: jobs.length,
         totalApplications: applications.length,
         totalCompanies: companies.length,
-        pendingJobs: jobs.filter(j => j.status === "pending").length,
-        // Ép kiểu số để tính toán chính xác
-        totalRevenue: transactions.filter(t => t.status === "completed")
-                        .reduce((sum, t) => sum + (Number(t.amount) || 0), 0).toLocaleString()
+        pendingJobs: pendingJobs.length,
+        totalRevenue: totalRevenue.toLocaleString()
     };
     
-    for (const [id, value] of Object.entries(stats)) {
+    for (const [id, value] of Object.entries(elements)) {
         const el = document.getElementById(id);
         if (el) el.innerText = value;
     }
-
-    // --- 2. Thống kê chi tiết (Tab Báo cáo & Thống kê) ---
-    const now = new Date();
-    // Chuyển về múi giờ VN để so sánh chính xác ngày hôm nay
-    const todayStr = now.toLocaleDateString('en-CA'); // Trả về YYYY-MM-DD
-
-    const revToday = transactions.filter(t => {
-        // Kiểm tra cả trường 'date' hoặc 'startDate' tùy theo HR lưu
-        const tDate = t.date ? t.date.split('T')[0] : t.startDate;
-        return t.status === "completed" && tDate === todayStr;
-    }).reduce((s, t) => s + (Number(t.amount) || 0), 0);
     
-    const revMonth = transactions.filter(t => {
-        const tDate = new Date(t.date || t.startDate);
-        return t.status === "completed" && 
-               tDate.getMonth() === now.getMonth() && 
-               tDate.getFullYear() === now.getFullYear();
-    }).reduce((s, t) => s + (Number(t.amount) || 0), 0);
-
-    // Hiển thị ra giao diện
-    const uiElements = {
-        "revenueToday": revToday.toLocaleString() + "đ",
-        "revenueMonth": revMonth.toLocaleString() + "đ",
-        "revenueYear": stats.totalRevenue + "đ", // Tạm lấy tổng doanh thu cho năm
-        "reportTotalUsers": users.length,
-        "reportTotalJobs": jobs.length,
-        "reportTotalApps": applications.length,
-        "reportActiveCompanies": companies.filter(c => c.status === "active").length
+    const reportTotalUsers = document.getElementById("reportTotalUsers");
+    const reportTotalJobs = document.getElementById("reportTotalJobs");
+    const reportTotalApps = document.getElementById("reportTotalApps");
+    const reportActiveCompanies = document.getElementById("reportActiveCompanies");
+    
+    if (reportTotalUsers) reportTotalUsers.innerText = users.length;
+    if (reportTotalJobs) reportTotalJobs.innerText = jobs.length;
+    if (reportTotalApps) reportTotalApps.innerText = applications.length;
+    if (reportActiveCompanies) reportActiveCompanies.innerText = companies.filter(c => c.status === "active").length;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const thisWeek = getWeekRange();
+    const thisMonth = new Date().getMonth();
+    const thisYear = new Date().getFullYear();
+    
+    const revenueToday = transactions.filter(t => t.status === "completed" && t.date === today).reduce((s, t) => s + t.amount, 0);
+    const revenueWeek = transactions.filter(t => t.status === "completed" && t.date >= thisWeek.start && t.date <= thisWeek.end).reduce((s, t) => s + t.amount, 0);
+    const revenueMonth = transactions.filter(t => t.status === "completed" && new Date(t.date).getMonth() === thisMonth && new Date(t.date).getFullYear() === thisYear).reduce((s, t) => s + t.amount, 0);
+    const revenueYear = transactions.filter(t => t.status === "completed" && new Date(t.date).getFullYear() === thisYear).reduce((s, t) => s + t.amount, 0);
+    
+    const revenueElements = {
+        revenueToday: revenueToday,
+        revenueWeek: revenueWeek,
+        revenueMonth: revenueMonth,
+        revenueYear: revenueYear
     };
-
-    for (const [id, value] of Object.entries(uiElements)) {
+    
+    for (const [id, value] of Object.entries(revenueElements)) {
         const el = document.getElementById(id);
-        if (el) el.innerText = value;
+        if (el) el.innerText = value.toLocaleString() + "đ";
     }
-
-    renderTransactions(transactions);
+    
+    renderTransactions();
 }
 
-// 🔥 FIX 2: Đưa hàm render ra ngoài và nhận tham số dữ liệu
+// ==================== RENDER TRANSACTIONS ====================
 function renderTransactions(data) {
-    const transactions = data || JSON.parse(localStorage.getItem("hr_transactions")) || [];
+    const transactions = data || JSON.parse(localStorage.getItem("transactions")) || [];
     const tbody = document.getElementById("transactionList");
     if (!tbody) return;
-
+    
     if (transactions.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#94a3b8;">📢 Chưa có dữ liệu giao dịch</td></tr>`;
         return;
     }
-
+    
     tbody.innerHTML = transactions.map(t => `
         <tr>
-            <td><span style="font-family: monospace; font-weight:600;">${t.id || t.transactionCode}</span></td>
+            <td>${t.id || t.transactionCode || "---"}</td>
             <td>${t.companyName || t.jobTitle || "Hệ thống"}</td>
             <td><span class="status-badge" style="background:#f0f9ff; color:#0369a1; border:none;">${t.package || "Đăng tin"}</span></td>
             <td>${t.duration || t.days || 0} ngày</td>
@@ -279,9 +273,9 @@ function renderTransactions(data) {
             <td>${t.date ? new Date(t.date).toLocaleDateString('vi-VN') : (t.startDate || "---")}</td>
             <td>
                 <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
-                    ${t.status === 'completed' ? 'Thành công' : 'Chờ xử lý'}
+                    ${t.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
                 </span>
-            </td>
+             </td>
         </tr>
     `).join("");
 }
@@ -312,14 +306,14 @@ function renderUsers() {
             <td>${user.name || user.fullname || "---"}</td>
             <td>${user.email}</td>
             <td>${user.phone || "---"}</td>
-            <td>${user.role === "admin" ? "Quản trị viên" : (user.role === "employer" ? "Nhà tuyển dụng" : "Ứng viên")}</td>
+            <td>${user.role === "admin" ? "Quản trị viên" : (user.role === "employer" || user.role === "hr" ? "Nhà tuyển dụng" : "Ứng viên")}</td>
             <td><span class="status-badge ${user.status === "banned" ? "status-inactive" : "status-active"}">${user.status === "banned" ? "Đã khóa" : "Hoạt động"}</span></td>
             <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString("vi-VN") : "---"}</td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-warning btn-sm" onclick="toggleUserStatus(${user.id})"><i class="fas ${user.status === "banned" ? "fa-unlock" : "fa-lock"}"></i></button>
-            </td>
+             </td>
         </tr>
     `).join("");
     
@@ -346,7 +340,7 @@ function openUserModal(userId = null) {
             document.getElementById("userFullname").value = user.name || user.fullname || "";
             document.getElementById("userEmail").value = user.email;
             document.getElementById("userPhone").value = user.phone || "";
-            document.getElementById("userRole").value = user.role === "admin" ? "admin" : (user.role === "employer" ? "employer" : "candidate");
+            document.getElementById("userRole").value = user.role === "admin" ? "admin" : (user.role === "employer" || user.role === "hr" ? "employer" : "candidate");
             document.getElementById("userStatus").value = user.status === "banned" ? "banned" : "active";
             document.getElementById("userPassword").value = "";
         }
@@ -432,10 +426,10 @@ function renderJobs() {
     tbody.innerHTML = paginated.map(job => `
         <tr>
             <td>${job.id}</td>
-            <td><strong>${job.title || "---"}</strong></td>
-            <td>${job.company || "---"}</td>
-            <td>${job.field || "---"}</td>
-            <td>${job.location || job.district || "---"}</td>
+            <td><strong>${escapeHtml(job.title || "---")}</strong></td>
+            <td>${escapeHtml(job.company || "---")}</td>
+            <td>${escapeHtml(job.field || "---")}</td>
+            <td>${escapeHtml(job.location || job.district || "---")}</td>
             <td><span class="status-badge ${job.status === "active" ? "status-active" : (job.status === "pending" ? "status-pending" : "status-inactive")}">
                 ${job.status === "active" ? "Đang đăng" : (job.status === "pending" ? "Chờ duyệt" : "Đã ẩn")}
             </span></td>
@@ -445,7 +439,7 @@ function renderJobs() {
                 <button class="btn-outline btn-sm" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-primary btn-sm" onclick="toggleJobStatus(${job.id})"><i class="fas ${job.status === "active" ? "fa-eye-slash" : "fa-eye"}"></i> ${job.status === "active" ? "Ẩn" : "Hiện"}</button>
-            </td>
+             </td>
         </tr>
     `).join("");
     
@@ -474,7 +468,7 @@ function editJob(id) {
         const industries = JSON.parse(localStorage.getItem("industries")) || [];
         const fieldSelect = document.getElementById("editJobField");
         if (fieldSelect) {
-            fieldSelect.innerHTML = industries.map(ind => `<option value="${ind}" ${job.field === ind ? 'selected' : ''}>${ind}</option>`).join("");
+            fieldSelect.innerHTML = industries.map(ind => `<option value="${escapeHtml(ind)}" ${job.field === ind ? 'selected' : ''}>${escapeHtml(ind)}</option>`).join("");
         }
         
         document.getElementById("editJobModal").classList.add("active");
@@ -554,11 +548,11 @@ function openApproveModal(jobId) {
     const content = document.getElementById("jobApproveContent");
     if (content) {
         content.innerHTML = `
-            <p><strong>Tiêu đề:</strong> ${job.title || "---"}</p>
-            <p><strong>Công ty:</strong> ${job.company || "---"}</p>
-            <p><strong>Lĩnh vực:</strong> ${job.field || "---"}</p>
-            <p><strong>Mức lương:</strong> ${job.salary || "---"}</p>
-            <p><strong>Địa điểm:</strong> ${job.location || job.district || "---"}</p>
+            <p><strong>Tiêu đề:</strong> ${escapeHtml(job.title || "---")}</p>
+            <p><strong>Công ty:</strong> ${escapeHtml(job.company || "---")}</p>
+            <p><strong>Lĩnh vực:</strong> ${escapeHtml(job.field || "---")}</p>
+            <p><strong>Mức lương:</strong> ${escapeHtml(job.salary || "---")}</p>
+            <p><strong>Địa điểm:</strong> ${escapeHtml(job.location || job.district || "---")}</p>
             <p><strong>Mô tả:</strong> ${(job.desc || "Chưa có mô tả").substring(0, 200)}${(job.desc || "").length > 200 ? "..." : ""}</p>
         `;
     }
@@ -581,14 +575,12 @@ function approveJob() {
         
         // 🔥 QUAN TRỌNG: Đồng bộ vào allJobs (cho trang người dùng)
         if (typeof allJobs !== 'undefined') {
-            // Cập nhật hoặc thêm vào allJobs
             const existingIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
             if (existingIndex !== -1) {
                 allJobs[existingIndex] = { ...allJobs[existingIndex], ...jobs[index] };
             } else {
-                allJobs.unshift(jobs[index]);  // thêm mới vào đầu danh sách
+                allJobs.unshift(jobs[index]);
             }
-            // Lưu lại allJobs vào localStorage để các trang khác dùng
             localStorage.setItem("allJobs", JSON.stringify(allJobs));
         }
         
@@ -601,6 +593,12 @@ function approveJob() {
             globalJobs.unshift(jobs[index]);
         }
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
+        
+        // 🔥 Gửi thông báo đến các tab khác
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'hr_jobs',
+            newValue: JSON.stringify(jobs)
+        }));
         
         alert("✅ Đã duyệt và đăng tin thành công!");
         closeJobApproveModal();
@@ -658,20 +656,20 @@ function renderCompanies() {
     if (!tbody) return;
     
     tbody.innerHTML = filtered.map(company => `
-        <tr>
+        <table>
             <td>${company.id}</td>
             <td><div class="company-logo-cell"><img src="${company.logo || 'https://placehold.co/40'}" style="width:35px;height:35px;object-fit:contain; border-radius: 8px;" onerror="this.src='https://placehold.co/40'"></div></td>
-            <td><strong>${company.name}</strong></td>
-            <td>${company.address || "---"}</td>
-            <td>${company.phone || "---"}</td>
-            <td>${company.industry || "---"}</td>
+            <td><strong>${escapeHtml(company.name)}</strong></td>
+            <td>${escapeHtml(company.address || "---")}</td>
+            <td>${escapeHtml(company.phone || "---")}</td>
+            <td>${escapeHtml(company.industry || "---")}</td>
             <td><span class="status-badge ${company.status === "active" ? "status-active" : (company.status === "pending" ? "status-pending" : "status-inactive")}">
                 ${company.status === "active" ? "Hoạt động" : (company.status === "pending" ? "Chờ duyệt" : "Đã khóa")}
             </span></td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editCompany(${company.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteCompany(${company.id})"><i class="fas fa-trash"></i></button>
-            </td>
+             </td>
         </tr>
     `).join("");
 }
@@ -684,7 +682,7 @@ function openCompanyModal(companyId = null) {
     const industries = JSON.parse(localStorage.getItem("industries")) || [];
     const industrySelect = document.getElementById("companyIndustry");
     if (industrySelect) {
-        industrySelect.innerHTML = '<option value="">-- Chọn lĩnh vực --</option>' + industries.map(ind => `<option value="${ind}">${ind}</option>`).join("");
+        industrySelect.innerHTML = '<option value="">-- Chọn lĩnh vực --</option>' + industries.map(ind => `<option value="${escapeHtml(ind)}">${escapeHtml(ind)}</option>`).join("");
     }
     
     if (companyId) {
@@ -799,15 +797,15 @@ function renderCVs() {
     tbody.innerHTML = filtered.map((cv, i) => `
         <tr>
             <td>${i+1}</td>
-            <td>${cv.fullName || "---"}</td>
-            <td>${cv.email || "---"}</td>
-            <td>${cv.phone || "---"}</td>
-            <td>${cv.position || "---"}</td>
+            <td>${escapeHtml(cv.fullName || "---")}</td>
+            <td>${escapeHtml(cv.email || "---")}</td>
+            <td>${escapeHtml(cv.phone || "---")}</td>
+            <td>${escapeHtml(cv.position || "---")}</td>
             <td>${cv.createdAt || "---"}</td>
             <td>
                 <button class="btn-outline btn-sm" onclick="viewCVDetail(${i})"><i class="fas fa-eye"></i> Xem</button>
                 <button class="btn-danger btn-sm" onclick="deleteCV(${i})"><i class="fas fa-trash"></i> Xóa</button>
-            </td>
+              </td>
         </tr>
     `).join("");
 }
@@ -843,16 +841,16 @@ function renderCategories() {
     const jobTypeDiv = document.getElementById("jobTypeList");
     
     if (industryDiv) {
-        industryDiv.innerHTML = industries.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('industry',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+        industryDiv.innerHTML = industries.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${escapeHtml(item)}</span><button class="btn-danger btn-sm" onclick="deleteCategory('industry',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
     }
     if (skillDiv) {
-        skillDiv.innerHTML = skills.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('skill',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+        skillDiv.innerHTML = skills.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${escapeHtml(item)}</span><button class="btn-danger btn-sm" onclick="deleteCategory('skill',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
     }
     if (locationDiv) {
-        locationDiv.innerHTML = locations.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('location',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+        locationDiv.innerHTML = locations.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${escapeHtml(item)}</span><button class="btn-danger btn-sm" onclick="deleteCategory('location',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
     }
     if (jobTypeDiv) {
-        jobTypeDiv.innerHTML = jobTypes.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('jobType',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+        jobTypeDiv.innerHTML = jobTypes.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${escapeHtml(item)}</span><button class="btn-danger btn-sm" onclick="deleteCategory('jobType',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
     }
 }
 
@@ -864,6 +862,12 @@ function addCategory(type) {
         localStorage.setItem(`${type}s`, JSON.stringify(list));
         renderCategories();
         alert(`✅ Đã thêm "${name}" vào danh mục!`);
+        
+        // 🔥 Kích hoạt storage event để các tab khác cập nhật
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: `${type}s`,
+            newValue: JSON.stringify(list)
+        }));
     }
 }
 
@@ -875,6 +879,12 @@ function deleteCategory(type, index) {
         localStorage.setItem(`${type}s`, JSON.stringify(list));
         renderCategories();
         alert("Đã xóa danh mục!");
+        
+        // 🔥 Kích hoạt storage event để các tab khác cập nhật
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: `${type}s`,
+            newValue: JSON.stringify(list)
+        }));
     }
 }
 
@@ -895,9 +905,9 @@ function renderSupport() {
     tbody.innerHTML = filtered.map(t => `
         <tr>
             <td>${t.id}</td>
-            <td>${t.userName}</td>
-            <td>${t.title}</td>
-            <td>${t.content.substring(0, 50)}...${t.content.length > 50 ? "" : ""}</td>
+            <td>${escapeHtml(t.userName)}</td>
+            <td>${escapeHtml(t.title)}</td>
+            <td>${escapeHtml(t.content.substring(0, 50))}${t.content.length > 50 ? "..." : ""}</td>
             <td>${t.date}</td>
             <td><span class="status-badge ${t.status === "pending" ? "status-pending" : (t.status === "processing" ? "status-warning" : "status-active")}">
                 ${t.status === "pending" ? "Chờ xử lý" : (t.status === "processing" ? "Đang xử lý" : "Đã giải quyết")}
@@ -905,7 +915,7 @@ function renderSupport() {
             <td>
                 <button class="btn-primary btn-sm" onclick="updateSupportStatus(${t.id},'processing')"><i class="fas fa-spinner"></i> Xử lý</button>
                 <button class="btn-success btn-sm" onclick="updateSupportStatus(${t.id},'resolved')"><i class="fas fa-check"></i> Hoàn thành</button>
-            </td>
+              </td>
         </tr>
     `).join("");
 }
@@ -919,32 +929,6 @@ function updateSupportStatus(id, status) {
         renderSupport();
         alert(`✅ Đã cập nhật trạng thái!`);
     }
-}
-
-// ==================== QUẢN LÝ GIAO DỊCH ====================
-function renderTransactions() {
-    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-    const tbody = document.getElementById("transactionList");
-    if (!tbody) return;
-    
-    if (transactions.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có giao dịch nào</td></tr>`;
-        return;
-    }
-    
-    tbody.innerHTML = transactions.map(t => `
-        <tr>
-            <td>${t.id}</td>
-            <td>${t.companyName}</td>
-            <td>${t.package || "Premium"}</td>
-            <td>${t.days || 7} ngày</td>
-            <td>${t.amount.toLocaleString()}đ</td>
-            <td>${t.date}</td>
-            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">
-                ${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}
-            </span></td>
-        </tr>
-    `).join("");
 }
 
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ HR ====================
@@ -974,10 +958,24 @@ function initAdminStorageListener() {
             console.log("🔄 Phát hiện thay đổi applications, đang cập nhật...");
             updateStats();
         }
+        if (e.key === "industries" || e.key === "skills" || e.key === "locations" || e.key === "jobTypes") {
+            console.log(`🔄 Phát hiện thay đổi danh mục: ${e.key}, đang cập nhật...`);
+            renderCategories();
+        }
     });
 }
 
 // ==================== UTILITY ====================
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
 function setCurrentDate() {
     const now = new Date();
     const dateEl = document.getElementById("currentDate");
@@ -1119,26 +1117,3 @@ window.addCategory = addCategory;
 window.deleteCategory = deleteCategory;
 window.updateSupportStatus = updateSupportStatus;
 window.handleAdminLogout = handleAdminLogout;
-
-// admin.js
-
-// Biến tạm để lưu ID job đang được chọn trong modal
-let currentApprovingJobId = null;
-
-// Hàm mở modal duyệt (Bạn gọi hàm này khi bấm nút Duyệt ở danh sách Job)
-function openJobApproveModal(jobId) {
-    currentApprovingJobId = jobId;
-    const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    const job = jobs.find(j => j.id == jobId);
-
-    if(job) {
-        document.getElementById('jobApproveContent').innerHTML = `
-            <p><strong>Tiêu đề:</strong> ${job.title}</p>
-            <p><strong>Công ty:</strong> ${job.company}</p>
-        `;
-        document.getElementById('jobApproveModal').style.display = 'block';
-    }
-}
-
-
-

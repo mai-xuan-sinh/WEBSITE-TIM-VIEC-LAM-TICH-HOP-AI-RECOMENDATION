@@ -65,7 +65,7 @@
           <h2>Thành phố đáng sống <span>và đầy cơ hội nghề nghiệp</span></h2>
           <p>Đà Nẵng không chỉ nổi tiếng với biển đẹp, môi trường sống hiện đại mà còn là trung tâm công nghệ, du lịch và dịch vụ phát triển mạnh. Hàng ngàn doanh nghiệp đang tìm kiếm nhân tài mỗi ngày.</p>
           <div class="video-stats">
-            <div class="stat-item"><h3>5000+</h3><span>Việc làm mới</span></div>
+            <div class="stat-item"><h3 id="statJobs">5000+</h3><span>Việc làm mới</span></div>
             <div class="stat-item"><h3>1200+</h3><span>Doanh nghiệp</span></div>
             <div class="stat-item"><h3>98%</h3><span>Hài lòng</span></div>
           </div>
@@ -91,19 +91,12 @@
   <!-- CONTENT -->
   <div class="container">
 
-    <!-- KHÁM PHÁ LĨNH VỰC -->
+    <!-- KHÁM PHÁ LĨNH VỰC - ĐỘNG TỪ LOCALSTORAGE -->
     <div>
       <div class="section-title">Khám phá theo lĩnh vực</div>
       <div class="section-sub">Chọn ngành bạn yêu thích để tìm kiếm cơ hội phù hợp nhất</div>
-      <div class="categories-grid">
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-code"></i></div><h3>Công nghệ thông tin</h3><div class="job-count">32 việc làm</div><div class="skills-list"><span>Frontend</span><span>Backend</span><span>DevOps</span><span>AI</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-hotel"></i></div><h3>Du lịch - Khách sạn</h3><div class="job-count">27 việc làm</div><div class="skills-list"><span>Hướng dẫn viên</span><span>Lễ tân</span><span>Quản lý resort</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-chart-line"></i></div><h3>Kinh doanh - Bán lẻ</h3><div class="job-count">21 việc làm</div><div class="skills-list"><span>Sales</span><span>Marketing</span><span>Quản lý</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-hard-hat"></i></div><h3>Xây dựng - BĐS</h3><div class="job-count">21 việc làm</div><div class="skills-list"><span>Kỹ sư</span><span>Kiến trúc sư</span><span>Giám sát</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-truck"></i></div><h3>Dịch vụ - Logistics</h3><div class="job-count">26 việc làm</div><div class="skills-list"><span>Shipper</span><span>CSKH</span><span>Vận hành</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-chalkboard-teacher"></i></div><h3>Giáo dục - Đào tạo</h3><div class="job-count">18 việc làm</div><div class="skills-list"><span>Giáo viên</span><span>Trợ giảng</span><span>Đào tạo</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-coins"></i></div><h3>Tài chính - Ngân hàng</h3><div class="job-count">22 việc làm</div><div class="skills-list"><span>Kế toán</span><span>Kiểm toán</span><span>Đầu tư</span></div></div>
-        <div class="cat-card"><div class="cat-icon"><i class="fas fa-palette"></i></div><h3>Thiết kế - Sáng tạo</h3><div class="job-count">19 việc làm</div><div class="skills-list"><span>UI/UX</span><span>Graphic</span><span>Video</span></div></div>
+      <div class="categories-grid" id="categoriesGrid">
+        <div class="loading-ai"><i class="fas fa-spinner fa-pulse"></i> Đang tải danh mục...</div>
       </div>
 
       <!-- AI RECOMMENDATION -->
@@ -143,19 +136,6 @@
   <div class="footer-bottom"><p>© 2026 DANANG WORK. All rights reserved.</p></div>
 </footer>
 
-<style>
-  .loading-ai {
-    text-align: center;
-    padding: 60px;
-    color: #fff;
-    font-size: 16px;
-    grid-column: 1/-1;
-  }
-  .loading-ai i {
-    margin-right: 10px;
-  }
-</style>
-
 <!-- FLOATING ACTION BUTTONS -->
 <div class="floating-actions">
   <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
@@ -181,25 +161,399 @@
   </div>
 </div>
 
-<!-- ==================== SCRIPT CHÍNH ==================== -->
-<!-- Chỉ giữ lại script cho hero background, các hàm auth và notification đã có trong notification.js -->
+<script src="jobs-data.js"></script>
+<script src="ai-recommend.js"></script>
 <script>
-// Khởi tạo hero background
-document.addEventListener('DOMContentLoaded', function() {
+// ==================== BIẾN TOÀN CỤC ====================
+let currentUser = null;
+let allJobsData = [];
+
+// ==================== LẤY JOBS TỪ NHIỀU NGUỒN ====================
+function getAllJobsFromStorage() {
+    let combined = [];
+    
+    // 1. Lấy từ jobs-data.js (static data)
+    if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+        combined = [...allJobs];
+    }
+    
+    // 2. Lấy từ localStorage jobs (nơi Admin duyệt)
+    const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    
+    // 3. Lấy từ hr_jobs (nơi HR đăng tin)
+    const hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    
+    combined = [...combined, ...storedJobs, ...hrJobs];
+    
+    // Lọc chỉ lấy jobs có status = "active" hoặc "approved" hoặc không có status
+    const activeJobs = combined.filter(job => {
+        if (job.status && job.status !== 'active' && job.status !== 'approved') {
+            return false;
+        }
+        return job.title && job.title.trim() !== '';
+    });
+    
+    // Loại bỏ trùng lặp theo id
+    const uniqueJobs = [];
+    const ids = new Set();
+    for (const job of activeJobs) {
+        if (!ids.has(job.id)) {
+            ids.add(job.id);
+            uniqueJobs.push(job);
+        }
+    }
+    
+    uniqueJobs.sort((a, b) => b.id - a.id);
+    
+    console.log(`📊 index.html: Đã tải ${uniqueJobs.length} việc làm`);
+    return uniqueJobs;
+}
+
+// ==================== LẤY DANH MỤC TỪ LOCALSTORAGE ====================
+function getIndustriesFromStorage() {
+    const stored = JSON.parse(localStorage.getItem('industries'));
+    if (stored && stored.length > 0) {
+        return stored;
+    }
+    // Fallback: lấy từ allJobs
+    const jobs = getAllJobsFromStorage();
+    const industriesSet = new Set();
+    jobs.forEach(job => {
+        if (job.field) industriesSet.add(job.field);
+    });
+    let industries = Array.from(industriesSet);
+    if (industries.length === 0) {
+        industries = ["Công nghệ thông tin", "Du lịch - Khách sạn", "Xây dựng - Bất động sản", 
+                      "Kinh doanh - Marketing", "Logistics - Vận hành", "Giáo dục - Đào tạo",
+                      "Tài chính - Ngân hàng", "Thiết kế - Sáng tạo"];
+    }
+    return industries;
+}
+
+// ==================== RENDER DANH MỤC (ĐỒNG BỘ VỚI ADMIN) ====================
+function renderCategories() {
+    const categoriesGrid = document.getElementById('categoriesGrid');
+    if (!categoriesGrid) return;
+    
+    const industries = getIndustriesFromStorage();
+    const jobs = getAllJobsFromStorage();
+    
+    // Đếm số lượng jobs theo từng ngành
+    const counts = {};
+    jobs.forEach(job => {
+        if (job.field) counts[job.field] = (counts[job.field] || 0) + 1;
+    });
+    
+    // Icon mapping
+    const iconMap = {
+        "Công nghệ thông tin": "fas fa-code",
+        "Du lịch - Khách sạn": "fas fa-hotel",
+        "Xây dựng - Bất động sản": "fas fa-hard-hat",
+        "Kinh doanh - Marketing": "fas fa-chart-line",
+        "Logistics - Vận hành": "fas fa-truck",
+        "Dịch vụ - Logistics": "fas fa-truck",
+        "Giáo dục - Đào tạo": "fas fa-chalkboard-teacher",
+        "Tài chính - Ngân hàng": "fas fa-coins",
+        "Thiết kế - Sáng tạo": "fas fa-palette"
+    };
+    
+    if (industries.length === 0) {
+        categoriesGrid.innerHTML = '<div class="loading-ai" style="grid-column:1/-1"><i class="fas fa-spinner fa-pulse"></i> Đang tải danh mục...</div>';
+        return;
+    }
+    
+    categoriesGrid.innerHTML = industries.map(field => `
+        <div class="cat-card" data-field="${escapeHtml(field)}">
+            <div class="cat-icon"><i class="${iconMap[field] || 'fas fa-briefcase'}"></i></div>
+            <h3>${escapeHtml(field)}</h3>
+            <div class="job-count">${counts[field] || 0} việc làm</div>
+            <div class="skills-list">
+                <span>${escapeHtml(field.split(' - ')[0])}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // Gắn sự kiện click cho danh mục
+    document.querySelectorAll('.cat-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const field = card.querySelector('h3')?.textContent;
+            if (field) {
+                window.location.href = `trangvieclam.html?field=${encodeURIComponent(field)}`;
+            }
+        });
+    });
+}
+
+// ==================== ESCAPE HTML ====================
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// ==================== CẬP NHẬT UI AUTH ====================
+function updateAuthUI() {
+    const authDiv = document.getElementById('authButtons');
+    const userDiv = document.getElementById('userBox');
+    
+    if (!authDiv || !userDiv) return;
+    
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (user) {
+        currentUser = user;
+        authDiv.style.display = 'none';
+        userDiv.style.display = 'block';
+        userDiv.innerHTML = `
+            <div class="user-info">
+                <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">${(user.name || user.fullname || 'U').charAt(0).toUpperCase()}</div>
+                <span class="user-name" onclick="goToProfile()" style="cursor: pointer;">${escapeHtml(user.name || user.fullname || user.email?.split('@')[0])}</span>
+                <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+            </div>
+        `;
+    } else {
+        currentUser = null;
+        authDiv.style.display = 'flex';
+        userDiv.style.display = 'none';
+        userDiv.innerHTML = '';
+    }
+}
+
+function goToProfile() {
+    window.location.href = 'profile.html';
+}
+
+function handleLogout() {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('rememberUser');
+    window.location.href = 'index.html';
+}
+
+// ==================== RENDER AI RECOMMENDATIONS ====================
+function renderAIRecommendations() {
+    const container = document.getElementById('aiRecommendations');
+    if (!container) return;
+    
+    // Cập nhật dữ liệu jobs
+    allJobsData = getAllJobsFromStorage();
+    
+    if (!allJobsData || allJobsData.length === 0) {
+        container.innerHTML = '<div class="loading-ai"><i class="fas fa-spinner fa-pulse"></i> Đang tải dữ liệu...</div>';
+        return;
+    }
+    
+    // Cập nhật thống kê số lượng jobs
+    const statJobsEl = document.getElementById('statJobs');
+    if (statJobsEl) statJobsEl.textContent = allJobsData.length + '+';
+    
+    // Lấy jobs đề xuất (6 job mới nhất hoặc phổ biến)
+    const recommendedJobs = allJobsData.slice(0, 6);
+    
+    if (!currentUser || typeof aiEngine === 'undefined') {
+        container.innerHTML = recommendedJobs.map(job => `
+            <div class="job-card ai-card">
+                <div class="match-percent">Phổ biến</div>
+                <div class="job-title">${escapeHtml(job.title)}</div>
+                <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
+                <div class="details">
+                    <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
+                    <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
+                </div>
+                <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
+                <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
+            </div>
+        `).join('');
+        return;
+    }
+    
+    // Dùng AI để gợi ý
+    if (aiEngine && aiEngine.recommendJobsForCandidate) {
+        try {
+            const recommendations = aiEngine.recommendJobsForCandidate(currentUser.id || currentUser.email, 6);
+            if (recommendations && recommendations.length > 0) {
+                container.innerHTML = recommendations.map(job => `
+                    <div class="job-card ai-card">
+                        <div class="match-percent">${Math.min(Math.floor((job.score || 0) / 10), 99)}% phù hợp</div>
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
+                        <div class="details">
+                            <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
+                            <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
+                        </div>
+                        <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
+                        <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
+                    </div>
+                `).join('');
+                return;
+            }
+        } catch(e) {
+            console.error('AI recommendation error:', e);
+        }
+    }
+    
+    // Fallback: hiển thị job phổ biến
+    container.innerHTML = recommendedJobs.map(job => `
+        <div class="job-card ai-card">
+            <div class="match-percent">Đề xuất</div>
+            <div class="job-title">${escapeHtml(job.title)}</div>
+            <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
+            <div class="details">
+                <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
+                <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
+            </div>
+            <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
+            <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
+        </div>
+    `).join('');
+}
+
+// ==================== XỬ LÝ ỨNG TUYỂN ====================
+function applyJob(jobId) {
+    allJobsData = getAllJobsFromStorage();
+    const job = allJobsData.find(j => j.id == jobId);
+    if (!job) return;
+    
+    if (!currentUser) {
+        if (confirm('Bạn cần đăng nhập để ứng tuyển. Đăng nhập ngay?')) {
+            window.location.href = 'login.html';
+        }
+        return;
+    }
+    
+    const applications = JSON.parse(localStorage.getItem('applications')) || [];
+    const alreadyApplied = applications.some(app => app.jobId === jobId && app.userEmail === currentUser.email);
+    
+    if (!alreadyApplied) {
+        const newApplication = {
+            id: Date.now(),
+            jobId: job.id,
+            jobTitle: job.title,
+            company: job.company,
+            location: job.location || job.district,
+            salary: job.salary,
+            userEmail: currentUser.email,
+            userName: currentUser.name || currentUser.fullname,
+            date: new Date().toLocaleDateString('vi-VN'),
+            status: 'pending'
+        };
+        applications.push(newApplication);
+        localStorage.setItem('applications', JSON.stringify(applications));
+        
+        // Cập nhật hr_candidates
+        let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+        const existingIndex = hrCandidates.findIndex(c => 
+            c.jobId === jobId && (c.email === currentUser.email || c.candidateEmail === currentUser.email)
+        );
+        
+        if (existingIndex === -1) {
+            const newCandidate = {
+                id: newApplication.id,
+                name: newApplication.userName,
+                email: currentUser.email,
+                candidateEmail: currentUser.email,
+                phone: currentUser.phone || '',
+                position: job.title,
+                company: job.company,
+                jobId: jobId,
+                skills: [],
+                experience: '',
+                education: '',
+                address: '',
+                intro: '',
+                date: newApplication.date,
+                fullDate: new Date().toISOString(),
+                status: 'pending'
+            };
+            hrCandidates.push(newCandidate);
+            localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
+        }
+        
+        alert(`✅ Ứng tuyển thành công!\n\nVị trí: ${job.title}\nCông ty: ${job.company}`);
+    } else {
+        alert(`⚠️ Bạn đã ứng tuyển vị trí này trước đó!`);
+    }
+}
+
+// ==================== XEM CHI TIẾT ====================
+function goToJobDetail(jobId) {
+    window.location.href = `job-detail.html?id=${jobId}`;
+}
+
+// ==================== REFRESH DỮ LIỆU ====================
+function refreshAllData() {
+    allJobsData = getAllJobsFromStorage();
+    renderCategories();
+    renderAIRecommendations();
+    console.log('🔄 Đã làm mới dữ liệu trang chủ');
+}
+
+// ==================== KHỞI TẠO ====================
+function init() {
+    // Cập nhật UI auth
+    updateAuthUI();
+    
+    // Hero background
     const heroSection = document.getElementById('dynamicHero');
     if (heroSection) {
         heroSection.style.backgroundImage = "url('img/bannerchinh.jpg')";
         heroSection.style.backgroundSize = "cover";
         heroSection.style.backgroundPosition = "center";
     }
-});
+    
+    // Tải dữ liệu
+    if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+        allJobsData = getAllJobsFromStorage();
+        renderCategories();
+        renderAIRecommendations();
+    } else {
+        const checkInterval = setInterval(() => {
+            if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+                clearInterval(checkInterval);
+                allJobsData = getAllJobsFromStorage();
+                renderCategories();
+                renderAIRecommendations();
+            }
+        }, 100);
+        
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            allJobsData = getAllJobsFromStorage();
+            renderCategories();
+            renderAIRecommendations();
+        }, 3000);
+    }
+    
+    // Lắng nghe storage event để cập nhật realtime
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'currentUser' || e.key === 'isLoggedIn') {
+            updateAuthUI();
+            renderAIRecommendations();
+        }
+        if (e.key === 'jobs' || e.key === 'hr_jobs' || e.key === 'industries' || e.key === 'skills') {
+            console.log(`🔄 Phát hiện thay đổi: ${e.key}, đang cập nhật...`);
+            refreshAllData();
+        }
+    });
+}
+
+// ==================== EXPORT GLOBAL ====================
+window.goToJobDetail = goToJobDetail;
+window.applyJob = applyJob;
+window.handleLogout = handleLogout;
+window.goToProfile = goToProfile;
+
+// ==================== KHỞI CHẠY ====================
+document.addEventListener('DOMContentLoaded', init);
 </script>
 
-<!-- Các script chính - THỨ TỰ QUAN TRỌNG -->
-<script src="jobs-data.js"></script>
-<script src="ai-recommend.js"></script>
+<!-- Các script chính -->
 <script src="notification.js"></script>
-<script src="index.js"></script>
 <script src="floating.js"></script>
 
 </body>
