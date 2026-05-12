@@ -629,6 +629,7 @@
         }
     }
     // ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN ====================
+// ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN (CẬP NHẬT REALTIME) ====================
 function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails = null) {
     if (!candidateEmail) return;
     
@@ -655,6 +656,39 @@ function sendNotificationToCandidate(candidateEmail, title, content, type, inter
     if (candidateNotifs.length > 50) candidateNotifs.pop();
     
     localStorage.setItem('candidate_notifications', JSON.stringify(candidateNotifs));
+    
+    // ========== REALTIME: Kích hoạt sự kiện storage cho tất cả tab ==========
+    // Phương pháp 1: Dispatch storage event
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'candidate_notifications',
+        newValue: JSON.stringify(candidateNotifs),
+        oldValue: JSON.stringify(candidateNotifs.slice(1))
+    }));
+    
+    // Phương pháp 2: BroadcastChannel cho realtime cross-tab
+    if (window.broadcastChannel) {
+        try {
+            window.broadcastChannel.postMessage({
+                type: 'NEW_NOTIFICATION',
+                data: newNotif
+            });
+        } catch(e) {}
+    } else {
+        // Tạo BroadcastChannel nếu chưa có
+        try {
+            window.broadcastChannel = new BroadcastChannel('notify_channel');
+            window.broadcastChannel.postMessage({
+                type: 'NEW_NOTIFICATION',
+                data: newNotif
+            });
+        } catch(e) {}
+    }
+    
+    // Phương pháp 3: Custom event cho cùng tab
+    if (typeof window.dispatchCustomNotificationEvent === 'function') {
+        window.dispatchCustomNotificationEvent(newNotif);
+    }
+    
     console.log(`📢 Đã gửi thông báo đến ${candidateEmail}: ${title}`);
 }
 
