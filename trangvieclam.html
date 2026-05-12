@@ -438,6 +438,170 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'currentUser' || e.key === 'isLoggedIn') updateAuthUI();
         });
+
+
+        // ==================== HÀM ỨNG TUYỂN (GỬI VÀO HR) ====================
+function submitApplication(jobId, jobTitle, company, location, salary, cvData) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (!currentUser) {
+        alert('Vui lòng đăng nhập để ứng tuyển!');
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    // Tạo đơn ứng tuyển
+    const application = {
+        id: Date.now(),
+        jobId: jobId,
+        jobTitle: jobTitle,
+        company: company,
+        location: location,
+        salary: salary,
+        candidateId: currentUser.id || Date.now(),
+        candidateName: currentUser.name || currentUser.fullname || 'Ứng viên',
+        candidateEmail: currentUser.email,
+        candidatePhone: currentUser.phone || '',
+        candidateSkills: cvData?.skills || [],
+        candidateExperience: cvData?.experience || '',
+        candidateEducation: cvData?.education || '',
+        cvData: cvData,
+        date: new Date().toISOString(),
+        dateDisplay: new Date().toLocaleDateString('vi-VN'),
+        status: 'pending' // pending, approved, rejected
+    };
+    
+    // Lưu vào localStorage chung
+    let applications = JSON.parse(localStorage.getItem('applications')) || [];
+    applications.push(application);
+    localStorage.setItem('applications', JSON.stringify(applications));
+    
+    // Đồng thời lưu vào HR candidates
+    let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
+    
+    // Kiểm tra xem đã ứng tuyển chưa
+    const existingIndex = hrCandidates.findIndex(c => c.jobId === jobId && c.candidateEmail === currentUser.email);
+    
+    if (existingIndex === -1) {
+        const newCandidate = {
+            id: application.id,
+            name: application.candidateName,
+            email: application.candidateEmail,
+            phone: application.candidatePhone,
+            position: jobTitle,
+            company: company,
+            jobId: jobId,
+            skills: cvData?.skills || [],
+            experience: cvData?.experience || '',
+            education: cvData?.education || '',
+            address: cvData?.address || '',
+            intro: cvData?.intro || '',
+            date: application.dateDisplay,
+            fullDate: application.date,
+            status: 'pending',
+            cvData: cvData
+        };
+        hrCandidates.push(newCandidate);
+        localStorage.setItem('hr_candidates', JSON.stringify(hrCandidates));
+    }
+    
+    // Tạo thông báo cho HR
+    let notifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+    notifications.unshift({
+        id: Date.now(),
+        title: 'Ứng viên mới',
+        content: `${application.candidateName} đã ứng tuyển vị trí ${jobTitle} tại ${company}`,
+        type: 'application',
+        time: 'Vừa xong',
+        read: false,
+        applicationId: application.id
+    });
+    if (notifications.length > 30) notifications.pop();
+    localStorage.setItem('hr_notifications', JSON.stringify(notifications));
+    
+    return true;
+}
+
+// ==================== CẬP NHẬT HÀM APPLY JOB ====================
+window.applyJob = function(event, jobId) {
+    event.stopPropagation();
+    
+    const job = allJobs.find(j => j.id == jobId);
+    if (!job) return;
+    
+    // Lấy CV đã lưu của ứng viên
+    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (!currentUser) {
+        alert('Vui lòng đăng nhập để ứng tuyển!');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Hiển thị modal chọn CV
+    const modal = document.getElementById('applyModal');
+    const applyJobTitle = document.getElementById('applyJobTitle');
+    const applyCompany = document.getElementById('applyCompany');
+    const applyLocation = document.getElementById('applyLocation');
+    const applySalary = document.getElementById('applySalary');
+    const savedCVSelect = document.getElementById('savedCVSelect');
+    
+    if (applyJobTitle) applyJobTitle.textContent = job.title;
+    if (applyCompany) applyCompany.textContent = job.company;
+    if (applyLocation) applyLocation.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location || job.district || 'Đà Nẵng'}`;
+    if (applySalary) applySalary.innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary || 'Thỏa thuận'}`;
+    
+    // Load danh sách CV của ứng viên
+    if (savedCVSelect) {
+        const userCVs = savedCVs.filter(cv => cv.userEmail === currentUser.email || !cv.userEmail);
+        savedCVSelect.innerHTML = '<option value="">-- Chọn CV đã lưu --</option>';
+        userCVs.forEach((cv, index) => {
+            savedCVSelect.innerHTML += `<option value="${index}">${cv.fullName || 'CV'} - ${cv.position || 'Chưa có vị trí'}</option>`;
+        });
+    }
+    
+    if (modal) modal.classList.add('active');
+    
+    // Lưu job hiện tại để xử lý khi submit
+    window.currentApplyingJob = job;
+};
+
+// Xử lý submit ứng tuyển
+document.getElementById('applyForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const job = window.currentApplyingJob;
+    if (!job) return;
+    
+    const selectedCVIndex = document.getElementById('savedCVSelect').value;
+    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+    const cvData = selectedCVIndex !== '' ? savedCVs[selectedCVIndex] : null;
+    
+    const name = document.getElementById('applyName').value;
+    const email = document.getElementById('applyEmail').value;
+    const phone = document.getElementById('applyPhone').value;
+    const message = document.getElementById('applyMessage').value;
+    
+    const applicationData = {
+        skills: cvData?.skills ? cvData.skills.split(/[,\n]+/).map(s => s.trim()) : [],
+        experience: cvData?.experience || '',
+        education: cvData?.education || '',
+        address: cvData?.address || '',
+        intro: message || cvData?.intro || '',
+        fullName: name,
+        email: email,
+        phone: phone
+    };
+    
+    const success = submitApplication(job.id, job.title, job.company, job.location || job.district, job.salary, applicationData);
+    
+    if (success) {
+        alert('✅ Ứng tuyển thành công! HR sẽ liên hệ với bạn trong thời gian sớm nhất.');
+        document.getElementById('applyModal').classList.remove('active');
+        this.reset();
+    }
+});
     </script>
     <script src="floating.js"></script>
 </body>

@@ -10,7 +10,82 @@ const ADMIN_USER = {
     createdAt: new Date().toISOString()
 };
 
-// Khởi tạo admin trong localStorage nếu chưa có
+// ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
+
+// Đồng bộ việc làm từ allJobs (jobs-data.js)
+function syncJobsFromData() {
+    if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+        let existingJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+        let hasChanges = false;
+        
+        allJobs.forEach(job => {
+            const exists = existingJobs.some(j => j.id === job.id);
+            if (!exists) {
+                existingJobs.push({
+                    ...job,
+                    status: job.status || "active",
+                    postDate: job.postDate || new Date().toLocaleDateString('vi-VN')
+                });
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            localStorage.setItem("hr_jobs", JSON.stringify(existingJobs));
+            console.log(`✅ Đã đồng bộ ${allJobs.length} việc làm từ jobs-data.js`);
+        }
+        
+        return existingJobs;
+    }
+    return JSON.parse(localStorage.getItem("hr_jobs")) || [];
+}
+
+// Đồng bộ công ty từ companyData (data-congty.js)
+function syncCompaniesFromData() {
+    if (typeof companyData !== 'undefined') {
+        let existingCompanies = JSON.parse(localStorage.getItem("companies")) || [];
+        let hasChanges = false;
+        
+        Object.keys(companyData).forEach(key => {
+            const company = companyData[key];
+            const exists = existingCompanies.some(c => c.name === company.name);
+            if (!exists) {
+                existingCompanies.push({
+                    id: Date.now() + Math.random() * 1000,
+                    name: company.name,
+                    logo: company.logo,
+                    address: company.location,
+                    phone: company.contact?.phone || "",
+                    email: company.contact?.email || "",
+                    industry: company.industry || "Đa ngành",
+                    size: company.size || "",
+                    rating: company.rating || "4.5",
+                    desc: company.desc || "",
+                    benefits: company.benefits || [],
+                    status: "active",
+                    createdAt: new Date().toISOString()
+                });
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            localStorage.setItem("companies", JSON.stringify(existingCompanies));
+            console.log(`✅ Đã đồng bộ ${Object.keys(companyData).length} công ty từ data-congty.js`);
+        }
+        
+        return existingCompanies;
+    }
+    return JSON.parse(localStorage.getItem("companies")) || [];
+}
+
+// Hàm khởi tạo đồng bộ tổng hợp
+function initSyncData() {
+    syncJobsFromData();
+    syncCompaniesFromData();
+}
+
+// ==================== KHỞI TẠO DỮ LIỆU ====================
 function initAdminAccount() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     const adminExists = users.some(u => u.email === ADMIN_USER.email);
@@ -18,32 +93,10 @@ function initAdminAccount() {
         users.push(ADMIN_USER);
         localStorage.setItem("users", JSON.stringify(users));
     }
-    
-    // Đồng thời lưu danh sách admin riêng
-    let admins = JSON.parse(localStorage.getItem("admins")) || [];
-    const adminInList = admins.some(a => a.email === ADMIN_USER.email);
-    if (!adminInList) {
-        admins.push(ADMIN_USER);
-        localStorage.setItem("admins", JSON.stringify(admins));
-    }
 }
 
-// ==================== KIỂM TRA ĐĂNG NHẬP ADMIN ====================
-function checkAdminAuth() {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    
-    if (!currentUser || currentUser.role !== "admin") {
-        window.location.href = "login.html";
-        return false;
-    }
-    
-    document.getElementById("adminName").innerText = currentUser.name || currentUser.fullname || "Admin";
-    return true;
-}
-
-// ==================== KHỞI TẠO DỮ LIỆU MẪU ====================
 function initSampleData() {
-    // Khởi tạo danh mục ngành nghề
+    // Danh mục ngành nghề
     if (!localStorage.getItem("industries")) {
         localStorage.setItem("industries", JSON.stringify([
             "Công nghệ thông tin", "Du lịch - Khách sạn", "Xây dựng - Bất động sản",
@@ -51,100 +104,118 @@ function initSampleData() {
             "Tài chính - Ngân hàng", "Thiết kế - Sáng tạo"
         ]));
     }
-    
-    // Khởi tạo danh mục kỹ năng
+    // Danh mục kỹ năng
     if (!localStorage.getItem("skills")) {
         localStorage.setItem("skills", JSON.stringify([
             "ReactJS", "NodeJS", "Python", "Java", "PHP", "Flutter",
             "SQL", "MongoDB", "AWS", "Docker", "Figma", "Photoshop"
         ]));
     }
-    
-    // Khởi tạo danh mục địa điểm
+    // Danh mục địa điểm
     if (!localStorage.getItem("locations")) {
         localStorage.setItem("locations", JSON.stringify([
-            "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Sơn Trà", "Cẩm Lệ", "Hòa Vang"
+            "Hải Châu", "Thanh Khê", "Liên Chiểu", "Ngũ Hành Sơn", "Sơn Trà", "Cẩm Lệ"
         ]));
     }
-    
-    // Khởi tạo loại hình công việc
+    // Loại hình công việc
     if (!localStorage.getItem("jobTypes")) {
         localStorage.setItem("jobTypes", JSON.stringify([
             "Toàn thời gian", "Bán thời gian", "Thực tập", "Freelance", "Remote"
         ]));
     }
-    
-    // Khởi tạo tin tức mẫu
-    if (!localStorage.getItem("news")) {
-        localStorage.setItem("news", JSON.stringify([
-            { id: 1, title: "DANANG WORK ra mắt tính năng AI Recommendation", type: "news", date: "2026-05-01", status: "active" },
-            { id: 2, title: "Thông báo nghỉ lễ 30/4 - 1/5", type: "notice", date: "2026-04-20", status: "active" },
-            { id: 3, title: "Banner khuyến mãi gói đăng tin", type: "banner", date: "2026-05-10", status: "active" }
-        ]));
-    }
-    
-    // Khởi tạo yêu cầu hỗ trợ mẫu
+    // Yêu cầu hỗ trợ
     if (!localStorage.getItem("supportTickets")) {
         localStorage.setItem("supportTickets", JSON.stringify([
-            { id: 1, userId: 1, userName: "Nguyễn Văn A", title: "Không thể đăng nhập", content: "Em không thể đăng nhập vào tài khoản", date: "2026-05-10", status: "pending" },
-            { id: 2, userId: 2, userName: "Công ty ABC", title: "Tin đăng bị lỗi", content: "Tin đăng của công ty em không hiển thị", date: "2026-05-11", status: "processing" }
+            { id: 1, userName: "Nguyễn Văn A", title: "Không thể đăng nhập", content: "Em không thể đăng nhập vào tài khoản", date: "2026-05-10", status: "pending" },
+            { id: 2, userName: "Công ty ABC", title: "Tin đăng bị lỗi", content: "Tin đăng của công ty em không hiển thị", date: "2026-05-11", status: "processing" }
         ]));
     }
-    
-    // Khởi tạo giao dịch mẫu
+    // Giao dịch mẫu
     if (!localStorage.getItem("transactions")) {
         localStorage.setItem("transactions", JSON.stringify([
-            { id: "TXN001", userName: "Công ty FPT", package: "Gói Premium 1 tháng", amount: 500000, date: "2026-05-01", status: "completed" },
-            { id: "TXN002", userName: "Công ty Viettel", package: "Gói Basic", amount: 200000, date: "2026-05-05", status: "completed" },
-            { id: "TXN003", userName: "Công ty SunGroup", package: "Gói Premium 3 tháng", amount: 1200000, date: "2026-05-10", status: "pending" }
+            { id: "TXN001", companyName: "FPT Software", package: "Premium", days: 30, amount: 1500000, date: "2026-05-01", status: "completed" },
+            { id: "TXN002", companyName: "Vinpearl Resort", package: "Premium", days: 30, amount: 1500000, date: "2026-05-05", status: "completed" },
+            { id: "TXN003", companyName: "Sun Group", package: "Basic", days: 7, amount: 350000, date: "2026-05-10", status: "pending" },
+            { id: "TXN004", companyName: "Viettel Post", package: "Basic", days: 7, amount: 350000, date: "2026-05-12", status: "completed" }
         ]));
     }
 }
 
-// ==================== CẬP NHẬT THỐNG KÊ TỔNG QUAN ====================
-function updateDashboardStats() {
+// ==================== KIỂM TRA ĐĂNG NHẬP ADMIN ====================
+function checkAdminAuth() {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser || currentUser.role !== "admin") {
+        window.location.href = "login.html";
+        return false;
+    }
+    document.getElementById("adminName").innerText = currentUser.name || "Admin";
+    return true;
+}
+
+// ==================== CẬP NHẬT THỐNG KÊ ====================
+function updateStats() {
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? allJobs : []);
+    const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     const applications = JSON.parse(localStorage.getItem("applications")) || [];
     const companies = JSON.parse(localStorage.getItem("companies")) || [];
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     
-    const candidates = users.filter(u => u.role === "candidate" || u.userType === "candidate");
     const employers = users.filter(u => u.role === "employer" || u.userType === "employer");
+    const candidates = users.filter(u => u.role === "candidate" || u.userType === "candidate");
     const pendingJobs = jobs.filter(j => j.status === "pending");
-    
     const totalRevenue = transactions.filter(t => t.status === "completed").reduce((sum, t) => sum + (t.amount || 0), 0);
     
-    document.getElementById("totalUsers").innerText = users.length;
-    document.getElementById("totalEmployers").innerText = employers.length;
-    document.getElementById("totalCandidates").innerText = candidates.length;
-    document.getElementById("totalJobs").innerText = jobs.length;
-    document.getElementById("totalApplications").innerText = applications.length;
-    document.getElementById("totalCompanies").innerText = companies.length;
-    document.getElementById("pendingJobs").innerText = pendingJobs.length;
-    document.getElementById("revenue").innerText = totalRevenue.toLocaleString();
+    const totalUsersEl = document.getElementById("totalUsers");
+    const totalEmployersEl = document.getElementById("totalEmployers");
+    const totalCandidatesEl = document.getElementById("totalCandidates");
+    const totalJobsEl = document.getElementById("totalJobs");
+    const totalApplicationsEl = document.getElementById("totalApplications");
+    const totalCompaniesEl = document.getElementById("totalCompanies");
+    const pendingJobsEl = document.getElementById("pendingJobs");
+    const totalRevenueEl = document.getElementById("totalRevenue");
     
-    // Cập nhật báo cáo
-    document.getElementById("reportTotalUsers").innerText = users.length;
-    document.getElementById("reportTotalJobs").innerText = jobs.length;
-    document.getElementById("reportTotalApps").innerText = applications.length;
-    document.getElementById("reportActiveCompanies").innerText = companies.filter(c => c.status === "active").length;
+    if (totalUsersEl) totalUsersEl.innerText = users.length;
+    if (totalEmployersEl) totalEmployersEl.innerText = employers.length;
+    if (totalCandidatesEl) totalCandidatesEl.innerText = candidates.length;
+    if (totalJobsEl) totalJobsEl.innerText = jobs.length;
+    if (totalApplicationsEl) totalApplicationsEl.innerText = applications.length;
+    if (totalCompaniesEl) totalCompaniesEl.innerText = companies.length;
+    if (pendingJobsEl) pendingJobsEl.innerText = pendingJobs.length;
+    if (totalRevenueEl) totalRevenueEl.innerText = totalRevenue.toLocaleString();
     
-    // Cập nhật doanh thu
+    // Báo cáo
+    const reportTotalUsers = document.getElementById("reportTotalUsers");
+    const reportTotalJobs = document.getElementById("reportTotalJobs");
+    const reportTotalApps = document.getElementById("reportTotalApps");
+    const reportActiveCompanies = document.getElementById("reportActiveCompanies");
+    
+    if (reportTotalUsers) reportTotalUsers.innerText = users.length;
+    if (reportTotalJobs) reportTotalJobs.innerText = jobs.length;
+    if (reportTotalApps) reportTotalApps.innerText = applications.length;
+    if (reportActiveCompanies) reportActiveCompanies.innerText = companies.filter(c => c.status === "active").length;
+    
+    // Doanh thu
     const today = new Date().toISOString().split('T')[0];
     const thisWeek = getWeekRange();
     const thisMonth = new Date().getMonth();
     const thisYear = new Date().getFullYear();
     
-    const revenueToday = transactions.filter(t => t.status === "completed" && t.date === today).reduce((sum, t) => sum + (t.amount || 0), 0);
-    const revenueWeek = transactions.filter(t => t.status === "completed" && t.date >= thisWeek.start && t.date <= thisWeek.end).reduce((sum, t) => sum + (t.amount || 0), 0);
-    const revenueMonth = transactions.filter(t => t.status === "completed" && new Date(t.date).getMonth() === thisMonth).reduce((sum, t) => sum + (t.amount || 0), 0);
-    const revenueYear = transactions.filter(t => t.status === "completed" && new Date(t.date).getFullYear() === thisYear).reduce((sum, t) => sum + (t.amount || 0), 0);
+    const revenueToday = transactions.filter(t => t.status === "completed" && t.date === today).reduce((s, t) => s + t.amount, 0);
+    const revenueWeek = transactions.filter(t => t.status === "completed" && t.date >= thisWeek.start && t.date <= thisWeek.end).reduce((s, t) => s + t.amount, 0);
+    const revenueMonth = transactions.filter(t => t.status === "completed" && new Date(t.date).getMonth() === thisMonth).reduce((s, t) => s + t.amount, 0);
+    const revenueYear = transactions.filter(t => t.status === "completed" && new Date(t.date).getFullYear() === thisYear).reduce((s, t) => s + t.amount, 0);
     
-    document.getElementById("revenueToday").innerText = revenueToday.toLocaleString() + "đ";
-    document.getElementById("revenueWeek").innerText = revenueWeek.toLocaleString() + "đ";
-    document.getElementById("revenueMonth").innerText = revenueMonth.toLocaleString() + "đ";
-    document.getElementById("revenueYear").innerText = revenueYear.toLocaleString() + "đ";
+    const revenueTodayEl = document.getElementById("revenueToday");
+    const revenueWeekEl = document.getElementById("revenueWeek");
+    const revenueMonthEl = document.getElementById("revenueMonth");
+    const revenueYearEl = document.getElementById("revenueYear");
+    
+    if (revenueTodayEl) revenueTodayEl.innerText = revenueToday.toLocaleString() + "đ";
+    if (revenueWeekEl) revenueWeekEl.innerText = revenueWeek.toLocaleString() + "đ";
+    if (revenueMonthEl) revenueMonthEl.innerText = revenueMonth.toLocaleString() + "đ";
+    if (revenueYearEl) revenueYearEl.innerText = revenueYear.toLocaleString() + "đ";
+    
+    renderTransactions();
 }
 
 function getWeekRange() {
@@ -166,27 +237,25 @@ function renderUsers() {
     const filterRole = document.querySelector("#tab-users .filter-tab.active")?.dataset.filter || "all";
     
     let filtered = users;
-    if (searchTerm) {
-        filtered = filtered.filter(u => u.name?.toLowerCase().includes(searchTerm) || u.email?.toLowerCase().includes(searchTerm));
-    }
-    if (filterRole !== "all") {
-        filtered = filtered.filter(u => u.role === filterRole || u.userType === filterRole);
-    }
+    if (searchTerm) filtered = filtered.filter(u => u.name?.toLowerCase().includes(searchTerm) || u.email?.toLowerCase().includes(searchTerm));
+    if (filterRole !== "all") filtered = filtered.filter(u => u.role === filterRole || u.userType === filterRole);
     
     const start = (currentUserPage - 1) * usersPerPage;
     const paginated = filtered.slice(start, start + usersPerPage);
     
     const tbody = document.getElementById("userList");
+    if (!tbody) return;
+    
     tbody.innerHTML = paginated.map(user => `
         <tr>
             <td>${user.id}</td>
-            <td><div class="company-logo-cell" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: white; font-weight: bold;">${(user.name?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase()}</div></td>
+            <td><div class="company-logo-cell" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">${(user.name?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase()}</div></td>
             <td>${user.name || user.fullname || "---"}</td>
             <td>${user.email}</td>
             <td>${user.phone || "---"}</td>
-            <td>${user.role === "admin" ? "Quản trị viên" : (user.role === "employer" || user.userType === "employer" ? "Nhà tuyển dụng" : "Ứng viên")}</td>
+            <td>${user.role === "admin" ? "Quản trị viên" : (user.role === "employer" ? "Nhà tuyển dụng" : "Ứng viên")}</td>
             <td><span class="status-badge ${user.status === "banned" ? "status-inactive" : "status-active"}">${user.status === "banned" ? "Đã khóa" : "Hoạt động"}</span></td>
-            <td>${new Date(user.createdAt).toLocaleDateString("vi-VN") || "---"}</td>
+            <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString("vi-VN") : "---"}</td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
@@ -195,25 +264,20 @@ function renderUsers() {
         </tr>
     `).join("");
     
-    // Pagination
     const totalPages = Math.ceil(filtered.length / usersPerPage);
     const paginationDiv = document.getElementById("userPagination");
     if (paginationDiv) {
-        let pages = "";
-        for (let i = 1; i <= totalPages; i++) {
-            pages += `<button class="${i === currentUserPage ? "active" : ""}" onclick="goToUserPage(${i})">${i}</button>`;
-        }
-        paginationDiv.innerHTML = pages;
+        paginationDiv.innerHTML = totalPages > 1 ? Array.from({length: totalPages}, (_, i) => `<button class="${i+1 === currentUserPage ? 'active' : ''}" onclick="goToUserPage(${i+1})">${i+1}</button>`).join('') : '';
     }
 }
 
-function goToUserPage(page) {
-    currentUserPage = page;
-    renderUsers();
-}
+function goToUserPage(page) { currentUserPage = page; renderUsers(); }
 
 function openUserModal(userId = null) {
-    document.getElementById("userModal").classList.add("active");
+    const modal = document.getElementById("userModal");
+    if (!modal) return;
+    modal.classList.add("active");
+    
     if (userId) {
         document.getElementById("userModalTitle").innerText = "Sửa người dùng";
         const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -231,12 +295,11 @@ function openUserModal(userId = null) {
         document.getElementById("userModalTitle").innerText = "Thêm người dùng";
         document.getElementById("userForm").reset();
         document.getElementById("userId").value = "";
+        document.getElementById("userPassword").value = "";
     }
 }
 
-function closeUserModal() {
-    document.getElementById("userModal").classList.remove("active");
-}
+function closeUserModal() { document.getElementById("userModal").classList.remove("active"); }
 
 function saveUser() {
     const id = document.getElementById("userId").value;
@@ -250,7 +313,6 @@ function saveUser() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     
     if (id) {
-        // Edit
         const index = users.findIndex(u => u.id == id);
         if (index !== -1) {
             users[index].name = fullname;
@@ -261,7 +323,6 @@ function saveUser() {
             if (password) users[index].password = password;
         }
     } else {
-        // Add new
         const newUser = {
             id: Date.now(),
             name: fullname,
@@ -279,58 +340,37 @@ function saveUser() {
     localStorage.setItem("users", JSON.stringify(users));
     closeUserModal();
     renderUsers();
-    updateDashboardStats();
-    showToast("Lưu người dùng thành công!", "success");
+    updateStats();
+    alert("✅ Lưu người dùng thành công!");
 }
 
-function editUser(id) {
-    openUserModal(id);
-}
+function editUser(id) { openUserModal(id); }
+function deleteUser(id) { if(confirm("Xóa người dùng này?")){ let users = JSON.parse(localStorage.getItem("users")) || []; users = users.filter(u => u.id !== id); localStorage.setItem("users", JSON.stringify(users)); renderUsers(); updateStats(); alert("Đã xóa!"); } }
+function toggleUserStatus(id) { let users = JSON.parse(localStorage.getItem("users")) || []; const user = users.find(u => u.id === id); if(user){ user.status = user.status === "banned" ? "active" : "banned"; localStorage.setItem("users", JSON.stringify(users)); renderUsers(); alert(`Đã ${user.status === "banned" ? "khóa" : "mở khóa"} tài khoản!`); } }
 
-function deleteUser(id) {
-    if (confirm("Bạn có chắc muốn xóa người dùng này?")) {
-        let users = JSON.parse(localStorage.getItem("users")) || [];
-        users = users.filter(u => u.id !== id);
-        localStorage.setItem("users", JSON.stringify(users));
-        renderUsers();
-        updateDashboardStats();
-        showToast("Đã xóa người dùng!", "success");
-    }
-}
-
-function toggleUserStatus(id) {
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    const user = users.find(u => u.id === id);
-    if (user) {
-        user.status = user.status === "banned" ? "active" : "banned";
-        localStorage.setItem("users", JSON.stringify(users));
-        renderUsers();
-        showToast(`Đã ${user.status === "banned" ? "khóa" : "mở khóa"} tài khoản!`, "success");
-    }
-}
-
-// ==================== QUẢN LÝ VIỆC LÀM ====================
+// ==================== QUẢN LÝ VIỆC LÀM (Lấy từ allJobs) ====================
 let currentJobPage = 1;
 const jobsPerPage = 10;
 let pendingJobId = null;
+let editingJobId = null;
 
 function renderJobs() {
-    let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? allJobs : []);
+    // Đồng bộ dữ liệu từ allJobs trước khi render
+    let jobs = syncJobsFromData();
+    
     const searchTerm = document.getElementById("searchJob")?.value.toLowerCase() || "";
     const filterStatus = document.querySelector("#tab-jobs .filter-tab.active")?.dataset.filter || "all";
     
     let filtered = jobs;
-    if (searchTerm) {
-        filtered = filtered.filter(j => j.title?.toLowerCase().includes(searchTerm) || j.company?.toLowerCase().includes(searchTerm));
-    }
-    if (filterStatus !== "all") {
-        filtered = filtered.filter(j => j.status === filterStatus);
-    }
+    if (searchTerm) filtered = filtered.filter(j => j.title?.toLowerCase().includes(searchTerm) || j.company?.toLowerCase().includes(searchTerm));
+    if (filterStatus !== "all") filtered = filtered.filter(j => j.status === filterStatus);
     
     const start = (currentJobPage - 1) * jobsPerPage;
     const paginated = filtered.slice(start, start + jobsPerPage);
     
     const tbody = document.getElementById("jobList");
+    if (!tbody) return;
+    
     tbody.innerHTML = paginated.map(job => `
         <tr>
             <td>${job.id}</td>
@@ -338,12 +378,12 @@ function renderJobs() {
             <td>${job.company || "---"}</td>
             <td>${job.field || "---"}</td>
             <td>${job.location || job.district || "---"}</td>
-            <td><span class="status-badge ${job.status === "active" ? "status-active" : (job.status === "pending" ? "status-pending" : "status-inactive")}">${job.status === "active" ? "Đang đăng" : (job.status === "pending" ? "Chờ duyệt" : "Từ chối")}</span></td>
+            <td><span class="status-badge ${job.status === "active" ? "status-active" : (job.status === "pending" ? "status-pending" : "status-active")}">${job.status === "active" ? "Đang đăng" : (job.status === "pending" ? "Chờ duyệt" : "Đang đăng")}</span></td>
             <td>${job.postDate || job.date || "---"}</td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
-                ${job.status === "pending" ? `<button class="btn-primary btn-sm" onclick="openApproveJobModal(${job.id})"><i class="fas fa-check-circle"></i> Duyệt</button>` : ""}
+                <button class="btn-primary btn-sm" onclick="toggleJobStatus(${job.id})"><i class="fas ${job.status === "active" ? "fa-eye-slash" : "fa-eye"}"></i> ${job.status === "active" ? "Ẩn" : "Hiện"}</button>
             </td>
         </tr>
     `).join("");
@@ -351,111 +391,111 @@ function renderJobs() {
     const totalPages = Math.ceil(filtered.length / jobsPerPage);
     const paginationDiv = document.getElementById("jobPagination");
     if (paginationDiv) {
-        let pages = "";
-        for (let i = 1; i <= totalPages; i++) {
-            pages += `<button class="${i === currentJobPage ? "active" : ""}" onclick="goToJobPage(${i})">${i}</button>`;
-        }
-        paginationDiv.innerHTML = pages;
+        paginationDiv.innerHTML = totalPages > 1 ? Array.from({length: totalPages}, (_, i) => `<button class="${i+1 === currentJobPage ? 'active' : ''}" onclick="goToJobPage(${i+1})">${i+1}</button>`).join('') : '';
     }
 }
 
-function goToJobPage(page) {
-    currentJobPage = page;
-    renderJobs();
-}
-
-function openApproveJobModal(jobId) {
-    pendingJobId = jobId;
-    const jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? allJobs : []);
-    const job = jobs.find(j => j.id == jobId);
-    if (job) {
-        document.getElementById("jobApproveContent").innerHTML = `
-            <p><strong>Tiêu đề:</strong> ${job.title}</p>
-            <p><strong>Công ty:</strong> ${job.company}</p>
-            <p><strong>Mô tả:</strong> ${job.desc || "Chưa có mô tả"}</p>
-            <p><strong>Mức lương:</strong> ${job.salary || "Thỏa thuận"}</p>
-            <p><strong>Địa điểm:</strong> ${job.location || job.district || "Đà Nẵng"}</p>
-        `;
-        document.getElementById("jobRejectReason").value = "";
-        document.getElementById("jobApproveModal").classList.add("active");
-    }
-}
-
-function closeJobApproveModal() {
-    document.getElementById("jobApproveModal").classList.remove("active");
-    pendingJobId = null;
-}
-
-function approveJob() {
-    if (pendingJobId) {
-        let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? [...allJobs] : []);
-        const index = jobs.findIndex(j => j.id == pendingJobId);
-        if (index !== -1) {
-            jobs[index].status = "active";
-            jobs[index].approvedAt = new Date().toISOString();
-            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-            renderJobs();
-            updateDashboardStats();
-            showToast("Đã duyệt tin tuyển dụng!", "success");
-        }
-        closeJobApproveModal();
-    }
-}
-
-function rejectJob() {
-    if (pendingJobId) {
-        const reason = document.getElementById("jobRejectReason").value;
-        let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? [...allJobs] : []);
-        const index = jobs.findIndex(j => j.id == pendingJobId);
-        if (index !== -1) {
-            jobs[index].status = "rejected";
-            jobs[index].rejectReason = reason;
-            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-            renderJobs();
-            showToast("Đã từ chối tin tuyển dụng!", "warning");
-        }
-        closeJobApproveModal();
-    }
-}
+function goToJobPage(page) { currentJobPage = page; renderJobs(); }
 
 function editJob(id) {
-    // Chuyển sang tab chỉnh sửa hoặc mở modal
-    showToast("Tính năng đang phát triển", "info");
+    let jobs = syncJobsFromData();
+    const job = jobs.find(j => j.id == id);
+    if (job) {
+        editingJobId = id;
+        document.getElementById("editJobId").value = id;
+        document.getElementById("editJobTitle").value = job.title || "";
+        document.getElementById("editJobCompany").value = job.company || "";
+        document.getElementById("editJobLocation").value = job.location || job.district || "";
+        document.getElementById("editJobSalary").value = job.salary || "";
+        document.getElementById("editJobDesc").value = job.desc || "";
+        document.getElementById("editJobStatus").value = job.status || "active";
+        
+        // Load industries
+        const industries = JSON.parse(localStorage.getItem("industries")) || [];
+        const fieldSelect = document.getElementById("editJobField");
+        if (fieldSelect) {
+            fieldSelect.innerHTML = industries.map(ind => `<option value="${ind}" ${job.field === ind ? 'selected' : ''}>${ind}</option>`).join("");
+        }
+        
+        document.getElementById("editJobModal").classList.add("active");
+    }
+}
+
+function closeEditJobModal() { document.getElementById("editJobModal").classList.remove("active"); editingJobId = null; }
+
+function updateJob() {
+    if (!editingJobId) return;
+    let jobs = syncJobsFromData();
+    
+    const index = jobs.findIndex(j => j.id == editingJobId);
+    if (index !== -1) {
+        jobs[index] = {
+            ...jobs[index],
+            title: document.getElementById("editJobTitle").value,
+            company: document.getElementById("editJobCompany").value,
+            field: document.getElementById("editJobField").value,
+            location: document.getElementById("editJobLocation").value,
+            salary: document.getElementById("editJobSalary").value,
+            desc: document.getElementById("editJobDesc").value,
+            status: document.getElementById("editJobStatus").value,
+            updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        // Cập nhật cả allJobs nếu có
+        if (typeof allJobs !== 'undefined') {
+            const originalIndex = allJobs.findIndex(j => j.id == editingJobId);
+            if (originalIndex !== -1) allJobs[originalIndex] = jobs[index];
+        }
+        
+        renderJobs();
+        updateStats();
+        closeEditJobModal();
+        alert("✅ Đã cập nhật tin tuyển dụng!");
+    }
 }
 
 function deleteJob(id) {
-    if (confirm("Bạn có chắc muốn xóa tin tuyển dụng này?")) {
-        let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || (typeof allJobs !== 'undefined' ? [...allJobs] : []);
+    if (confirm("Xóa tin tuyển dụng này?")) {
+        let jobs = syncJobsFromData();
         jobs = jobs.filter(j => j.id != id);
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         renderJobs();
-        updateDashboardStats();
-        showToast("Đã xóa tin tuyển dụng!", "success");
+        updateStats();
+        alert("Đã xóa tin tuyển dụng!");
     }
 }
 
-function openJobModal() {
-    showToast("Tính năng đang phát triển", "info");
+function toggleJobStatus(id) {
+    let jobs = syncJobsFromData();
+    const index = jobs.findIndex(j => j.id == id);
+    if (index !== -1) {
+        jobs[index].status = jobs[index].status === "active" ? "inactive" : "active";
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        renderJobs();
+        alert(`Đã ${jobs[index].status === "active" ? "hiển thị" : "ẩn"} tin tuyển dụng!`);
+    }
 }
 
-// ==================== QUẢN LÝ CÔNG TY ====================
+// ==================== QUẢN LÝ CÔNG TY (Lấy từ companyData) ====================
 function renderCompanies() {
-    let companies = JSON.parse(localStorage.getItem("companies")) || [];
-    const searchTerm = document.getElementById("searchCompany")?.value.toLowerCase() || "";
+    // Đồng bộ dữ liệu từ companyData trước khi render
+    let companies = syncCompaniesFromData();
     
-    let filtered = companies;
-    if (searchTerm) {
-        filtered = filtered.filter(c => c.name?.toLowerCase().includes(searchTerm));
-    }
+    const searchTerm = document.getElementById("searchCompany")?.value.toLowerCase() || "";
+    let filtered = searchTerm ? companies.filter(c => c.name?.toLowerCase().includes(searchTerm)) : companies;
     
     const tbody = document.getElementById("companyList");
+    if (!tbody) return;
+    
     tbody.innerHTML = filtered.map(company => `
         <tr>
             <td>${company.id}</td>
-            <td><div class="company-logo-cell"><img src="${company.logo || 'https://placehold.co/40'}" alt="${company.name}" onerror="this.src='https://placehold.co/40'"></div></td>
+            <td><div class="company-logo-cell"><img src="${company.logo || 'https://placehold.co/40'}" style="width:35px;height:35px;object-fit:contain; border-radius: 8px;" onerror="this.src='https://placehold.co/40'"></div></td>
             <td><strong>${company.name}</strong></td>
             <td>${company.address || "---"}</td>
             <td>${company.phone || "---"}</td>
+            <td>${company.industry || "---"}</td>
             <td><span class="status-badge ${company.status === "active" ? "status-active" : (company.status === "pending" ? "status-pending" : "status-inactive")}">${company.status === "active" ? "Hoạt động" : (company.status === "pending" ? "Chờ duyệt" : "Đã khóa")}</span></td>
             <td>
                 <button class="btn-outline btn-sm" onclick="editCompany(${company.id})"><i class="fas fa-edit"></i></button>
@@ -466,16 +506,19 @@ function renderCompanies() {
 }
 
 function openCompanyModal(companyId = null) {
-    document.getElementById("companyModal").classList.add("active");
+    const modal = document.getElementById("companyModal");
+    if (!modal) return;
+    modal.classList.add("active");
     
-    // Load industries vào select
     const industries = JSON.parse(localStorage.getItem("industries")) || [];
     const industrySelect = document.getElementById("companyIndustry");
-    industrySelect.innerHTML = '<option>-- Chọn lĩnh vực --</option>' + industries.map(ind => `<option value="${ind}">${ind}</option>`).join("");
+    if (industrySelect) {
+        industrySelect.innerHTML = '<option value="">-- Chọn lĩnh vực --</option>' + industries.map(ind => `<option value="${ind}">${ind}</option>`).join("");
+    }
     
     if (companyId) {
         document.getElementById("companyModalTitle").innerText = "Sửa công ty";
-        const companies = JSON.parse(localStorage.getItem("companies")) || [];
+        const companies = syncCompaniesFromData();
         const company = companies.find(c => c.id === companyId);
         if (company) {
             document.getElementById("companyId").value = company.id;
@@ -484,19 +527,18 @@ function openCompanyModal(companyId = null) {
             document.getElementById("companyAddress").value = company.address || "";
             document.getElementById("companyPhone").value = company.phone || "";
             document.getElementById("companyEmail").value = company.email || "";
-            document.getElementById("companyIndustry").value = company.industry || "";
-            document.getElementById("companyStatus").value = company.status || "pending";
+            if (industrySelect) industrySelect.value = company.industry || "";
+            document.getElementById("companyStatus").value = company.status || "active";
         }
     } else {
         document.getElementById("companyModalTitle").innerText = "Thêm công ty";
         document.getElementById("companyForm").reset();
         document.getElementById("companyId").value = "";
+        document.getElementById("companyStatus").value = "active";
     }
 }
 
-function closeCompanyModal() {
-    document.getElementById("companyModal").classList.remove("active");
-}
+function closeCompanyModal() { document.getElementById("companyModal").classList.remove("active"); }
 
 function saveCompany() {
     const id = document.getElementById("companyId").value;
@@ -505,10 +547,15 @@ function saveCompany() {
     const address = document.getElementById("companyAddress").value;
     const phone = document.getElementById("companyPhone").value;
     const email = document.getElementById("companyEmail").value;
-    const industry = document.getElementById("companyIndustry").value;
+    const industry = document.getElementById("companyIndustry")?.value || "";
     const status = document.getElementById("companyStatus").value;
     
-    let companies = JSON.parse(localStorage.getItem("companies")) || [];
+    if (!name) {
+        alert("Vui lòng nhập tên công ty!");
+        return;
+    }
+    
+    let companies = syncCompaniesFromData();
     
     if (id) {
         const index = companies.findIndex(c => c.id == id);
@@ -527,21 +574,19 @@ function saveCompany() {
     localStorage.setItem("companies", JSON.stringify(companies));
     closeCompanyModal();
     renderCompanies();
-    updateDashboardStats();
-    showToast("Lưu công ty thành công!", "success");
+    updateStats();
+    alert("✅ Lưu công ty thành công!");
 }
 
-function editCompany(id) {
-    openCompanyModal(id);
-}
+function editCompany(id) { openCompanyModal(id); }
 
 function deleteCompany(id) {
     if (confirm("Bạn có chắc muốn xóa công ty này?")) {
-        let companies = JSON.parse(localStorage.getItem("companies")) || [];
+        let companies = syncCompaniesFromData();
         companies = companies.filter(c => c.id !== id);
         localStorage.setItem("companies", JSON.stringify(companies));
         renderCompanies();
-        showToast("Đã xóa công ty!", "success");
+        alert("Đã xóa công ty!");
     }
 }
 
@@ -549,24 +594,24 @@ function deleteCompany(id) {
 function renderCVs() {
     const cvs = JSON.parse(localStorage.getItem("savedCVs")) || [];
     const searchTerm = document.getElementById("searchCV")?.value.toLowerCase() || "";
-    
-    let filtered = cvs;
-    if (searchTerm) {
-        filtered = filtered.filter(cv => cv.fullName?.toLowerCase().includes(searchTerm) || cv.email?.toLowerCase().includes(searchTerm));
-    }
+    let filtered = searchTerm ? cvs.filter(cv => cv.fullName?.toLowerCase().includes(searchTerm) || cv.email?.toLowerCase().includes(searchTerm)) : cvs;
     
     const tbody = document.getElementById("cvList");
-    tbody.innerHTML = filtered.map((cv, index) => `
+    if (!tbody) return;
+    
+    tbody.innerHTML = filtered.map((cv, i) => `
         <tr>
-            <td>${index + 1}</td>
-            <td>${cv.fullName || "---"}</strong></td>
+            <td>${i+1}</td>
+            <td>${cv.fullName || "---"}</td>
             <td>${cv.email || "---"}</td>
             <td>${cv.phone || "---"}</td>
             <td>${cv.position || "---"}</td>
             <td>${cv.createdAt || "---"}</td>
-            <td><button class="btn-outline btn-sm" onclick="viewCVDetail(${index})"><i class="fas fa-eye"></i> Xem</button>
-                <button class="btn-danger btn-sm" onclick="deleteCV(${index})"><i class="fas fa-trash"></i> Xóa</button>
-             </tr>
+            <td>
+                <button class="btn-outline btn-sm" onclick="viewCVDetail(${i})"><i class="fas fa-eye"></i> Xem</button>
+                <button class="btn-danger btn-sm" onclick="deleteCV(${i})"><i class="fas fa-trash"></i> Xóa</button>
+            </td>
+        </tr>
     `).join("");
 }
 
@@ -584,7 +629,7 @@ function deleteCV(index) {
         cvs.splice(index, 1);
         localStorage.setItem("savedCVs", JSON.stringify(cvs));
         renderCVs();
-        showToast("Đã xóa CV!", "success");
+        alert("Đã xóa CV!");
     }
 }
 
@@ -595,115 +640,70 @@ function renderCategories() {
     const locations = JSON.parse(localStorage.getItem("locations")) || [];
     const jobTypes = JSON.parse(localStorage.getItem("jobTypes")) || [];
     
-    document.getElementById("industryList").innerHTML = industries.map((item, i) => `<div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('industry', ${i})"><i class="fas fa-trash"></i></button></div>`).join("");
-    document.getElementById("skillList").innerHTML = skills.map((item, i) => `<div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('skill', ${i})"><i class="fas fa-trash"></i></button></div>`).join("");
-    document.getElementById("locationList").innerHTML = locations.map((item, i) => `<div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('location', ${i})"><i class="fas fa-trash"></i></button></div>`).join("");
-    document.getElementById("jobTypeList").innerHTML = jobTypes.map((item, i) => `<div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('jobType', ${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+    const industryDiv = document.getElementById("industryList");
+    const skillDiv = document.getElementById("skillList");
+    const locationDiv = document.getElementById("locationList");
+    const jobTypeDiv = document.getElementById("jobTypeList");
+    
+    if (industryDiv) {
+        industryDiv.innerHTML = industries.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('industry',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+    }
+    if (skillDiv) {
+        skillDiv.innerHTML = skills.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('skill',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+    }
+    if (locationDiv) {
+        locationDiv.innerHTML = locations.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('location',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+    }
+    if (jobTypeDiv) {
+        jobTypeDiv.innerHTML = jobTypes.map((item, i) => `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #e2e8f0;"><span>${item}</span><button class="btn-danger btn-sm" onclick="deleteCategory('jobType',${i})"><i class="fas fa-trash"></i></button></div>`).join("");
+    }
 }
 
 function addCategory(type) {
     const name = prompt("Nhập tên danh mục mới:");
-    if (name) {
+    if (name && name.trim()) {
         let list = JSON.parse(localStorage.getItem(`${type}s`)) || [];
-        list.push(name);
+        list.push(name.trim());
         localStorage.setItem(`${type}s`, JSON.stringify(list));
         renderCategories();
-        showToast(`Đã thêm ${name} vào danh mục!`, "success");
+        alert(`✅ Đã thêm "${name}" vào danh mục!`);
     }
 }
 
 function deleteCategory(type, index) {
     let list = JSON.parse(localStorage.getItem(`${type}s`)) || [];
-    list.splice(index, 1);
-    localStorage.setItem(`${type}s`, JSON.stringify(list));
-    renderCategories();
-    showToast("Đã xóa danh mục!", "success");
-}
-
-// ==================== QUẢN LÝ NỘI DUNG ====================
-function renderContent() {
-    const news = JSON.parse(localStorage.getItem("news")) || [];
-    const filterType = document.querySelector("#tab-content .filter-tab.active")?.dataset.news || "all";
-    
-    let filtered = news;
-    if (filterType !== "all") {
-        filtered = news.filter(n => n.type === filterType);
-    }
-    
-    const tbody = document.getElementById("contentList");
-    tbody.innerHTML = filtered.map(item => `
-        <tr>
-            <td>${item.id}</td>
-            <td><a href="#" onclick="viewNewsDetail(${item.id})">${item.title}</a></td>
-            <td>${item.type === "news" ? "Tin tức" : (item.type === "notice" ? "Thông báo" : "Banner")}</td>
-            <td>${item.date}</td>
-            <td><span class="status-badge ${item.status === "active" ? "status-active" : "status-inactive"}">${item.status === "active" ? "Hiển thị" : "Ẩn"}</span></td>
-            <td>
-                <button class="btn-outline btn-sm" onclick="editNews(${item.id})"><i class="fas fa-edit"></i></button>
-                <button class="btn-danger btn-sm" onclick="deleteNews(${item.id})"><i class="fas fa-trash"></i></button>
-             </tr>
-    `).join("");
-}
-
-function openNewsModal(newsId = null) {
-    showToast("Tính năng đang phát triển", "info");
-}
-
-function editNews(id) {
-    showToast("Tính năng đang phát triển", "info");
-}
-
-function deleteNews(id) {
-    if (confirm("Xóa nội dung này?")) {
-        let news = JSON.parse(localStorage.getItem("news")) || [];
-        news = news.filter(n => n.id !== id);
-        localStorage.setItem("news", JSON.stringify(news));
-        renderContent();
-        showToast("Đã xóa!", "success");
-    }
-}
-
-function viewNewsDetail(id) {
-    const news = JSON.parse(localStorage.getItem("news")) || [];
-    const item = news.find(n => n.id === id);
-    if (item) {
-        alert(`📰 ${item.title}\n\nLoại: ${item.type}\nNgày: ${item.date}`);
+    const deleted = list[index];
+    if (confirm(`Xóa "${deleted}" khỏi danh mục?`)) {
+        list.splice(index, 1);
+        localStorage.setItem(`${type}s`, JSON.stringify(list));
+        renderCategories();
+        alert("Đã xóa danh mục!");
     }
 }
 
 // ==================== QUẢN LÝ HỖ TRỢ ====================
 function renderSupport() {
     const tickets = JSON.parse(localStorage.getItem("supportTickets")) || [];
-    const filterStatus = document.querySelector("#tab-support .filter-tab.active")?.dataset.support || "pending";
-    
-    let filtered = tickets;
-    if (filterStatus !== "all") {
-        filtered = tickets.filter(t => t.status === filterStatus);
-    }
+    const filter = document.querySelector("#tab-support .filter-tab.active")?.dataset.support || "pending";
+    let filtered = tickets.filter(t => t.status === filter);
     
     const tbody = document.getElementById("supportList");
-    tbody.innerHTML = filtered.map(ticket => `
+    if (!tbody) return;
+    
+    tbody.innerHTML = filtered.map(t => `
         <tr>
-            <td>${ticket.id}</td>
-            <td>${ticket.userName}</td>
-            <td>${ticket.title}</td>
-            <td>${ticket.content.substring(0, 50)}...</td>
-            <td>${ticket.date}</td>
-            <td><span class="status-badge ${ticket.status === "pending" ? "status-pending" : (ticket.status === "processing" ? "status-warning" : "status-active")}">${ticket.status === "pending" ? "Chờ xử lý" : (ticket.status === "processing" ? "Đang xử lý" : "Đã giải quyết")}</span></td>
+            <td>${t.id}</td>
+            <td>${t.userName}</td>
+            <td>${t.title}</td>
+            <td>${t.content.substring(0, 50)}...</td>
+            <td>${t.date}</td>
+            <td><span class="status-badge ${t.status === "pending" ? "status-pending" : (t.status === "processing" ? "status-warning" : "status-active")}">${t.status === "pending" ? "Chờ xử lý" : (t.status === "processing" ? "Đang xử lý" : "Đã giải quyết")}</span></td>
             <td>
-                <button class="btn-outline btn-sm" onclick="viewSupportTicket(${ticket.id})"><i class="fas fa-eye"></i></button>
-                <button class="btn-primary btn-sm" onclick="updateSupportStatus(${ticket.id}, 'processing')"><i class="fas fa-spinner"></i></button>
-                <button class="btn-success btn-sm" onclick="updateSupportStatus(${ticket.id}, 'resolved')"><i class="fas fa-check"></i></button>
-             </tr>
+                <button class="btn-primary btn-sm" onclick="updateSupportStatus(${t.id},'processing')"><i class="fas fa-spinner"></i> Xử lý</button>
+                <button class="btn-success btn-sm" onclick="updateSupportStatus(${t.id},'resolved')"><i class="fas fa-check"></i> Hoàn thành</button>
+            </td>
+        </tr>
     `).join("");
-}
-
-function viewSupportTicket(id) {
-    const tickets = JSON.parse(localStorage.getItem("supportTickets")) || [];
-    const ticket = tickets.find(t => t.id === id);
-    if (ticket) {
-        alert(`📧 YÊU CẦU HỖ TRỢ\n\nNgười gửi: ${ticket.userName}\nTiêu đề: ${ticket.title}\nNội dung: ${ticket.content}\nNgày gửi: ${ticket.date}\nTrạng thái: ${ticket.status}`);
-    }
 }
 
 function updateSupportStatus(id, status) {
@@ -713,7 +713,7 @@ function updateSupportStatus(id, status) {
         tickets[index].status = status;
         localStorage.setItem("supportTickets", JSON.stringify(tickets));
         renderSupport();
-        showToast(`Đã cập nhật trạng thái!`, "success");
+        alert(`✅ Đã cập nhật trạng thái!`);
     }
 }
 
@@ -721,30 +721,28 @@ function updateSupportStatus(id, status) {
 function renderTransactions() {
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     const tbody = document.getElementById("transactionList");
-    tbody.innerHTML = transactions.map(trans => `
+    if (!tbody) return;
+    
+    tbody.innerHTML = transactions.map(t => `
         <tr>
-            <td>${trans.id}</td>
-            <td>${trans.userName}</td>
-            <td>${trans.package}</td>
-            <td>${trans.amount.toLocaleString()}đ</td>
-            <td>${trans.date}</td>
-            <td><span class="status-badge ${trans.status === "completed" ? "status-active" : "status-pending"}">${trans.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}</span></td>
-         </tr>
+            <td>${t.id}</td>
+            <td>${t.companyName}</td>
+            <td>${t.package || "Premium"}</td>
+            <td>${t.days || 7} ngày</td>
+            <td>${t.amount.toLocaleString()}đ</td>
+            <td>${t.date}</td>
+            <td><span class="status-badge ${t.status === "completed" ? "status-active" : "status-pending"}">${t.status === "completed" ? "Hoàn thành" : "Chờ xử lý"}</span><table>
+        </tr>
     `).join("");
 }
 
-// ==================== UTILITY FUNCTIONS ====================
-function showToast(message, type = "success") {
-    const toast = document.createElement("div");
-    toast.className = `toast-message ${type}`;
-    toast.innerHTML = `<i class="fas ${type === "success" ? "fa-check-circle" : (type === "error" ? "fa-exclamation-circle" : "fa-info-circle")}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
+// ==================== UTILITY ====================
 function setCurrentDate() {
     const now = new Date();
-    document.getElementById("currentDate").innerText = now.toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const dateEl = document.getElementById("currentDate");
+    if (dateEl) {
+        dateEl.innerText = now.toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
 }
 
 // ==================== TAB NAVIGATION ====================
@@ -752,7 +750,6 @@ function initTabs() {
     const menuItems = document.querySelectorAll(".sidebar-menu li");
     const tabContents = document.querySelectorAll(".tab-content");
     const pageTitle = document.getElementById("pageTitle");
-    const pageSubtitle = document.querySelector(".page-title p");
     
     const titles = {
         dashboard: "Tổng quan",
@@ -762,22 +759,18 @@ function initTabs() {
         cvs: "Quản lý CV",
         categories: "Danh mục hệ thống",
         reports: "Báo cáo & Thống kê",
-        content: "Quản lý nội dung",
-        support: "Hỗ trợ người dùng",
-        revenue: "Thống kê doanh thu"
+        support: "Hỗ trợ người dùng"
     };
     
     menuItems.forEach(item => {
         item.addEventListener("click", () => {
             menuItems.forEach(i => i.classList.remove("active"));
             item.classList.add("active");
-            
             const tabId = item.dataset.tab;
-            tabContents.forEach(content => content.classList.remove("active"));
-            document.getElementById(`tab-${tabId}`).classList.add("active");
-            
-            pageTitle.innerText = titles[tabId] || "Quản trị hệ thống";
-            pageSubtitle.innerText = `Quản lý ${titles[tabId]?.toLowerCase() || "hệ thống"}`;
+            tabContents.forEach(c => c.classList.remove("active"));
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.add("active");
+            if (pageTitle) pageTitle.innerText = titles[tabId] || "Quản trị hệ thống";
             
             // Load dữ liệu cho từng tab
             if (tabId === "users") renderUsers();
@@ -785,14 +778,12 @@ function initTabs() {
             if (tabId === "companies") renderCompanies();
             if (tabId === "cvs") renderCVs();
             if (tabId === "categories") renderCategories();
-            if (tabId === "content") renderContent();
             if (tabId === "support") renderSupport();
-            if (tabId === "revenue") renderTransactions();
         });
     });
 }
 
-function initFilterListeners() {
+function initFilters() {
     // Filter cho users
     document.querySelectorAll("#tab-users .filter-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -813,15 +804,6 @@ function initFilterListeners() {
         });
     });
     
-    // Filter cho content
-    document.querySelectorAll("#tab-content .filter-tab").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll("#tab-content .filter-tab").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            renderContent();
-        });
-    });
-    
     // Filter cho support
     document.querySelectorAll("#tab-support .filter-tab").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -832,36 +814,70 @@ function initFilterListeners() {
     });
     
     // Search listeners
-    document.getElementById("searchUser")?.addEventListener("input", () => { currentUserPage = 1; renderUsers(); });
-    document.getElementById("searchJob")?.addEventListener("input", () => { currentJobPage = 1; renderJobs(); });
-    document.getElementById("searchCompany")?.addEventListener("input", renderCompanies);
-    document.getElementById("searchCV")?.addEventListener("input", renderCVs);
+    const searchUser = document.getElementById("searchUser");
+    const searchJob = document.getElementById("searchJob");
+    const searchCompany = document.getElementById("searchCompany");
+    const searchCV = document.getElementById("searchCV");
+    
+    if (searchUser) searchUser.addEventListener("input", () => { currentUserPage = 1; renderUsers(); });
+    if (searchJob) searchJob.addEventListener("input", () => { currentJobPage = 1; renderJobs(); });
+    if (searchCompany) searchCompany.addEventListener("input", renderCompanies);
+    if (searchCV) searchCV.addEventListener("input", renderCVs);
 }
 
-// ==================== ADMIN LOGOUT ====================
 function handleAdminLogout() {
-    localStorage.removeItem("currentUser");
-    window.location.href = "login.html";
+    if (confirm("Đăng xuất khỏi hệ thống?")) {
+        localStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+    }
 }
 
 // ==================== KHỞI TẠO ====================
 document.addEventListener("DOMContentLoaded", () => {
+    initAdminAccount();
     if (!checkAdminAuth()) return;
     
-    initAdminAccount();
+    // Đồng bộ dữ liệu từ file gốc
+    initSyncData();
+    
     initSampleData();
     setCurrentDate();
-    updateDashboardStats();
+    updateStats();
     initTabs();
-    initFilterListeners();
+    initFilters();
     
-    // Load initial data
+    // Load dữ liệu ban đầu
     renderUsers();
     renderJobs();
     renderCompanies();
     renderCVs();
     renderCategories();
-    renderContent();
     renderSupport();
     renderTransactions();
 });
+
+// Export global functions
+window.goToUserPage = goToUserPage;
+window.openUserModal = openUserModal;
+window.closeUserModal = closeUserModal;
+window.saveUser = saveUser;
+window.editUser = editUser;
+window.deleteUser = deleteUser;
+window.toggleUserStatus = toggleUserStatus;
+window.goToJobPage = goToJobPage;
+window.editJob = editJob;
+window.closeEditJobModal = closeEditJobModal;
+window.updateJob = updateJob;
+window.deleteJob = deleteJob;
+window.toggleJobStatus = toggleJobStatus;
+window.openCompanyModal = openCompanyModal;
+window.closeCompanyModal = closeCompanyModal;
+window.saveCompany = saveCompany;
+window.editCompany = editCompany;
+window.deleteCompany = deleteCompany;
+window.viewCVDetail = viewCVDetail;
+window.deleteCV = deleteCV;
+window.addCategory = addCategory;
+window.deleteCategory = deleteCategory;
+window.updateSupportStatus = updateSupportStatus;
+window.handleAdminLogout = handleAdminLogout;
