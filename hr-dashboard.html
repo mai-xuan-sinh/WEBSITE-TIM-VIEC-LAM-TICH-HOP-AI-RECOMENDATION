@@ -3,22 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>HR Dashboard Pro | Danang Work</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>HR Dashboard | Danang Work</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="hr-style.css">
+    <style>
+        /* CSS bổ sung */
+        .skills-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            min-height: 50px;
+        }
+        .skill-tag-item {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .skill-tag-item i {
+            cursor: pointer;
+            color: var(--danger);
+            font-size: 11px;
+        }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        .step {
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--gray-200);
+            color: var(--gray-600);
+        }
+        .step.active {
+            background: var(--primary);
+            color: white;
+        }
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+        .payment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 20px 0;
+        }
+        .price-breakdown {
+            background: var(--gray-100);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .price-item.total {
+            font-weight: 700;
+            font-size: 18px;
+            border-bottom: none;
+            padding-top: 15px;
+            color: var(--primary);
+        }
+        .price-highlight {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .qr-payment {
+            text-align: center;
+        }
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 16px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray-200);
+            font-size: 48px;
+        }
+        .date-range {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .date-range span {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        .form-hint {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
 
-<div id="hr-auth-guard" class="auth-guard">
+<!-- AUTH GUARD -->
+<div id="hr-auth-guard" class="auth-guard" style="display: none;">
     <i class="fa-solid fa-shield-halved"></i>
     <h2>Khu vực Quản trị Nhân sự</h2>
-    <p>Đăng nhập để quản lý tuyển dụng & ứng viên</p>
-    <p style="margin-top: 10px; font-size: 13px; opacity: 0.8;">📧 hr@danangwork.com | 🔑 123456</p>
+    <p>Vui lòng đăng nhập để tiếp tục</p>
+    <p style="font-size: 13px; opacity: 0.8;">📧 hr@danangwork.com | 🔑 123456</p>
     <button onclick="location.href='login.html'" class="btn-primary mt-3">Đăng nhập ngay</button>
 </div>
 
-<div class="app-layout">
+<!-- MAIN APP LAYOUT -->
+<div id="app-layout" class="app-layout" style="display: none;">
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="brand-icon"><i class="fa-solid fa-briefcase"></i></div>
@@ -28,449 +148,290 @@
             <div class="menu-label">CHÍNH</div>
             <a href="#" class="menu-item active" data-target="view-dashboard">
                 <i class="fa-solid fa-chart-line"></i><span>Tổng quan</span>
-                <div class="menu-hover-effect"></div>
             </a>
             <div class="menu-label">TUYỂN DỤNG</div>
             <a href="#" class="menu-item" data-target="view-jobs">
                 <i class="fa-solid fa-layer-group"></i><span>Quản lý tin</span>
-                <div class="menu-hover-effect"></div>
             </a>
             <a href="#" class="menu-item" data-target="view-candidates">
                 <i class="fa-solid fa-users-viewfinder"></i><span>Duyệt hồ sơ</span>
-                <div class="menu-hover-effect"></div>
+                <span class="badge-dot"></span>
             </a>
             <a href="#" class="menu-item" data-target="view-interviews">
                 <i class="fa-regular fa-calendar-check"></i><span>Lịch phỏng vấn</span>
-                <div class="menu-hover-effect"></div>
             </a>
             <div class="menu-label">TƯƠNG TÁC</div>
-            <a href="#" class="menu-item" data-target="view-messages">
-                <i class="fa-regular fa-comments"></i><span>Tin nhắn</span>
-                <span class="badge-dot"></span>
-                <div class="menu-hover-effect"></div>
-            </a>
             <a href="#" class="menu-item" data-target="view-search">
                 <i class="fa-solid fa-magnifying-glass"></i><span>Tìm ứng viên</span>
-                <div class="menu-hover-effect"></div>
             </a>
         </div>
         <div class="sidebar-footer">
             <div class="hr-user">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=HR&backgroundColor=2d3b8c" alt="avatar" class="rounded-avatar">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=HR&backgroundColor=2563eb" alt="avatar" class="rounded-avatar">
                 <div class="user-info">
                     <strong id="hrName">HR Manager</strong>
-                    <span id="hrCompanyName">Công ty Công nghệ</span>
+                    <span id="hrCompanyName">Đang tải...</span>
                 </div>
             </div>
             <button id="hrLogoutBtn" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
         </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main-wrapper">
         <header class="topbar">
             <div class="search-bar">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="globalSearch" placeholder="Tìm kiếm ứng viên, công việc...">
+                <input type="text" id="globalSearch" placeholder="Tìm kiếm...">
             </div>
             <div class="topbar-actions">
-                <button class="action-btn relative"><i class="fa-regular fa-bell"></i><span class="badge-count">3</span></button>
+                <button class="action-btn" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge-count" id="notifBadge">0</span>
+                </button>
+                <div id="notificationPanel" class="notification-panel">
+                    <div class="notification-header">
+                        <h3><i class="fa-regular fa-bell"></i> Thông báo</h3>
+                        <button class="mark-all-read" onclick="markAllNotificationsRead()">Đánh dấu đã đọc</button>
+                    </div>
+                    <div id="notification-list" class="notification-list"></div>
+                </div>
             </div>
         </header>
 
-        <!-- Dashboard Section -->
+        <!-- DASHBOARD -->
         <section id="view-dashboard" class="view-section active">
             <div class="section-header">
-                <div class="flex-between">
-                    <div>
-                        <h2 class="title">Tổng quan chiến lược</h2>
-                        <p class="subtitle">Phân tích hiệu suất tuyển dụng tuần này</p>
-                    </div>
-                    <button id="refreshDashboardBtn" class="btn-refresh"><i class="fa-solid fa-arrows-rotate"></i> Làm mới</button>
-                </div>
+                <div><h2 class="title">Tổng quan</h2><p class="subtitle">Phân tích hiệu suất tuyển dụng</p></div>
+                <button id="refreshDashboardBtn" class="btn-refresh"><i class="fa-solid fa-arrows-rotate"></i> Làm mới</button>
             </div>
-            
-            <!-- Stats Cards -->
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <div class="stat-icon bg-indigo"><i class="fa-solid fa-briefcase"></i></div>
-                    <div class="stat-data">
-                        <p>Tin đang mở</p>
-                        <h3 id="dash-active-jobs">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon bg-green"><i class="fa-solid fa-file-invoice"></i></div>
-                    <div class="stat-data">
-                        <p>CV chờ duyệt</p>
-                        <h3 id="dash-pending-cv">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon bg-orange"><i class="fa-solid fa-calendar-check"></i></div>
-                    <div class="stat-data">
-                        <p>Lịch phỏng vấn</p>
-                        <h3 id="dash-interviews">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon bg-purple"><i class="fa-solid fa-user-check"></i></div>
-                    <div class="stat-data">
-                        <p>Đã duyệt</p>
-                        <h3 id="dash-approved">0</h3>
-                    </div>
-                </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon bg-indigo"><i class="fa-solid fa-briefcase"></i></div><div class="stat-data"><p>Tin đang mở</p><h3 id="dash-active-jobs">0</h3></div></div>
+                <div class="stat-card"><div class="stat-icon bg-green"><i class="fa-solid fa-file-invoice"></i></div><div class="stat-data"><p>CV chờ duyệt</p><h3 id="dash-pending-cv">0</h3></div></div>
+                <div class="stat-card"><div class="stat-icon bg-orange"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-data"><p>Lịch phỏng vấn</p><h3 id="dash-interviews">0</h3></div></div>
+                <div class="stat-card"><div class="stat-icon bg-purple"><i class="fa-solid fa-user-check"></i></div><div class="stat-data"><p>Đã duyệt</p><h3 id="dash-approved">0</h3></div></div>
             </div>
-            
-            <!-- Dashboard Grid - Đã bỏ biểu đồ, thay bằng thông tin hữu ích -->
-            <div class="dashboard-grid">
-                <!-- Top Skills Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <i class="fa-solid fa-fire-flame-curved"></i> 
-                        Top kỹ năng được tuyển dụng
-                    </div>
-                    <div class="top-skills-list" id="topSkillsList">
-                        <div class="skill-item">
-                            <span>ReactJS</span>
-                            <div class="skill-bar"><div class="skill-fill" style="width: 85%"></div></div>
-                            <span class="skill-count">32 tin</span>
-                        </div>
-                        <div class="skill-item">
-                            <span>Node.js</span>
-                            <div class="skill-bar"><div class="skill-fill" style="width: 75%"></div></div>
-                            <span class="skill-count">28 tin</span>
-                        </div>
-                        <div class="skill-item">
-                            <span>Python</span>
-                            <div class="skill-bar"><div class="skill-fill" style="width: 68%"></div></div>
-                            <span class="skill-count">25 tin</span>
-                        </div>
-                        <div class="skill-item">
-                            <span>UI/UX Design</span>
-                            <div class="skill-bar"><div class="skill-fill" style="width: 50%"></div></div>
-                            <span class="skill-count">18 tin</span>
-                        </div>
-                        <div class="skill-item">
-                            <span>SQL</span>
-                            <div class="skill-bar"><div class="skill-fill" style="width: 45%"></div></div>
-                            <span class="skill-count">16 tin</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <i class="fa-regular fa-clock"></i> 
-                        Hoạt động gần đây
-                    </div>
-                    <ul class="activity-list" id="activity-feed">
-                        <li>✨ Chào mừng bạn đến với HR Pro</li>
-                    </ul>
-                </div>
+            <div class="quick-stats-row">
+                <div class="info-card"><i class="fa-solid fa-chart-simple"></i><div><h4>Tỷ lệ phê duyệt</h4><p class="info-value" id="approvalRate">0%</p></div></div>
+                <div class="info-card"><i class="fa-solid fa-clock"></i><div><h4>Phản hồi trung bình</h4><p class="info-value">2.5 ngày</p></div></div>
+                <div class="info-card"><i class="fa-solid fa-building"></i><div><h4>Công ty đang tuyển</h4><p class="info-value" id="activeCompanies">1</p></div></div>
             </div>
-            
-            <!-- Quick Stats Row -->
-            <div class="quick-stats-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 24px;">
-                <div class="info-card">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <div>
-                        <h4>Tỷ lệ phê duyệt</h4>
-                        <p class="info-value" id="approvalRate">0%</p>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <i class="fa-solid fa-clock"></i>
-                    <div>
-                        <h4>Phản hồi trung bình</h4>
-                        <p class="info-value">2.5 ngày</p>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <i class="fa-solid fa-building"></i>
-                    <div>
-                        <h4>Công ty đang tuyển</h4>
-                        <p class="info-value" id="activeCompanies">1</p>
-                    </div>
-                </div>
+            <div class="panel">
+                <div class="panel-header"><i class="fa-regular fa-clock"></i> Hoạt động gần đây</div>
+                <ul class="activity-list" id="activity-feed"><li><span class="dot"></span> ✨ Chào mừng bạn đến với HR Dashboard</li></ul>
             </div>
         </section>
 
-        <!-- Jobs Management -->
+        <!-- JOBS MANAGEMENT -->
         <section id="view-jobs" class="view-section">
-            <div class="flex-between">
-                <div>
-                    <h2 class="title">Quản lý tin đăng</h2>
-                    <p class="subtitle">Đăng tin chi tiết, quản lý ứng viên theo từng vị trí</p>
-                </div>
+            <div class="section-header">
+                <div><h2 class="title">Quản lý tin đăng</h2><p class="subtitle">Quản lý tin tuyển dụng của bạn</p></div>
                 <button class="btn-primary" id="btn-add-job"><i class="fa-solid fa-plus"></i> Đăng tin mới</button>
             </div>
             <div id="job-cards-container" class="job-cards-grid"></div>
         </section>
 
-        <!-- Candidates Section -->
+        <!-- CANDIDATES SECTION -->
         <section id="view-candidates" class="view-section">
             <h2 class="title">Duyệt hồ sơ ứng viên</h2>
             <div class="panel">
                 <div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <select id="candidateFilter" class="form-control" style="width: 180px;">
+                    <select id="candidateFilter" class="form-control" style="width: 150px;">
                         <option value="all">Tất cả</option>
                         <option value="pending">Chờ duyệt</option>
                         <option value="approved">Đã duyệt</option>
                         <option value="rejected">Từ chối</option>
                     </select>
-                    <select id="positionFilter" class="form-control" style="width: 200px;">
-                        <option value="all">Tất cả vị trí</option>
-                    </select>
+                    <select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select>
                 </div>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Ứng viên</th>
-                                <th>Vị trí</th>
-                                <th>Ngày nộp</th>
-                                <th>Trạng thái</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="candidate-list"></tbody>
-                    </table>
+                    <table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+                    <tbody id="candidate-list"></tbody></table>
                 </div>
             </div>
         </section>
 
-        <!-- CV Modal -->
-        <div id="cvModal" class="modal">
-            <div class="modal-box cv-modal">
-                <div class="flex-between">
-                    <h3><i class="fa-solid fa-file-pdf"></i> Chi tiết hồ sơ ứng viên</h3>
-                    <button class="btn-close" id="closeCvModal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="cvContent" class="cv-content"></div>
-                <div class="cv-actions" id="cvActions"></div>
-            </div>
-        </div>
+        <!-- CV MODAL -->
+        <div id="cvModal" class="modal"><div class="modal-box cv-modal"><div class="flex-between"><h3><i class="fa-solid fa-file-pdf"></i> Chi tiết hồ sơ</h3><button class="btn-close" id="closeCvModal"><i class="fa-solid fa-xmark"></i></button></div><div id="cvContent" class="cv-content"></div><div class="cv-actions" id="cvActions"></div></div></div>
 
-        <!-- Create Interview Modal -->
-        <div id="createInterviewModal" class="modal">
-            <div class="modal-box interview-modal">
-                <div class="flex-between">
-                    <h3><i class="fa-regular fa-calendar-plus"></i> Tạo lịch phỏng vấn</h3>
-                    <button class="btn-close" id="closeCreateInterviewModal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <form id="createInterviewForm">
-                    <input type="hidden" id="createInterviewCandidateId">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-user"></i> Ứng viên <span>*</span></label>
-                            <input type="text" class="form-control" id="createInterviewCandidate" readonly style="background: #f3f4f6;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-briefcase"></i> Vị trí <span>*</span></label>
-                            <input type="text" class="form-control" id="createInterviewPosition" readonly style="background: #f3f4f6;">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fa-regular fa-calendar"></i> Ngày <span>*</span></label>
-                            <input type="date" class="form-control" id="createInterviewDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-regular fa-clock"></i> Giờ <span>*</span></label>
-                            <input type="time" class="form-control" id="createInterviewTime" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-video"></i> Hình thức</label>
-                            <select class="form-control" id="createInterviewType">
-                                <option value="online">Online (Video Call)</option>
-                                <option value="offline">Offline (Trực tiếp)</option>
-                                <option value="phone">Phone Interview</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-location-dot"></i> Địa điểm/Link</label>
-                            <input type="text" class="form-control" id="createInterviewLocation" placeholder="VD: Google Meet link">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-users"></i> Người phỏng vấn</label>
-                        <input type="text" class="form-control" id="createInterviewInterviewer" placeholder="VD: Mr. Thắng, Ms. Hà">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-clock"></i> Thời lượng</label>
-                        <select class="form-control" id="createInterviewDuration">
-                            <option value="30">30 phút</option>
-                            <option value="45" selected>45 phút</option>
-                            <option value="60">60 phút</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fa-regular fa-note-sticky"></i> Ghi chú</label>
-                        <textarea class="form-control" id="createInterviewNote" rows="2" placeholder="Ghi chú thêm..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary w-100"><i class="fa-solid fa-save"></i> Tạo lịch</button>
-                </form>
-            </div>
-        </div>
+        <!-- CREATE INTERVIEW MODAL -->
+        <div id="createInterviewModal" class="modal"><div class="modal-box interview-modal"><div class="flex-between"><h3><i class="fa-regular fa-calendar-plus"></i> Tạo lịch phỏng vấn</h3><button class="btn-close" id="closeCreateInterviewModal"><i class="fa-solid fa-xmark"></i></button></div>
+            <form id="createInterviewForm">
+                <input type="hidden" id="createInterviewCandidateId">
+                <div class="form-row"><div class="form-group"><label>Ứng viên</label><input type="text" class="form-control" id="createInterviewCandidate" readonly></div><div class="form-group"><label>Vị trí</label><input type="text" class="form-control" id="createInterviewPosition" readonly></div></div>
+                <div class="form-row"><div class="form-group"><label>Ngày</label><input type="date" class="form-control" id="createInterviewDate" required></div><div class="form-group"><label>Giờ</label><input type="time" class="form-control" id="createInterviewTime" required></div></div>
+                <div class="form-row"><div class="form-group"><label>Hình thức</label><select class="form-control" id="createInterviewType"><option value="online">Online</option><option value="offline">Offline</option></select></div><div class="form-group"><label>Địa điểm</label><input type="text" class="form-control" id="createInterviewLocation"></div></div>
+                <div class="form-group"><label>Ghi chú</label><textarea class="form-control" id="createInterviewNote" rows="2"></textarea></div>
+                <button type="submit" class="btn-primary w-100">Tạo lịch</button>
+            </form>
+        </div></div>
 
-        <!-- Edit Interview Modal -->
-        <div id="editInterviewModal" class="modal">
-            <div class="modal-box interview-modal">
-                <div class="flex-between">
-                    <h3><i class="fa-regular fa-calendar-pen"></i> Sửa lịch phỏng vấn</h3>
-                    <button class="btn-close" id="closeEditInterviewModal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <form id="editInterviewForm">
-                    <input type="hidden" id="editInterviewId">
-                    <div class="form-row">
-                        <div class="form-group"><label>Ứng viên</label><input type="text" class="form-control" id="editInterviewCandidate" readonly></div>
-                        <div class="form-group"><label>Vị trí</label><input type="text" class="form-control" id="editInterviewPosition" readonly></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Ngày</label><input type="date" class="form-control" id="editInterviewDate" required></div>
-                        <div class="form-group"><label>Giờ</label><input type="time" class="form-control" id="editInterviewTime" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Hình thức</label><select class="form-control" id="editInterviewType"><option value="online">Online</option><option value="offline">Offline</option><option value="phone">Phone</option></select></div>
-                        <div class="form-group"><label>Địa điểm</label><input type="text" class="form-control" id="editInterviewLocation"></div>
-                    </div>
-                    <div class="form-group"><label>Trạng thái</label><select class="form-control" id="editInterviewStatus"><option value="upcoming">Sắp diễn ra</option><option value="completed">Đã hoàn thành</option><option value="cancelled">Đã hủy</option></select></div>
-                    <button type="submit" class="btn-primary w-100">Cập nhật</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Cancel Interview Modal -->
-        <div id="cancelInterviewModal" class="modal">
-            <div class="modal-box cancel-modal">
-                <div class="flex-between">
-                    <h3><i class="fa-solid fa-ban"></i> Hủy lịch phỏng vấn</h3>
-                    <button class="btn-close" id="closeCancelModal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="cancel-content">
-                    <p><i class="fa-regular fa-circle-question"></i> Bạn có chắc muốn hủy lịch phỏng vấn này?</p>
-                    <div class="form-group">
-                        <label>Lý do hủy</label>
-                        <textarea class="form-control" id="cancelReason" rows="2" placeholder="Nhập lý do hủy..."></textarea>
-                    </div>
-                </div>
-                <div class="cancel-actions">
-                    <button class="btn-outline" id="cancelNoBtn">Không, giữ lại</button>
-                    <button class="btn-danger" id="cancelConfirmBtn">Xác nhận hủy</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Interviews Section -->
-        <section id="view-interviews" class="view-section">
-            <div class="flex-between">
-                <div>
-                    <h2 class="title">Lịch phỏng vấn</h2>
-                    <p class="subtitle">Quản lý và theo dõi các buổi phỏng vấn</p>
-                </div>
-            </div>
-            <div class="interview-filter-bar">
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">Tất cả</button>
-                    <button class="filter-tab" data-filter="upcoming">Sắp diễn ra</button>
-                    <button class="filter-tab" data-filter="completed">Đã hoàn thành</button>
-                    <button class="filter-tab" data-filter="cancelled">Đã hủy</button>
-                </div>
-                <div class="search-interview">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" id="interviewSearch" placeholder="Tìm theo ứng viên...">
-                </div>
-            </div>
+        <!-- INTERVIEWS SECTION -->
+        <section id="view-interviews" class="view-section"><div><h2 class="title">Lịch phỏng vấn</h2><p class="subtitle">Quản lý lịch phỏng vấn</p></div>
+            <div class="interview-filter-bar"><div class="filter-tabs"><button class="filter-tab active" data-filter="all">Tất cả</button><button class="filter-tab" data-filter="upcoming">Sắp diễn ra</button><button class="filter-tab" data-filter="completed">Đã hoàn thành</button></div>
+            <div class="search-interview"><i class="fa-solid fa-search"></i><input type="text" id="interviewSearch" placeholder="Tìm ứng viên..."></div></div>
             <div id="interviews-container" class="interviews-grid"></div>
-            <div id="interview-empty-state" class="empty-state" style="display: none;">
-                <i class="fa-regular fa-calendar-xmark"></i>
-                <h3>Chưa có lịch phỏng vấn</h3>
-                <p>Hãy tạo lịch phỏng vấn từ danh sách ứng viên đã duyệt</p>
-            </div>
+            <div id="interview-empty-state" class="empty-state" style="display: none;"><i class="fa-regular fa-calendar-xmark"></i><h3>Chưa có lịch phỏng vấn</h3></div>
         </section>
 
-        <!-- Messages & Search -->
-        <section id="view-messages" class="view-section">
-            <div class="panel empty-state">
-                <i class="fa-regular fa-comment-dots"></i>
-                <h3>Tin nhắn nội bộ</h3>
-                <p>Tính năng đang được phát triển</p>
+        <!-- SEARCH CANDIDATES -->
+        <section id="view-search" class="view-section"><h2 class="title">Tìm ứng viên</h2>
+            <div class="search-filters">
+                <div class="filter-group"><label>Từ khóa</label><input type="text" id="searchKeyword" placeholder="Tên, vị trí..."></div>
+                <div class="filter-group"><label>Kỹ năng</label><input type="text" id="searchSkill" placeholder="React, Node.js..."></div>
+                <div class="filter-group"><label>Kinh nghiệm</label><select id="searchExperience"><option value="">Tất cả</option><option>1 năm</option><option>2 năm</option><option>3 năm</option><option>5 năm</option></select></div>
+                <div class="filter-group"><label>&nbsp;</label><button class="btn-primary" onclick="searchCandidates()" style="width:100%"><i class="fa-solid fa-search"></i> Tìm kiếm</button></div>
             </div>
-        </section>
-        <section id="view-search" class="view-section">
-            <div class="panel empty-state">
-                <i class="fa-solid fa-database"></i>
-                <h3>Tìm kiếm ứng viên</h3>
-                <p>Tính năng đang được phát triển</p>
-            </div>
+            <div id="searchResults" class="search-results"></div>
         </section>
     </main>
 </div>
 
-<!-- Job Post Modal -->
+<!-- JOB POST MODAL - ĐĂNG TIN MỚI (Có tính phí theo ngày) -->
 <div id="jobPostModal" class="modal">
-    <div class="modal-box job-posting-modal">
+    <div class="modal-box job-posting-modal" style="max-width: 680px;">
         <div class="flex-between">
-            <h3 id="jobModalTitle"><i class="fa-solid fa-bullhorn"></i> Đăng tin mới</h3>
+            <h3 id="jobModalTitle"><i class="fa-solid fa-bullhorn"></i> Đăng tin tuyển dụng</h3>
             <div class="step-indicator">
-                <span class="step active" data-step="1">1. Thông tin cơ bản</span>
+                <span class="step active" data-step="1">1. Thông tin</span>
                 <i class="fa-solid fa-arrow-right"></i>
-                <span class="step" data-step="2">2. Chi tiết công việc</span>
+                <span class="step" data-step="2">2. Chi tiết</span>
                 <i class="fa-solid fa-arrow-right"></i>
                 <span class="step" data-step="3">3. Thanh toán</span>
             </div>
             <button class="btn-close" id="closeJobPostModal"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        
-        <!-- Step 1 -->
+
+        <!-- STEP 1: Thông tin cơ bản -->
         <div id="step1" class="step-content active">
             <form id="step1Form">
-                <div class="form-group"><label><i class="fa-solid fa-tag"></i> Tiêu đề <span>*</span></label><input type="text" class="form-control" id="jobTitle" placeholder="VD: Senior Frontend Developer" required></div>
-                <div class="form-group"><label><i class="fa-solid fa-layer-group"></i> Lĩnh vực <span>*</span></label><select class="form-control" id="jobCategory" required><option value="">-- Chọn lĩnh vực --</option><option value="IT">IT - Công nghệ thông tin</option><option value="Marketing">Marketing</option><option value="Sales">Kinh doanh</option><option value="Tourism">Du lịch</option><option value="Construction">Xây dựng</option><option value="Service">Dịch vụ</option><option value="Finance">Tài chính</option><option value="Education">Giáo dục</option></select></div>
-                <div class="form-group" id="subCategoryGroup" style="display:none;"><label><i class="fa-solid fa-code-branch"></i> Chuyên ngành</label><select class="form-control" id="jobSubCategory"><option value="">-- Chọn --</option></select></div>
-                <div class="form-row"><div class="form-group"><label><i class="fa-solid fa-coins"></i> Mức lương <span>*</span></label><input type="text" class="form-control" id="jobSalary" placeholder="VD: 15-25 triệu" required></div><div class="form-group"><label><i class="fa-regular fa-calendar"></i> Ngày đăng</label><input type="date" class="form-control" id="jobPostDate"></div></div>
-                <div class="form-group"><label><i class="fa-solid fa-location-dot"></i> Địa chỉ <span>*</span></label><select class="form-control" id="jobLocation" required><option value="">-- Chọn Quận --</option><option value="Hải Châu">Hải Châu</option><option value="Thanh Khê">Thanh Khê</option><option value="Liên Chiểu">Liên Chiểu</option><option value="Ngũ Hành Sơn">Ngũ Hành Sơn</option><option value="Sơn Trà">Sơn Trà</option><option value="Cẩm Lệ">Cẩm Lệ</option><option value="Hòa Vang">Hòa Vang</option></select></div>
-                <div class="form-group"><label><i class="fa-solid fa-align-left"></i> Mô tả ngắn</label><textarea class="form-control" id="jobShortDesc" rows="2"></textarea></div>
-                <div class="form-group"><label><i class="fa-solid fa-eye"></i> Trạng thái</label><select class="form-control" id="jobStatusStep1"><option value="active">Đang mở</option><option value="closed">Đã đóng</option></select></div>
-                <button type="button" class="btn-primary next-step" id="nextToStep2"><i class="fa-solid fa-arrow-right"></i> Tiếp theo</button>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-tag"></i> Tiêu đề tin <span>*</span></label>
+                    <input type="text" class="form-control" id="jobTitle" placeholder="VD: Senior Frontend Developer" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-layer-group"></i> Lĩnh vực <span>*</span></label>
+                    <select class="form-control" id="jobCategory" required>
+                        <option value="">-- Chọn lĩnh vực --</option>
+                        <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+                        <option value="Du lịch - Khách sạn">Du lịch - Khách sạn</option>
+                        <option value="Xây dựng - Bất động sản">Xây dựng - Bất động sản</option>
+                        <option value="Kinh doanh - Marketing">Kinh doanh - Marketing</option>
+                        <option value="Logistics - Vận hành">Logistics - Vận hành</option>
+                        <option value="Giáo dục - Đào tạo">Giáo dục - Đào tạo</option>
+                        <option value="Tài chính - Ngân hàng">Tài chính - Ngân hàng</option>
+                        <option value="Thiết kế - Sáng tạo">Thiết kế - Sáng tạo</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-coins"></i> Mức lương <span>*</span></label>
+                        <input type="text" class="form-control" id="jobSalary" placeholder="VD: 15-25 triệu" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-calendar-alt"></i> Ngày bắt đầu <span>*</span></label>
+                        <input type="date" class="form-control" id="jobStartDate" required>
+                        <div class="form-hint">Chọn ngày bắt đầu đăng tin (từ hôm nay trở đi)</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-clock"></i> Thời gian đăng <span>*</span></label>
+                        <select class="form-control" id="jobDuration" required>
+                            <option value="1">1 ngày - 50,000đ</option>
+                            <option value="3">3 ngày - 150,000đ</option>
+                            <option value="5">5 ngày - 250,000đ</option>
+                            <option value="7" selected>7 ngày - 350,000đ (Phổ biến)</option>
+                            <option value="10">10 ngày - 500,000đ</option>
+                            <option value="15">15 ngày - 750,000đ</option>
+                            <option value="20">20 ngày - 1,000,000đ</option>
+                            <option value="25">25 ngày - 1,250,000đ</option>
+                            <option value="30">30 ngày - 1,500,000đ</option>
+                        </select>
+                        <div class="form-hint">Tối đa 30 ngày, giá 50,000đ/ngày</div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-location-dot"></i> Địa chỉ <span>*</span></label>
+                        <select class="form-control" id="jobLocation" required>
+                            <option value="">-- Chọn Quận --</option>
+                            <option value="Hải Châu">Quận Hải Châu</option>
+                            <option value="Thanh Khê">Quận Thanh Khê</option>
+                            <option value="Liên Chiểu">Quận Liên Chiểu</option>
+                            <option value="Ngũ Hành Sơn">Quận Ngũ Hành Sơn</option>
+                            <option value="Sơn Trà">Quận Sơn Trà</option>
+                            <option value="Cẩm Lệ">Quận Cẩm Lệ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-align-left"></i> Mô tả ngắn</label>
+                    <textarea class="form-control" id="jobShortDesc" rows="2" placeholder="Mô tả ngắn gọn về công việc..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-primary next-step" id="nextToStep2">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
             </form>
         </div>
-        
-        <!-- Step 2 -->
+
+        <!-- STEP 2: Chi tiết công việc -->
         <div id="step2" class="step-content">
             <form id="step2Form">
-                <div class="form-group"><label><i class="fa-solid fa-list-check"></i> Mô tả chi tiết <span>*</span></label><textarea class="form-control" id="jobFullDesc" rows="4"></textarea></div>
-                <div class="form-group"><label><i class="fa-solid fa-user-graduate"></i> Yêu cầu chuyên môn</label><textarea class="form-control" id="jobRequirement" rows="3"></textarea></div>
-                <div class="form-group"><label><i class="fa-solid fa-code"></i> Kỹ năng chuyên môn</label><input type="text" id="skillInput" class="form-control" placeholder="Nhập kỹ năng và nhấn Enter"><div id="skillsList" class="skills-tags-container"></div><input type="hidden" id="jobTechSkills" value=""></div>
-                <div class="form-row"><div class="form-group"><label>Kinh nghiệm</label><select class="form-control" id="jobExperience"><option value="0">Không yêu cầu</option><option value="1">1 năm</option><option value="2">2 năm</option><option value="3">3 năm</option><option value="5">5+ năm</option></select></div><div class="form-group"><label>Học vấn</label><select class="form-control" id="jobEducation"><option>Cao đẳng</option><option selected>Đại học</option><option>Thạc sĩ</option></select></div></div>
-                <div class="form-group"><label><i class="fa-solid fa-heart"></i> Phẩm chất cá nhân</label><textarea class="form-control" id="jobPersonalTraits" rows="2"></textarea></div>
-                <div class="form-group"><label><i class="fa-solid fa-gift"></i> Quyền lợi</label><textarea class="form-control" id="jobBenefits" rows="2"></textarea></div>
-                <div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep1"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary next-step" id="nextToStep3">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-list-check"></i> Mô tả chi tiết <span>*</span></label>
+                    <textarea class="form-control" id="jobFullDesc" rows="4" placeholder="- Phát triển sản phẩm web...&#10;- Phối hợp với team...&#10;- Báo cáo tiến độ..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user-graduate"></i> Yêu cầu ứng viên</label>
+                    <textarea class="form-control" id="jobRequirement" rows="3" placeholder="- Tốt nghiệp Đại học chuyên ngành CNTT&#10;- Kinh nghiệm 2+ năm&#10;- Thành thạo ReactJS, Node.js"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-code"></i> Kỹ năng yêu cầu</label>
+                    <input type="text" id="skillInput" class="form-control" placeholder="Nhập kỹ năng và nhấn Enter">
+                    <div id="skillsList" class="skills-tags-container"></div>
+                    <input type="hidden" id="jobTechSkills" value="">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-gift"></i> Quyền lợi</label>
+                    <textarea class="form-control" id="jobBenefits" rows="3" placeholder="- Lương cạnh tranh&#10;- Bảo hiểm đầy đủ&#10;- Môi trường chuyên nghiệp"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-outline prev-step" id="backToStep1"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+                    <button type="button" class="btn-primary next-step" id="nextToStep3">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
             </form>
         </div>
-        
-        <!-- Step 3 -->
+
+        <!-- STEP 3: Xác nhận và thanh toán -->
         <div id="step3" class="step-content">
             <div class="payment-container">
                 <div class="payment-info">
-                    <h4><i class="fa-solid fa-credit-card"></i> Thanh toán</h4>
-                    <div class="price-breakdown">
-                        <div class="price-item"><span>Phí đăng tin:</span><span>50,000 VNĐ</span></div>
-                        <div class="price-item total"><span>Tổng:</span><span id="totalPrice">50,000 VNĐ</span></div>
+                    <h4><i class="fa-regular fa-rectangle-list"></i> Thông tin tin đăng</h4>
+                    <div id="jobSummary" class="price-breakdown">
+                        <div class="price-item"><span>Tiêu đề:</span><span id="summaryTitle">---</span></div>
+                        <div class="price-item"><span>Lĩnh vực:</span><span id="summaryCategory">---</span></div>
+                        <div class="price-item"><span>Mức lương:</span><span id="summarySalary">---</span></div>
+                        <div class="price-item"><span>Địa điểm:</span><span id="summaryLocation">---</span></div>
+                        <div class="price-item"><span>Ngày đăng:</span><span id="summaryStartDate">---</span></div>
+                        <div class="price-item"><span>Ngày hết hạn:</span><span id="summaryEndDate">---</span></div>
+                        <div class="price-item"><span>Thời gian đăng:</span><span id="summaryDuration">--- ngày</span></div>
+                        <div class="price-item total"><span>Tổng phí đăng tin:</span><span id="totalPriceDisplay" class="price-highlight">0đ</span></div>
                     </div>
-                    <div class="form-group"><label>Ngày bắt đầu</label><input type="date" class="form-control" id="displayStartDate" required></div>
                 </div>
                 <div class="qr-payment">
-                    <div id="qrcode" class="qr-code"></div>
-                    <p class="qr-note">Quét QR để thanh toán</p>
-                    <div class="bank-info">
-                        <p>Vietcombank: 1234567890</p>
-                        <p>ND: DANGTIN_<span id="transactionCode"></span></p>
+                    <div class="qr-code">
+                        <i class="fa-solid fa-qrcode" style="font-size: 80px; color: var(--primary);"></i>
+                    </div>
+                    <p class="qr-note">Quét mã QR để thanh toán</p>
+                    <div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;">
+                        <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                        <p><strong>Số TK:</strong> 1234567890</p>
+                        <p><strong>Chủ TK:</strong> DANANG WORK</p>
+                        <p><strong>Nội dung:</strong> DANGTIN_<span id="transactionCode"></span></p>
                     </div>
                 </div>
+            </div>
+            <div class="date-range" id="dateRangeInfo">
+                <i class="fa-regular fa-calendar-check"></i> Tin sẽ được đăng từ <span id="displayStartDate">---</span> đến hết <span id="displayEndDate">---</span>
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-outline prev-step" id="backToStep2"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
@@ -480,6 +441,645 @@
     </div>
 </div>
 
-<script src="hr-script.js"></script>
+<script>
+    // ==================== KIỂM TRA ĐĂNG NHẬP HR ====================
+    function checkHRAuth() {
+        const authGuard = document.getElementById('hr-auth-guard');
+        const appLayout = document.getElementById('app-layout');
+        
+        let currentUser = null;
+        let userStr = localStorage.getItem('currentUser');
+        
+        if (userStr) {
+            try { currentUser = JSON.parse(userStr); } catch(e) { currentUser = null; }
+        }
+        
+        const isValidHR = currentUser && (currentUser.role === 'hr' || currentUser.role === 'employer' || currentUser.email === 'hr@danangwork.com');
+        
+        if (isValidHR) {
+            if (authGuard) authGuard.style.display = 'none';
+            if (appLayout) appLayout.style.display = 'flex';
+            document.getElementById('hrName').innerText = currentUser.name || currentUser.fullname || 'HR Manager';
+            document.getElementById('hrCompanyName').innerText = currentUser.company?.name || 'Công ty Công nghệ Đà Nẵng';
+            return true;
+        } else {
+            if (authGuard) authGuard.style.display = 'flex';
+            if (appLayout) appLayout.style.display = 'none';
+            return false;
+        }
+    }
+    
+    // ==================== TẠO TÀI KHOẢN HR ====================
+    function initHRAccount() {
+        const fixedHRUser = {
+            id: 1, name: "HR Manager", fullname: "HR Manager", email: "hr@danangwork.com",
+            password: "123456", role: "hr", userType: "employer",
+            company: { name: "Công ty Công nghệ Đà Nẵng", address: "Đà Nẵng" }
+        };
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        if (!users.some(u => u.email === fixedHRUser.email)) {
+            users.push(fixedHRUser);
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+    }
+    
+    // ==================== DỮ LIỆU ====================
+    let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [
+        { id: 1, name: "Trần Văn A", email: "a@email.com", phone: "0912345678", position: "Frontend Developer", company: "FPT Software", skills: ["ReactJS", "JavaScript"], experience: "3 năm", date: "15/05/2026", status: "pending" },
+        { id: 2, name: "Lê Thị B", email: "b@email.com", phone: "0923456789", position: "UI/UX Designer", company: "Rikkeisoft", skills: ["Figma", "Adobe XD"], experience: "4 năm", date: "14/05/2026", status: "pending" }
+    ];
+    let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
+    let notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Dashboard"];
+    
+    let skillsList = [];
+    
+    // Helper functions
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    
+    function addActivity(msg) {
+        const timestamp = new Date().toLocaleTimeString('vi-VN');
+        activities.unshift(`🕒 ${timestamp} - ${msg}`);
+        if (activities.length > 20) activities.pop();
+        localStorage.setItem("hr_activities", JSON.stringify(activities));
+        renderActivityFeed();
+    }
+    
+    function renderActivityFeed() {
+        const feed = document.getElementById("activity-feed");
+        if (feed) feed.innerHTML = activities.slice(0, 10).map(a => `<li><span class="dot"></span> ${escapeHtml(a)}</li>`).join('');
+    }
+    
+    function updateStats() {
+        document.getElementById("dash-active-jobs").innerText = jobs.filter(j => j.status === 'active' && new Date(j.expiryDate) >= new Date()).length;
+        document.getElementById("dash-pending-cv").innerText = candidates.filter(c => c.status === 'pending').length;
+        document.getElementById("dash-interviews").innerText = interviews.length;
+        const approved = candidates.filter(c => c.status === 'approved').length;
+        document.getElementById("dash-approved").innerText = approved;
+        document.getElementById("approvalRate").innerText = candidates.length ? Math.round((approved / candidates.length) * 100) + "%" : "0%";
+        
+        const unreadCount = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById("notifBadge");
+        if (badge) badge.innerText = unreadCount > 0 ? unreadCount : "0";
+    }
+    
+    // ==================== TÍNH TOÁN PHÍ ĐĂNG TIN ====================
+    const PRICE_PER_DAY = 50000; // 50,000đ/ngày
+    
+    function calculateTotalPrice(durationDays) {
+        return durationDays * PRICE_PER_DAY;
+    }
+    
+    function formatCurrency(amount) {
+        return amount.toLocaleString('vi-VN') + 'đ';
+    }
+    
+    function getEndDate(startDate, durationDays) {
+        const end = new Date(startDate);
+        end.setDate(end.getDate() + durationDays - 1);
+        return end;
+    }
+    
+    function formatDate(date) {
+        const d = new Date(date);
+        return d.toLocaleDateString('vi-VN');
+    }
+    
+    // Cập nhật hiển thị giá và ngày khi thay đổi duration hoặc start date
+    function updatePriceAndDate() {
+        const startDate = document.getElementById('jobStartDate').value;
+        const duration = parseInt(document.getElementById('jobDuration').value);
+        
+        if (startDate && duration) {
+            const endDate = getEndDate(startDate, duration);
+            const totalPrice = calculateTotalPrice(duration);
+            
+            document.getElementById('summaryStartDate').innerText = formatDate(startDate);
+            document.getElementById('summaryEndDate').innerText = formatDate(endDate);
+            document.getElementById('summaryDuration').innerText = duration;
+            document.getElementById('totalPriceDisplay').innerHTML = formatCurrency(totalPrice);
+            document.getElementById('displayStartDate').innerText = formatDate(startDate);
+            document.getElementById('displayEndDate').innerText = formatDate(endDate);
+        }
+    }
+    
+    // Thiết lập min date cho input date (không cho chọn ngày trong quá khứ)
+    function setMinDate() {
+        const today = new Date().toISOString().split('T')[0];
+        const startDateInput = document.getElementById('jobStartDate');
+        if (startDateInput) {
+            startDateInput.min = today;
+            startDateInput.value = today;
+        }
+    }
+    
+    // ==================== QUẢN LÝ TIN TUYỂN DỤNG ====================
+    function renderJobs() {
+        const container = document.getElementById("job-cards-container");
+        if (!container) return;
+        
+        // Lọc các tin còn hạn
+        const activeJobs = jobs.filter(job => {
+            if (job.status !== 'active') return false;
+            if (job.expiryDate) {
+                return new Date(job.expiryDate) >= new Date();
+            }
+            return true;
+        });
+        
+        if (jobs.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-briefcase"></i><h3>Chưa có tin tuyển dụng</h3><p>Nhấn "Đăng tin mới" để tạo tin đầu tiên</p></div>';
+            return;
+        }
+        
+        container.innerHTML = jobs.map((job, index) => {
+            const isExpired = job.expiryDate && new Date(job.expiryDate) < new Date();
+            const statusText = isExpired ? 'Hết hạn' : (job.status === 'active' ? 'Đang đăng' : 'Đã đóng');
+            const statusClass = isExpired ? 'tag-danger' : (job.status === 'active' ? 'tag-success' : 'tag-warning');
+            
+            return `
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <div class="job-card-title">${escapeHtml(job.title)}</div>
+                        <div class="job-card-salary">${escapeHtml(job.salary)}</div>
+                    </div>
+                    <div class="job-card-details">
+                        <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location)}</div>
+                        <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
+                    </div>
+                    <div class="job-card-footer">
+                        <span class="tag ${statusClass}">${statusText}</span>
+                        <button class="btn-sm" style="color:var(--danger)" onclick="deleteJob(${index})"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        updateStats();
+    }
+    
+    function deleteJob(index) {
+        if (confirm("Xóa tin tuyển dụng này?")) {
+            const title = jobs[index].title;
+            jobs.splice(index, 1);
+            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+            renderJobs();
+            addActivity(`🗑️ Đã xóa tin tuyển dụng: ${title}`);
+            addNotification("Đã xóa tin", `Tin "${title}" đã được xóa`, "system");
+        }
+    }
+    
+    // ==================== ĐĂNG TIN MỚI ====================
+    let currentStep = 1;
+    
+    function showStep(step) {
+        currentStep = step;
+        document.querySelectorAll('.step-content').forEach((el, i) => {
+            el.classList.toggle('active', i + 1 === step);
+        });
+        document.querySelectorAll('.step').forEach((el, i) => {
+            el.classList.toggle('active', i + 1 === step);
+        });
+        
+        // Cập nhật summary ở step 3
+        if (step === 3) {
+            document.getElementById('summaryTitle').innerText = document.getElementById('jobTitle').value || '---';
+            document.getElementById('summaryCategory').innerText = document.getElementById('jobCategory').value || '---';
+            document.getElementById('summarySalary').innerText = document.getElementById('jobSalary').value || '---';
+            document.getElementById('summaryLocation').innerText = document.getElementById('jobLocation').value || '---';
+            updatePriceAndDate();
+        }
+    }
+    
+    // Xử lý thêm kỹ năng
+    function renderSkillsTags() {
+        const container = document.getElementById('skillsList');
+        if (!container) return;
+        
+        container.innerHTML = skillsList.map((skill, index) => `
+            <span class="skill-tag-item">
+                ${escapeHtml(skill)}
+                <i class="fa-solid fa-xmark" onclick="removeSkill(${index})"></i>
+            </span>
+        `).join('');
+        document.getElementById('jobTechSkills').value = skillsList.join(',');
+    }
+    
+    window.removeSkill = function(index) {
+        skillsList.splice(index, 1);
+        renderSkillsTags();
+    };
+    
+    // Xử lý đăng tin
+    function submitJobPost() {
+        // Lấy dữ liệu từ form
+        const title = document.getElementById('jobTitle').value.trim();
+        const category = document.getElementById('jobCategory').value;
+        const salary = document.getElementById('jobSalary').value.trim();
+        const location = document.getElementById('jobLocation').value;
+        const startDate = document.getElementById('jobStartDate').value;
+        const duration = parseInt(document.getElementById('jobDuration').value);
+        const shortDesc = document.getElementById('jobShortDesc').value;
+        const fullDesc = document.getElementById('jobFullDesc').value;
+        const requirement = document.getElementById('jobRequirement').value;
+        const benefits = document.getElementById('jobBenefits').value;
+        const skills = skillsList;
+        
+        // Validate
+        if (!title) { alert('Vui lòng nhập tiêu đề tin!'); showStep(1); return; }
+        if (!category) { alert('Vui lòng chọn lĩnh vực!'); showStep(1); return; }
+        if (!salary) { alert('Vui lòng nhập mức lương!'); showStep(1); return; }
+        if (!location) { alert('Vui lòng chọn địa điểm!'); showStep(1); return; }
+        if (!startDate) { alert('Vui lòng chọn ngày bắt đầu!'); showStep(1); return; }
+        
+        // Kiểm tra ngày bắt đầu không được nhỏ hơn hôm nay
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(startDate);
+        if (selectedDate < today) {
+            alert('Ngày bắt đầu không được nhỏ hơn hôm nay!');
+            showStep(1);
+            return;
+        }
+        
+        if (!fullDesc) { alert('Vui lòng nhập mô tả chi tiết!'); showStep(2); return; }
+        
+        // Tính ngày hết hạn
+        const expiryDate = getEndDate(startDate, duration);
+        const totalPrice = calculateTotalPrice(duration);
+        
+        // Tạo mã giao dịch
+        const transactionCode = 'DT' + Date.now();
+        document.getElementById('transactionCode').innerText = transactionCode;
+        
+        // Xác nhận thanh toán (mô phỏng)
+        const confirmPayment = confirm(`Xác nhận đăng tin với các thông tin:\n\nTiêu đề: ${title}\nThời gian: ${duration} ngày\nTổng phí: ${formatCurrency(totalPrice)}\n\nMã giao dịch: ${transactionCode}\nNgân hàng: Vietcombank\nSố TK: 1234567890\n\nSau khi thanh toán, tin sẽ được đăng ngay. Bạn đã chuyển khoản thành công?`);
+        
+        if (!confirmPayment) return;
+        
+        // Tạo job mới
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const newJob = {
+            id: Date.now(),
+            title: title,
+            field: category,
+            salary: salary,
+            location: location,
+            district: location,
+            startDate: startDate,
+            expiryDate: expiryDate.toISOString(),
+            duration: duration,
+            totalPrice: totalPrice,
+            transactionCode: transactionCode,
+            desc: fullDesc,
+            shortDesc: shortDesc,
+            requirement: requirement,
+            benefits: benefits,
+            skills: skills,
+            company: currentUser?.company?.name || 'Công ty của bạn',
+            status: 'active',
+            createdAt: new Date().toISOString(),
+            postDate: new Date().toLocaleDateString('vi-VN')
+        };
+        
+        jobs.push(newJob);
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        // Lưu giao dịch vào lịch sử
+        let transactions = JSON.parse(localStorage.getItem("hr_transactions")) || [];
+        transactions.unshift({
+            id: transactionCode,
+            jobTitle: title,
+            amount: totalPrice,
+            duration: duration,
+            startDate: startDate,
+            expiryDate: expiryDate.toISOString(),
+            date: new Date().toISOString(),
+            status: 'completed'
+        });
+        localStorage.setItem("hr_transactions", JSON.stringify(transactions));
+        
+        // Reset form
+        document.getElementById('jobTitle').value = '';
+        document.getElementById('jobCategory').value = '';
+        document.getElementById('jobSalary').value = '';
+        document.getElementById('jobLocation').value = '';
+        document.getElementById('jobStartDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('jobDuration').value = '7';
+        document.getElementById('jobShortDesc').value = '';
+        document.getElementById('jobFullDesc').value = '';
+        document.getElementById('jobRequirement').value = '';
+        document.getElementById('jobBenefits').value = '';
+        skillsList = [];
+        renderSkillsTags();
+        
+        // Đóng modal và refresh
+        document.getElementById('jobPostModal').classList.remove('show');
+        renderJobs();
+        addActivity(`📌 Đã đăng tin tuyển dụng mới: ${title} (${duration} ngày - ${formatCurrency(totalPrice)})`);
+        addNotification("Tin tuyển dụng mới", `Tin "${title}" đã được đăng thành công trong ${duration} ngày`, "system");
+        alert(`✅ Đăng tin thành công!\n\nTiêu đề: ${title}\nLĩnh vực: ${category}\nMức lương: ${salary}\nThời gian: ${duration} ngày\nTổng phí: ${formatCurrency(totalPrice)}\nMã GD: ${transactionCode}\n\nTin sẽ được đăng từ ${formatDate(startDate)} đến hết ${formatDate(expiryDate)}`);
+        showStep(1);
+    }
+    
+    // ==================== CÁC HÀM KHÁC ====================
+    function renderCandidates() {
+        const container = document.getElementById("candidate-list");
+        if (!container) return;
+        
+        const filterValue = document.getElementById("candidateFilter")?.value || "all";
+        const positionValue = document.getElementById("positionFilter")?.value || "all";
+        
+        let filtered = [...candidates];
+        if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
+        if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">📭 Chưa có ứng viên nào</td></tr>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(c => {
+            const statusText = c.status === 'pending' ? 'Chờ duyệt' : (c.status === 'approved' ? 'Đã duyệt' : 'Từ chối');
+            const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger');
+            return `
+                <tr>
+                    <td><strong>${escapeHtml(c.name)}</strong><br><small>${escapeHtml(c.email)}</small></td>
+                    <td>${escapeHtml(c.position)}</td>
+                    <td>${c.date}</td>
+                    <td><span class="tag ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>
+                        ${c.status === 'pending' ? `
+                            <button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button>
+                            <button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>
+                        ` : ''}
+                        ${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> PV</button>` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(candidates.find(c => c.id === parseInt(btn.dataset.id))));
+        document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
+        document.querySelectorAll(".reject-cv-btn").forEach(btn => btn.onclick = () => rejectCandidate(parseInt(btn.dataset.id)));
+        document.querySelectorAll(".create-interview-btn").forEach(btn => btn.onclick = () => openCreateInterviewModal(parseInt(btn.dataset.id), btn.dataset.name, btn.dataset.position));
+        updateStats();
+    }
+    
+    function showCVModal(candidate) {
+        if (!candidate) return;
+        const modal = document.getElementById("cvModal");
+        document.getElementById("cvContent").innerHTML = `
+            <div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div>
+            <div class="cv-info">
+                <h2>${escapeHtml(candidate.name)}</h2>
+                <p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p>
+                <p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p>
+                <p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p>
+                <div class="skills-tags"><strong>Kỹ năng:</strong> ${(candidate.skills || []).map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join('')}</div>
+                <p><i class="fa-solid fa-clock"></i> <strong>Kinh nghiệm:</strong> ${escapeHtml(candidate.experience)}</p>
+            </div>
+        `;
+        modal.classList.add("show");
+    }
+    
+    function approveCandidate(id) {
+        const index = candidates.findIndex(c => c.id === id);
+        if (index !== -1 && candidates[index].status === 'pending') {
+            candidates[index].status = 'approved';
+            localStorage.setItem("hr_candidates", JSON.stringify(candidates));
+            renderCandidates();
+            addActivity(`✅ Đã duyệt hồ sơ của ${candidates[index].name}`);
+            addNotification("Hồ sơ được duyệt", `${candidates[index].name} đã được duyệt`, "application");
+            alert("✅ Đã duyệt hồ sơ!");
+        }
+    }
+    
+    function rejectCandidate(id) {
+        if (!confirm("Từ chối hồ sơ này?")) return;
+        const index = candidates.findIndex(c => c.id === id);
+        if (index !== -1 && candidates[index].status === 'pending') {
+            candidates[index].status = 'rejected';
+            localStorage.setItem("hr_candidates", JSON.stringify(candidates));
+            renderCandidates();
+            addActivity(`❌ Đã từ chối hồ sơ của ${candidates[index].name}`);
+            alert("❌ Đã từ chối hồ sơ!");
+        }
+    }
+    
+    // ==================== THÔNG BÁO ====================
+    function renderNotifications() {
+        const container = document.getElementById("notification-list");
+        if (!container) return;
+        if (notifications.length === 0) {
+            container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>';
+            return;
+        }
+        container.innerHTML = notifications.map(n => `
+            <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
+                <div class="notification-icon ${n.type}"><i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-calendar-check'}"></i></div>
+                <div class="notification-content"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-desc">${escapeHtml(n.content)}</div><div class="notification-time">${n.time}</div></div>
+            </div>
+        `).join('');
+        updateStats();
+    }
+    
+    function addNotification(title, content, type = "system") {
+        notifications.unshift({ id: Date.now(), title, content, type, time: "Vừa xong", read: false });
+        if (notifications.length > 30) notifications.pop();
+        localStorage.setItem("hr_notifications", JSON.stringify(notifications));
+        renderNotifications();
+    }
+    
+    function markNotificationRead(id) {
+        const n = notifications.find(n => n.id === id);
+        if (n) n.read = true;
+        localStorage.setItem("hr_notifications", JSON.stringify(notifications));
+        renderNotifications();
+    }
+    
+    function markAllNotificationsRead() {
+        notifications.forEach(n => n.read = true);
+        localStorage.setItem("hr_notifications", JSON.stringify(notifications));
+        renderNotifications();
+    }
+    
+    function toggleNotificationPanel() {
+        document.getElementById("notificationPanel")?.classList.toggle("show");
+    }
+    
+    // ==================== TÌM ỨNG VIÊN ====================
+    function searchCandidates() {
+        const keyword = document.getElementById("searchKeyword")?.value.toLowerCase() || "";
+        const skill = document.getElementById("searchSkill")?.value.toLowerCase() || "";
+        const exp = document.getElementById("searchExperience")?.value || "";
+        
+        let filtered = candidates.filter(c => c.status === "approved");
+        if (keyword) filtered = filtered.filter(c => c.name.toLowerCase().includes(keyword) || c.position.toLowerCase().includes(keyword));
+        if (skill) filtered = filtered.filter(c => (c.skills || []).some(s => s.toLowerCase().includes(skill)));
+        if (exp) filtered = filtered.filter(c => c.experience === exp);
+        
+        const container = document.getElementById("searchResults");
+        if (!container) return;
+        if (filtered.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><h3>Không tìm thấy ứng viên</h3></div>'; return; }
+        
+        container.innerHTML = filtered.map(c => {
+            const matchScore = Math.min((c.skills?.length || 0) * 20, 100);
+            return `<div class="candidate-result-card"><div class="candidate-info"><h4>${escapeHtml(c.name)}</h4><p>${escapeHtml(c.position)}</p><div class="candidate-skills">${(c.skills || []).slice(0,3).map(s => `<span class="skill-badge">${escapeHtml(s)}</span>`).join('')}</div></div>
+            <div class="candidate-actions"><div class="match-score">${matchScore}%</div><button class="btn-sm" style="background:var(--primary);color:white" onclick="openCreateInterviewModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.position)}')"><i class="fa-regular fa-calendar-plus"></i> Mời PV</button></div></div>`;
+        }).join('');
+    }
+    
+    // ==================== LỊCH PHỎNG VẤN ====================
+    function openCreateInterviewModal(id, name, position) {
+        const modal = document.getElementById("createInterviewModal");
+        document.getElementById("createInterviewCandidateId").value = id;
+        document.getElementById("createInterviewCandidate").value = name;
+        document.getElementById("createInterviewPosition").value = position;
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
+        document.getElementById("createInterviewTime").value = "09:00";
+        modal.classList.add("show");
+    }
+    
+    document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const newInterview = {
+            id: Date.now(),
+            candidate: document.getElementById("createInterviewCandidate").value,
+            position: document.getElementById("createInterviewPosition").value,
+            date: document.getElementById("createInterviewDate").value,
+            time: document.getElementById("createInterviewTime").value,
+            type: document.getElementById("createInterviewType").value,
+            location: document.getElementById("createInterviewLocation").value || "Văn phòng công ty",
+            note: document.getElementById("createInterviewNote").value,
+            status: "upcoming"
+        };
+        interviews.push(newInterview);
+        localStorage.setItem("hr_interviews", JSON.stringify(interviews));
+        renderInterviews();
+        addActivity(`📅 Đã tạo lịch phỏng vấn cho ${newInterview.candidate}`);
+        addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${newInterview.candidate} lúc ${newInterview.time} ngày ${newInterview.date}`, "interview");
+        document.getElementById("createInterviewModal").classList.remove("show");
+        alert("✅ Đã tạo lịch phỏng vấn!");
+        this.reset();
+    });
+    
+    function renderInterviews() {
+        const container = document.getElementById("interviews-container");
+        if (!container) return;
+        if (interviews.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fa-regular fa-calendar-xmark"></i><h3>Chưa có lịch phỏng vấn</h3></div>';
+            return;
+        }
+        container.innerHTML = interviews.map(i => {
+            const date = new Date(i.date);
+            return `<div class="interview-card"><div class="interview-card-header"><h4>${escapeHtml(i.position)}</h4><div class="interview-position">${escapeHtml(i.candidate)}</div><span class="interview-status status-${i.status}">${i.status === 'upcoming' ? 'Sắp diễn ra' : 'Đã hoàn thành'}</span></div>
+            <div class="interview-card-body"><div class="interview-datetime"><div class="interview-date"><div class="day">${date.getDate()}</div><div class="month">Th${date.getMonth()+1}</div></div><div class="interview-time">${i.time}</div></div>
+            <div class="interview-info"><p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(i.location)}</p></div>${i.note ? `<div class="interview-note">${escapeHtml(i.note)}</div>` : ''}</div>
+            <div class="interview-card-footer"><button class="btn-sm" onclick="deleteInterview(${i.id})"><i class="fa-solid fa-trash"></i> Xóa</button></div></div>`;
+        }).join('');
+        updateStats();
+    }
+    
+    function deleteInterview(id) {
+        if (confirm("Xóa lịch phỏng vấn?")) {
+            interviews = interviews.filter(i => i.id !== id);
+            localStorage.setItem("hr_interviews", JSON.stringify(interviews));
+            renderInterviews();
+            addActivity("🗑️ Đã xóa lịch phỏng vấn");
+        }
+    }
+    
+    // ==================== KHỞI TẠO SỰ KIỆN ====================
+    function initEventListeners() {
+        document.getElementById("closeJobPostModal")?.addEventListener("click", () => document.getElementById("jobPostModal").classList.remove("show"));
+        document.getElementById("closeCvModal")?.addEventListener("click", () => document.getElementById("cvModal").classList.remove("show"));
+        document.getElementById("closeCreateInterviewModal")?.addEventListener("click", () => document.getElementById("createInterviewModal").classList.remove("show"));
+        
+        document.getElementById("btn-add-job")?.addEventListener("click", () => {
+            setMinDate();
+            document.getElementById("jobPostModal").classList.add("show");
+            showStep(1);
+        });
+        
+        document.getElementById("nextToStep2")?.addEventListener("click", () => showStep(2));
+        document.getElementById("backToStep1")?.addEventListener("click", () => showStep(1));
+        document.getElementById("nextToStep3")?.addEventListener("click", () => showStep(3));
+        document.getElementById("backToStep2")?.addEventListener("click", () => showStep(2));
+        document.getElementById("submitJobPost")?.addEventListener("click", submitJobPost);
+        
+        // Sự kiện khi thay đổi duration hoặc start date
+        document.getElementById("jobDuration")?.addEventListener("change", updatePriceAndDate);
+        document.getElementById("jobStartDate")?.addEventListener("change", updatePriceAndDate);
+        
+        document.getElementById("skillInput")?.addEventListener("keypress", function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const skill = this.value.trim();
+                if (skill && !skillsList.includes(skill)) {
+                    skillsList.push(skill);
+                    renderSkillsTags();
+                    this.value = '';
+                }
+            }
+        });
+        
+        document.querySelectorAll(".menu-item").forEach(item => {
+            item.addEventListener("click", function(e) {
+                e.preventDefault();
+                document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active"));
+                document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
+                this.classList.add("active");
+                document.getElementById(this.dataset.target).classList.add("active");
+                if (this.dataset.target === "view-candidates") renderCandidates();
+                if (this.dataset.target === "view-jobs") renderJobs();
+                if (this.dataset.target === "view-interviews") renderInterviews();
+            });
+        });
+        
+        document.getElementById("candidateFilter")?.addEventListener("change", () => renderCandidates());
+        document.getElementById("positionFilter")?.addEventListener("change", () => renderCandidates());
+        document.getElementById("interviewSearch")?.addEventListener("input", () => renderInterviews());
+        document.getElementById("refreshDashboardBtn")?.addEventListener("click", () => { renderJobs(); renderCandidates(); renderInterviews(); renderActivityFeed(); addActivity("🔄 Làm mới dữ liệu"); alert("Đã làm mới!"); });
+        document.getElementById("hrLogoutBtn")?.addEventListener("click", () => { localStorage.removeItem("currentUser"); window.location.href = "login.html"; });
+        
+        window.onclick = (e) => { if (e.target.classList?.contains("modal")) e.target.classList.remove("show"); };
+        
+        const positions = [...new Set(candidates.map(c => c.position))];
+        const select = document.getElementById("positionFilter");
+        if (select) positions.forEach(p => { const opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
+    }
+    
+    // ==================== KHỞI TẠO ====================
+    function init() {
+        initHRAccount();
+        const isHR = checkHRAuth();
+        if (!isHR) return;
+        
+        if (JSON.parse(localStorage.getItem("hr_jobs")) === null) localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        if (JSON.parse(localStorage.getItem("hr_candidates")) === null) localStorage.setItem("hr_candidates", JSON.stringify(candidates));
+        
+        renderJobs();
+        renderCandidates();
+        renderInterviews();
+        renderActivityFeed();
+        renderNotifications();
+        updateStats();
+        initEventListeners();
+    }
+    
+    init();
+    
+    window.searchCandidates = searchCandidates;
+    window.toggleNotificationPanel = toggleNotificationPanel;
+    window.markAllNotificationsRead = markAllNotificationsRead;
+    window.markNotificationRead = markNotificationRead;
+    window.openCreateInterviewModal = openCreateInterviewModal;
+    window.deleteInterview = deleteInterview;
+    window.deleteJob = deleteJob;
+    window.removeSkill = removeSkill;
+</script>
 </body>
 </html>

@@ -12,39 +12,76 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // TÀI KHOẢN HR DUY NHẤT
-  const HR_USER = {
-    id: 1,
-    email: "hr@danangwork.com",
-    password: "123456",
-    role: "hr",
-    name: "HR Manager",
-    fullname: "HR Manager",
-    company: {
-      name: "Công ty Công nghệ Đà Nẵng",
-      address: "Đà Nẵng, Việt Nam"
+  // ==================== TÀI KHOẢN CỐ ĐỊNH ====================
+  const FIXED_ACCOUNTS = [
+    {
+      id: 1,
+      email: "hr@danangwork.com",
+      password: "123456",
+      role: "hr",
+      name: "HR Manager",
+      fullname: "HR Manager",
+      company: {
+        name: "Công ty Công nghệ Đà Nẵng",
+        address: "Đà Nẵng, Việt Nam"
+      }
+    },
+    {
+      id: 999,
+      email: "admin@danangwork.com",
+      password: "Admin@123",
+      role: "admin",
+      name: "Quản trị viên",
+      fullname: "Quản trị viên hệ thống"
     }
-  };
+  ];
 
-  // INIT USER LOCALSTORAGE
-  function initHRUser() {
+  // ==================== KHỞI TẠO TÀI KHOẢN ====================
+  function initAccounts() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
-    const hrExists = users.some(u => u.email === HR_USER.email);
+    let hasChanges = false;
 
-    if (!hrExists) {
-      users.push(HR_USER);
+    FIXED_ACCOUNTS.forEach(fixedUser => {
+      const exists = users.some(u => u.email === fixedUser.email);
+      if (!exists) {
+        users.push({
+          ...fixedUser,
+          createdAt: new Date().toISOString(),
+          status: "active"
+        });
+        hasChanges = true;
+        console.log(`✅ Đã tạo tài khoản: ${fixedUser.email}`);
+      } else {
+        // Cập nhật lại thông tin nếu cần (đảm bảo đúng role)
+        const index = users.findIndex(u => u.email === fixedUser.email);
+        if (index !== -1 && users[index].role !== fixedUser.role) {
+          users[index].role = fixedUser.role;
+          users[index].password = fixedUser.password;
+          hasChanges = true;
+          console.log(`🔄 Đã cập nhật tài khoản: ${fixedUser.email}`);
+        }
+      }
+    });
+
+    if (hasChanges) {
       localStorage.setItem("users", JSON.stringify(users));
     }
+
+    console.log("=== DANH SÁCH TÀI KHOẢN TRONG HỆ THỐNG ===");
+    users.forEach(u => {
+      console.log(`📧 ${u.email} | 🔑 ${u.password} | 👤 ${u.role || "candidate"}`);
+    });
+    console.log("===========================================");
   }
 
-  initHRUser();
+  // Gọi khởi tạo
+  initAccounts();
 
   // TOGGLE PASSWORD (FIX SAFE + KHÔNG LỖI NULL)
   if (togglePass && passwordInput) {
     togglePass.addEventListener("click", () => {
       const isPassword = passwordInput.type === "password";
       passwordInput.type = isPassword ? "text" : "password";
-
       togglePass.classList.toggle("fa-eye-slash");
     });
   }
@@ -56,11 +93,15 @@ document.addEventListener("DOMContentLoaded", () => {
     emailInput.value = savedUser.email;
     passwordInput.value = savedUser.password;
     rememberCheckbox.checked = true;
+  } else {
+    // Mặc định hiển thị tài khoản Admin để dễ test
+    emailInput.value = "admin@danangwork.com";
+    passwordInput.value = "Admin@123";
+    rememberCheckbox.checked = false;
   }
 
   // LOGIN HANDLER
   function handleLogin() {
-
     const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value.trim();
     const remember = rememberCheckbox.checked;
@@ -74,15 +115,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const user = users.find(u => u.email === email && u.password === password);
 
     if (!user) {
-      alert("❌ Sai email hoặc mật khẩu!");
+      alert("❌ Sai email hoặc mật khẩu!\n\n📧 Tài khoản Admin: admin@danangwork.com\n🔑 Mật khẩu: Admin@123\n\n📧 Tài khoản HR: hr@danangwork.com\n🔑 Mật khẩu: 123456");
       return;
     }
 
     const currentUser = {
       id: user.id,
       email: user.email,
-      name: user.name || user.fullname,
-      role: user.role
+      name: user.name || user.fullname || user.email.split("@")[0],
+      fullname: user.fullname || user.name || user.email.split("@")[0],
+      role: user.role,
+      userType: user.role === "hr" || user.role === "employer" ? "employer" : (user.role === "admin" ? "admin" : "candidate")
     };
 
     if (user.role === "hr" && user.company) {
@@ -103,15 +146,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     alert(`✅ Đăng nhập thành công!\nChào mừng ${currentUser.name}`);
 
-    // REDIRECT
-    window.location.href =
-      user.role === "hr" ? "hr-dashboard.html" : "index.html";
+    // REDIRECT theo role
+    if (user.role === "admin") {
+      window.location.href = "admin.html";
+    } else if (user.role === "hr") {
+      window.location.href = "hr-dashboard.html";
+    } else {
+      window.location.href = "index.html";
+    }
   }
 
   // EVENTS
   loginBtn.addEventListener("click", handleLogin);
 
-  // ENTER KEY (FIX CLEAN)
+  // ENTER KEY
   [emailInput, passwordInput].forEach(input => {
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleLogin();
