@@ -628,6 +628,213 @@
             addNotification("Đã xóa tin", `Tin "${title}" đã được xóa`, "system");
         }
     }
+    // ==================== GỬI THÔNG BÁO CHO ỨNG VIÊN ====================
+function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails = null) {
+    if (!candidateEmail) return;
+    
+    let candidateNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
+    
+    const newNotif = {
+        id: Date.now(),
+        userId: candidateEmail,
+        title: title,
+        content: content,
+        type: type, // 'approved', 'rejected', 'interview'
+        read: false,
+        createdAt: new Date().toISOString(),
+        time: "Vừa xong"
+    };
+    
+    if (interviewDetails) {
+        newNotif.interviewDetails = interviewDetails;
+    }
+    
+    candidateNotifs.unshift(newNotif);
+    
+    // Giới hạn 50 thông báo
+    if (candidateNotifs.length > 50) candidateNotifs.pop();
+    
+    localStorage.setItem('candidate_notifications', JSON.stringify(candidateNotifs));
+    console.log(`📢 Đã gửi thông báo đến ${candidateEmail}: ${title}`);
+}
+
+// ==================== CẬP NHẬT HÀM approveCandidate ====================
+// Tìm hàm approveCandidate và thay thế bằng code dưới đây
+// (hoặc thêm dòng gửi thông báo vào hàm hiện có)
+
+function approveCandidate(id) {
+    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+    const candidate = data.find(c => c.id === id);
+    if (candidate && candidate.status === 'pending') {
+        candidate.status = "approved";
+        localStorage.setItem("hr_candidates", JSON.stringify(data));
+        
+        // Đồng bộ với applications
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        const app = applications.find(a => 
+            a.id === id || 
+            a.candidateEmail === candidate.email ||
+            a.userEmail === candidate.email
+        );
+        if (app) {
+            app.status = "approved";
+            localStorage.setItem("applications", JSON.stringify(applications));
+        }
+        
+        // ===== GỬI THÔNG BÁO CHO ỨNG VIÊN =====
+        sendNotificationToCandidate(
+            candidate.email,
+            "✅ Hồ sơ được duyệt",
+            `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt. Vui lòng chờ lịch phỏng vấn từ nhà tuyển dụng.`,
+            "approved"
+        );
+        
+        renderCandidates();
+        addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
+        addNotification('Hồ sơ được duyệt', `Hồ sơ của ${candidate.name} đã được duyệt`, "application");
+        alert('✅ Đã duyệt hồ sơ và gửi thông báo cho ứng viên!');
+    }
+}
+
+// ==================== CẬP NHẬT HÀM rejectCandidate ====================
+function rejectCandidate(id) {
+    if (!confirm("Từ chối hồ sơ này?")) return;
+    let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
+    const candidate = data.find(c => c.id === id);
+    if (candidate && candidate.status === 'pending') {
+        candidate.status = "rejected";
+        localStorage.setItem("hr_candidates", JSON.stringify(data));
+        
+        // Đồng bộ với applications
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        const app = applications.find(a => 
+            a.id === id || 
+            a.candidateEmail === candidate.email ||
+            a.userEmail === candidate.email
+        );
+        if (app) {
+            app.status = "rejected";
+            localStorage.setItem("applications", JSON.stringify(applications));
+        }
+        
+        // ===== GỬI THÔNG BÁO CHO ỨNG VIÊN =====
+        sendNotificationToCandidate(
+            candidate.email,
+            "❌ Hồ sơ không được duyệt",
+            `Rất tiếc, hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} không phù hợp với yêu cầu. Chúc bạn may mắn với các cơ hội khác!`,
+            "rejected"
+        );
+        
+        renderCandidates();
+        addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
+        addNotification('Hồ sơ bị từ chối', `Rất tiếc, hồ sơ của ${candidate.name} không phù hợp`, "system");
+        alert('❌ Đã từ chối hồ sơ và gửi thông báo cho ứng viên!');
+    }
+}
+
+// ==================== CẬP NHẬT HÀM openCreateInterviewModal ====================
+function openCreateInterviewModal(id, name, position) {
+    const modal = document.getElementById("createInterviewModal");
+    document.getElementById("createInterviewCandidateId").value = id;
+    document.getElementById("createInterviewCandidate").value = name;
+    document.getElementById("createInterviewPosition").value = position;
+    
+    // Lấy email của ứng viên
+    let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+    const candidate = candidates.find(c => c.id === id);
+    if (candidate) {
+        // Thêm trường email nếu chưa có
+        let emailField = document.getElementById("createInterviewCandidateEmail");
+        if (!emailField) {
+            // Tạo thêm trường nếu chưa có
+            const formRow = document.querySelector("#createInterviewForm .form-row");
+            if (formRow) {
+                const newDiv = document.createElement("div");
+                newDiv.className = "form-group";
+                newDiv.innerHTML = `<label>Email ứng viên</label><input type="email" class="form-control" id="createInterviewCandidateEmail" readonly>`;
+                formRow.parentNode.insertBefore(newDiv, formRow.nextSibling);
+            }
+            emailField = document.getElementById("createInterviewCandidateEmail");
+        }
+        if (emailField) emailField.value = candidate.email || candidate.candidateEmail || '';
+    }
+    
+    const tomorrow = new Date(); 
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
+    document.getElementById("createInterviewTime").value = "09:00";
+    modal.classList.add("show");
+}
+
+// ==================== CẬP NHẬT FORM TẠO LỊCH PHỎNG VẤN ====================
+// Tìm và thay thế hàm xử lý submit của form createInterviewForm
+
+// Xóa event listener cũ nếu có và thêm mới
+document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const candidateId = document.getElementById("createInterviewCandidateId").value;
+    const candidateName = document.getElementById("createInterviewCandidate").value;
+    const candidateEmail = document.getElementById("createInterviewCandidateEmail")?.value || '';
+    const position = document.getElementById("createInterviewPosition").value;
+    const interviewDate = document.getElementById("createInterviewDate").value;
+    const interviewTime = document.getElementById("createInterviewTime").value;
+    const interviewType = document.getElementById("createInterviewType").value;
+    const interviewLocation = document.getElementById("createInterviewLocation").value;
+    const note = document.getElementById("createInterviewNote").value;
+    
+    if (!candidateName || !position || !interviewDate || !interviewTime) {
+        alert("❌ Vui lòng điền đầy đủ thông tin bắt buộc!");
+        return;
+    }
+    
+    const interviewId = Date.now();
+    const newInterview = {
+        id: interviewId,
+        candidateId: candidateId,
+        candidateName: candidateName,
+        candidateEmail: candidateEmail,
+        position: position,
+        date: interviewDate,
+        time: interviewTime,
+        type: interviewType,
+        location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'),
+        note: note || '',
+        status: "upcoming",
+        createdAt: new Date().toISOString()
+    };
+    
+    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+    allInterviews.push(newInterview);
+    localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
+    interviews = allInterviews;
+    
+    // Format ngày cho thông báo
+    const formattedDate = new Date(interviewDate).toLocaleDateString('vi-VN');
+    
+    // ===== GỬI THÔNG BÁO LỊCH PHỎNG VẤN CHO ỨNG VIÊN =====
+    sendNotificationToCandidate(
+        candidateEmail,
+        "📅 Lịch phỏng vấn",
+        `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}. Hình thức: ${interviewType === 'online' ? 'Online' : 'Trực tiếp'}. Địa điểm: ${newInterview.location}`,
+        "interview",
+        {
+            date: interviewDate,
+            time: interviewTime,
+            type: interviewType,
+            location: newInterview.location,
+            position: position,
+            note: note
+        }
+    );
+    
+    renderInterviews();
+    addActivity(`📅 Đã tạo lịch phỏng vấn cho ${candidateName}`);
+    addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${candidateName} lúc ${interviewTime} ngày ${interviewDate}`, "interview");
+    document.getElementById("createInterviewModal").classList.remove("show");
+    alert("✅ Đã tạo lịch phỏng vấn và gửi thông báo cho ứng viên!");
+    this.reset();
+});
     
     // ==================== ĐĂNG TIN MỚI ====================
     let currentStep = 1;
