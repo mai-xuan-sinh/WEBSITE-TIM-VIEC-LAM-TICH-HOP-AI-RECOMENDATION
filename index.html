@@ -160,50 +160,26 @@
 </style>
 <!-- FLOATING ACTION BUTTONS -->
 <div class="floating-actions">
-
-  <!-- FAVORITE -->
   <a href="yeuthich.html" class="fab fab-heart" title="Công việc yêu thích">
     <i class="fas fa-heart"></i>
   </a>
-
-  <!-- NOTIFICATION -->
   <div class="fab fab-bell" id="notifyBtn" title="Thông báo">
     <i class="fas fa-bell"></i>
     <span class="dot" id="notifyDot"></span>
   </div>
-
 </div>
 
 <!-- NOTIFICATION PANEL -->
 <div class="notify-panel" id="notifyPanel">
-  <h3>Thông báo</h3>
-  <div class="notify-item">📢 Có 5 việc làm mới phù hợp với bạn</div>
-  <div class="notify-item">🏢 FPT Software vừa đăng tuyển Developer</div>
-  <div class="notify-item">🔥 CV của bạn đã được xem 12 lần</div>
+  <div class="notify-header">
+    <h3><i class="fas fa-bell"></i> Thông báo</h3>
+    <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
+    <button id="refreshNotifBtn" class="mark-read-btn" style="margin-left:8px;background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+  </div>
+  <div id="notifyList" class="notify-list">
+    <div class="notify-item empty">📢 Đang tải thông báo...</div>
+  </div>
 </div>
-<script>
-const notifyBtn = document.getElementById("notifyBtn");
-const notifyPanel = document.getElementById("notifyPanel");
-const notifyDot = document.getElementById("notifyDot");
-
-// giả lập có thông báo mới
-let hasNotify = true;
-
-if (hasNotify) {
-  notifyDot.style.display = "block";
-}
-
-// click mở/đóng panel
-notifyBtn.addEventListener("click", () => {
-  if (notifyPanel.style.display === "flex") {
-    notifyPanel.style.display = "none";
-  } else {
-    notifyPanel.style.display = "flex";
-    notifyDot.style.display = "none";
-  }
-});
-</script>
-
 
 <script>
 // 1. Định nghĩa hàm chuyển hướng (Global)
@@ -253,6 +229,8 @@ function refreshUserBox() {
 document.addEventListener('DOMContentLoaded', refreshUserBox);
 window.addEventListener('storage', refreshUserBox);
 </script>
+
+<!-- Scripts chính - THỨ TỰ QUAN TRỌNG -->
 <script src="jobs-data.js"></script>
 <script src="ai-recommend.js"></script>
 <script src="index.js"></script>

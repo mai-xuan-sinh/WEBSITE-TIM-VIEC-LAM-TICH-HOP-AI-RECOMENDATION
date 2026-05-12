@@ -1,4 +1,4 @@
-// floating.js - Phiên bản ổn định
+// floating.js - Phiên bản ổn định cho tất cả trang
 (function() {
     if (window._floatingLoaded) return;
     window._floatingLoaded = true;
@@ -14,8 +14,10 @@
             <div class="notify-panel" id="notifyPanel">
                 <div class="notify-header">
                     <h3><i class="fas fa-bell"></i> Thông báo</h3>
-                    <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
-                    <button id="refreshNotifBtn" class="mark-read-btn" style="margin-left:8px;background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="markAllReadBtn" class="mark-read-btn">Đánh dấu đã đọc</button>
+                        <button id="refreshNotifBtn" class="mark-read-btn" style="background:#0ea5e9;"><i class="fas fa-sync-alt"></i> Làm mới</button>
+                    </div>
                 </div>
                 <div id="notifyList" class="notify-list"><div class="notify-item empty">📢 Đang tải...</div></div>
             </div>
@@ -28,13 +30,15 @@
 
         function formatTimeAgo(isoDate) {
             if (!isoDate) return 'Vừa xong';
-            const date = new Date(isoDate);
-            const now = new Date();
-            const diffMins = Math.floor((now - date) / 60000);
-            if (diffMins < 1) return 'Vừa xong';
-            if (diffMins < 60) return diffMins + ' phút trước';
-            if (diffMins < 1440) return Math.floor(diffMins / 60) + ' giờ trước';
-            return date.toLocaleDateString('vi-VN');
+            try {
+                const date = new Date(isoDate);
+                const now = new Date();
+                const diffMins = Math.floor((now - date) / 60000);
+                if (diffMins < 1) return 'Vừa xong';
+                if (diffMins < 60) return diffMins + ' phút trước';
+                if (diffMins < 1440) return Math.floor(diffMins / 60) + ' giờ trước';
+                return date.toLocaleDateString('vi-VN');
+            } catch(e) { return 'Vừa xong'; }
         }
 
         function escapeHtml(str) {
@@ -51,13 +55,21 @@
             type = type || 'info';
             const toast = document.createElement('div');
             toast.className = 'toast-message ' + type;
-            toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle')) + '"></i><span>' + message + '</span>';
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+            toast.innerHTML = '<i class="fas ' + icon + '"></i><span>' + escapeHtml(message) + '</span>';
             toast.style.cssText = 'position:fixed;bottom:100px;right:30px;background:' + (type === 'success' ? '#10b981' : (type === 'warning' ? '#f59e0b' : '#0ea5e9')) + ';color:white;padding:12px 20px;border-radius:12px;z-index:10001;animation:slideIn 0.3s ease;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
             document.body.appendChild(toast);
             setTimeout(function() {
                 toast.style.animation = 'slideOut 0.3s ease';
                 setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
             }, 4000);
+        }
+
+        if (!document.querySelector('#toast-animation')) {
+            const style = document.createElement('style');
+            style.id = 'toast-animation';
+            style.textContent = '@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
+            document.head.appendChild(style);
         }
 
         function loadNotifications() {
@@ -74,10 +86,11 @@
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             let userNotifs = [];
             for (var i = 0; i < allNotifs.length; i++) {
-                if (allNotifs[i].userId === currentUser.email) {
+                if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase()) {
                     userNotifs.push(allNotifs[i]);
                 }
             }
+            
             userNotifs.sort(function(a, b) {
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
@@ -107,11 +120,12 @@
                     case 'interview': icon = '<i class="fas fa-calendar-alt"></i>'; color = '#8b5cf6'; break;
                     default: icon = '<i class="fas fa-bell"></i>'; color = '#0ea5e9';
                 }
+                var shortContent = notif.content.length > 100 ? notif.content.substring(0, 100) + '...' : notif.content;
                 html += '<div class="notify-item ' + (notif.read ? 'read' : 'unread') + '" data-id="' + notif.id + '" data-index="' + k + '" onclick="window.handleNotifyClick(' + k + ')">' +
                     '<div class="notify-icon" style="color:' + color + ';">' + icon + '</div>' +
                     '<div class="notify-content">' +
                         '<div class="notify-title">' + escapeHtml(notif.title) + '</div>' +
-                        '<div class="notify-message">' + escapeHtml(notif.content.substring(0, 100)) + (notif.content.length > 100 ? '...' : '') + '</div>' +
+                        '<div class="notify-message">' + escapeHtml(shortContent) + '</div>' +
                         '<div class="notify-time">' + formatTimeAgo(notif.createdAt) + '</div>' +
                     '</div>' +
                     (!notif.read ? '<div class="notify-dot"></div>' : '') +
@@ -126,29 +140,32 @@
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             let userNotifs = [];
             for (var i = 0; i < allNotifs.length; i++) {
-                if (allNotifs[i].userId === currentUser.email) userNotifs.push(allNotifs[i]);
+                if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase()) {
+                    userNotifs.push(allNotifs[i]);
+                }
             }
             var notif = userNotifs[index];
-            if (notif) {
-                if (!notif.read) {
-                    for (var j = 0; j < allNotifs.length; j++) {
-                        if (allNotifs[j].id === notif.id) {
-                            allNotifs[j].read = true;
-                            break;
-                        }
+            if (!notif) return;
+            
+            if (!notif.read) {
+                for (var j = 0; j < allNotifs.length; j++) {
+                    if (allNotifs[j].id === notif.id) {
+                        allNotifs[j].read = true;
+                        break;
                     }
-                    localStorage.setItem('candidate_notifications', JSON.stringify(allNotifs));
                 }
-                if (notif.type === 'interview' && notif.interviewDetails) {
-                    var d = notif.interviewDetails;
-                    alert('📅 LỊCH PHỎNG VẤN\n\nVị trí: ' + d.position + '\nThời gian: ' + d.time + ' - Ngày ' + new Date(d.date).toLocaleDateString('vi-VN') + '\nHình thức: ' + (d.type === 'online' ? 'Online' : 'Trực tiếp') + '\nĐịa điểm: ' + d.location + '\n' + (d.note ? 'Ghi chú: ' + d.note : ''));
-                } else if (notif.type === 'approved') {
-                    alert('✅ ' + notif.title + '\n\n' + notif.content);
-                } else {
-                    alert('📢 ' + notif.title + '\n\n' + notif.content);
-                }
-                loadNotifications();
+                localStorage.setItem('candidate_notifications', JSON.stringify(allNotifs));
             }
+            
+            if (notif.type === 'interview' && notif.interviewDetails) {
+                var d = notif.interviewDetails;
+                alert('📅 CHI TIẾT LỊCH PHỎNG VẤN\n\nVị trí: ' + d.position + '\nThời gian: ' + d.time + ' - Ngày ' + new Date(d.date).toLocaleDateString('vi-VN') + '\nHình thức: ' + (d.type === 'online' ? 'Online' : 'Trực tiếp') + '\nĐịa điểm: ' + d.location + (d.note ? '\nGhi chú: ' + d.note : ''));
+            } else if (notif.type === 'approved') {
+                alert('✅ ' + notif.title + '\n\n' + notif.content);
+            } else {
+                alert('📢 ' + notif.title + '\n\n' + notif.content);
+            }
+            loadNotifications();
         };
 
         window.markAllNotificationsRead = function() {
@@ -157,7 +174,7 @@
             let allNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
             var changed = false;
             for (var i = 0; i < allNotifs.length; i++) {
-                if (allNotifs[i].userId === currentUser.email && !allNotifs[i].read) {
+                if (allNotifs[i].userId && allNotifs[i].userId.toLowerCase() === currentUser.email.toLowerCase() && !allNotifs[i].read) {
                     allNotifs[i].read = true;
                     changed = true;
                 }
@@ -198,7 +215,6 @@
             window.refreshNotifications();
         });
 
-        // Lắng nghe storage event từ tab khác
         window.addEventListener('storage', function(e) {
             if (e.key === 'candidate_notifications' || e.key === 'currentUser') {
                 console.log('🔄 Phát hiện thay đổi thông báo, cập nhật...');
@@ -206,10 +222,14 @@
             }
         });
 
-        // Polling mỗi 3 giây
-        setInterval(loadNotifications, 3000);
+        window.addEventListener('realtime-notification', function(e) {
+            console.log('📢 Nhận thông báo realtime:', e.detail);
+            loadNotifications();
+            if (e.detail && e.detail.title) showToast('📢 ' + e.detail.title, 'info');
+        });
 
+        setInterval(loadNotifications, 3000);
         loadNotifications();
-        console.log('🔔 Floating notifications initialized');
+        console.log('🔔 Floating notifications ready');
     });
 })();
