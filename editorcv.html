@@ -104,21 +104,32 @@
             reader.readAsDataURL(e.target.files[0]);
         };
 
-        function exportPDF() {
-            const element = document.getElementById('cv-render');
-            html2pdf().set({ margin:0, filename:'CV.pdf', html2canvas:{scale:2}, jsPDF:{format:'a4'} }).from(element).save();
-        }
+       function exportPDF() {
+
+    if (!validateCV()) return;
+
+    const element = document.getElementById('cv-render');
+
+    html2pdf().set({
+        margin: 0,
+        filename: 'CV.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { format: 'a4' }
+    }).from(element).save();
+}
         function saveData() {
+
+    if (!validateCV()) return;
 
     const cv = {
         template: tid,
 
-        fullName: document.getElementById("in-name").value,
-        position: document.getElementById("in-job").value,
-        contact: document.getElementById("in-contact").value,
-        education: document.getElementById("in-edu").value,
-        experience: document.getElementById("in-exp").value,
-        skills: document.getElementById("in-skills").value,
+        fullName: document.getElementById("in-name").value.trim(),
+        position: document.getElementById("in-job").value.trim(),
+        contact: document.getElementById("in-contact").value.trim(),
+        education: document.getElementById("in-edu").value.trim(),
+        experience: document.getElementById("in-exp").value.trim(),
+        skills: document.getElementById("in-skills").value.trim(),
         avatar: document.getElementById("out-img").src,
 
         createdAt: new Date().toLocaleString()
@@ -130,7 +141,29 @@
 
     localStorage.setItem("savedCVs", JSON.stringify(saved));
 
-    alert("Đã lưu CV thành công!");
+    alert("💾 Đã lưu CV thành công!");
+}
+function validateCV() {
+
+    const name = document.getElementById("in-name").value.trim();
+    const job = document.getElementById("in-job").value.trim();
+    const contact = document.getElementById("in-contact").value.trim();
+    const edu = document.getElementById("in-edu").value.trim();
+    const exp = document.getElementById("in-exp").value.trim();
+    const skills = document.getElementById("in-skills").value.trim();
+    const avatar = document.getElementById("out-img").src;
+
+    if (!name || !job || !contact || !edu || !exp || !skills) {
+        alert("⚠️ Vui lòng nhập đầy đủ tất cả thông tin CV!");
+        return false;
+    }
+
+    if (!avatar || avatar.includes("undefined") || avatar === "") {
+        alert("⚠️ Vui lòng tải ảnh CV!");
+        return false;
+    }
+
+    return true;
 }
     </script>
     
