@@ -213,72 +213,83 @@
 
         loadDetail();
 
-        // LOGIN/LOGOUT - ĐÃ SỬA LỖI UNDEFINED
-        (function() {
-            const AUTH_KEY = 'isLoggedIn';
-            const DEFAULT_USER = 'Nguyễn Văn A';
+       // ==========================================
+        // AUTH UI ĐỒNG BỘ TOÀN HỆ THỐNG
+        // ==========================================
+        
+        // 1. Khai báo hàm chuyển hướng toàn cục
+        window.goToProfile = function() {
+            window.location.href = 'profile.html';
+        };
+
+        function updateAuthUI() {
             const authDiv = document.getElementById('authButtons');
             const userDiv = document.getElementById('userBox');
-            const loginBtn = document.getElementById('fakeLoginBtn');
-            const registerBtn = document.getElementById('fakeRegisterBtn');
+            if (!authDiv || !userDiv) return;
             
-            function getUserName() {
-                let name = localStorage.getItem('userName');
-                if (!name || name === 'undefined' || name === 'null') {
-                    return DEFAULT_USER;
-                }
-                return name;
+            const currentUser = localStorage.getItem('currentUser');
+            let isLoggedIn = false;
+            let userName = "";
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    isLoggedIn = true;
+                    userName = user.name || user.fullname || user.email?.split('@')[0] || "Thành viên";
+                } catch(e) { isLoggedIn = false; }
             }
             
-            function renderUI() {
-                const isLoggedIn = localStorage.getItem(AUTH_KEY) === 'true';
-                if (isLoggedIn) {
-                    const userName = getUserName();
-                    authDiv.style.display = 'none';
-                    userDiv.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-avatar">${userName.charAt(0)}</div>
-                            <span>${userName}</span>
-                            <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+            // Hỗ trợ cả flag isLoggedIn cũ nếu có
+            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
+                isLoggedIn = true;
+                userName = localStorage.getItem('userName') || "Thành viên";
+            }
+            
+            if (isLoggedIn) {
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                // Thêm onclick và cursor pointer cho Avatar + Tên
+                userDiv.innerHTML = `
+                    <div class="user-info" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer; width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            ${userName.charAt(0).toUpperCase()}
                         </div>
-                    `;
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', () => {
-                            localStorage.setItem(AUTH_KEY, 'false');
-                            localStorage.removeItem('userName');
-                            renderUI();
-                            alert('Đã đăng xuất!');
-                        });
-                    }
-                } else {
-                    authDiv.style.display = 'flex';
-                    userDiv.innerHTML = '';
-                }
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600; color: #334155;">
+                            ${userName}
+                        </span>
+                        <button class="logout-btn" onclick="handleLogout()" style="background: #ef4444; border: none; padding: 5px 12px; border-radius: 30px; color: white; cursor: pointer; font-size: 12px; margin-left: 5px;">
+                            Đăng xuất
+                        </button>
+                    </div>
+                `;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
             }
-            
-            if (loginBtn) {
-                loginBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.setItem(AUTH_KEY, 'true');
-                    localStorage.setItem('userName', DEFAULT_USER);
-                    renderUI();
-                    alert('Đăng nhập thành công!');
-                });
-            }
-            
-            if (registerBtn) {
-                registerBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.setItem(AUTH_KEY, 'true');
-                    localStorage.setItem('userName', DEFAULT_USER);
-                    renderUI();
-                    alert('Đăng ký thành công!');
-                });
-            }
-            
-            renderUI();
-        })();
+        }
+        
+        window.handleLogout = function() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('rememberUser');
+            window.location.reload();
+        };
+        
+        // Chạy khi trang load
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+        
+        // Đồng bộ khi có thay đổi từ tab khác
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'currentUser' || e.key === 'isLoggedIn') updateAuthUI();
+        });
+
+        // Gán link cho nút đăng nhập/đăng ký nếu người dùng chưa nhấn
+        const loginBtn = document.getElementById('fakeLoginBtn');
+        const registerBtn = document.getElementById('fakeRegisterBtn');
+        if(loginBtn) loginBtn.href = 'login.html';
+        if(registerBtn) registerBtn.href = 'register.html';
     </script>
 </body>
 </html>
