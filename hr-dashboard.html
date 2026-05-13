@@ -35,7 +35,6 @@
         input.error, select.error, textarea.error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
         input.valid, select.valid, textarea.valid { border-color: #22c55e !important; }
         
-        /* Search and Pagination styles */
         .search-job-bar {
             background: white;
             padding: 16px 20px;
@@ -196,7 +195,6 @@
                 <button class="btn-primary" id="btn-add-job"><i class="fa-solid fa-plus"></i> Đăng tin mới</button>
             </div>
             
-            <!-- Thanh tìm kiếm và lọc -->
             <div class="search-job-bar">
                 <div class="search-input-wrapper">
                     <i class="fa-solid fa-search"></i>
@@ -206,14 +204,13 @@
                     <option value="all">Tất cả trạng thái</option>
                     <option value="active">Đang đăng</option>
                     <option value="pending">Chờ duyệt</option>
+                    <option value="pending_delete">Chờ xóa</option>
                     <option value="expired">Hết hạn</option>
                 </select>
                 <button id="resetJobSearchBtn" class="reset-search-btn"><i class="fa-solid fa-undo-alt"></i> Đặt lại</button>
             </div>
             
             <div id="job-cards-container" class="job-cards-grid"></div>
-            
-            <!-- Phân trang -->
             <div id="jobPagination" class="pagination-container"></div>
         </section>
 
@@ -278,29 +275,17 @@
 <script>
     // ==================== VALIDATION FUNCTIONS ====================
     function validateSalary(salary) {
-        if (!salary || salary.trim().length === 0) {
-            return { valid: false, message: "Vui lòng nhập mức lương!" };
-        }
+        if (!salary || salary.trim().length === 0) return { valid: false, message: "Vui lòng nhập mức lương!" };
         const allowedPattern = /^[\d\s\.\-]+(triệu|tr|USD|K|k)?$/i;
-        if (!allowedPattern.test(salary)) {
-            return { valid: false, message: "Mức lương chỉ được nhập số, dấu '-', và chữ 'triệu' (VD: 15-25 triệu)" };
-        }
-        if (/^[a-zA-Z\s]+$/.test(salary)) {
-            return { valid: false, message: "Mức lương không được nhập toàn bộ bằng chữ! (VD: 15-25 triệu)" };
-        }
+        if (!allowedPattern.test(salary)) return { valid: false, message: "Mức lương chỉ được nhập số, dấu '-', và chữ 'triệu' (VD: 15-25 triệu)" };
+        if (/^[a-zA-Z\s]+$/.test(salary)) return { valid: false, message: "Mức lương không được nhập toàn bộ bằng chữ! (VD: 15-25 triệu)" };
         return { valid: true };
     }
 
     function validateDescription(desc) {
-        if (!desc || desc.trim().length === 0) {
-            return { valid: false, message: "Vui lòng nhập mô tả chi tiết công việc!" };
-        }
-        if (desc.trim().length < 20) {
-            return { valid: false, message: "Mô tả công việc phải có ít nhất 20 ký tự!" };
-        }
-        if (/^[\d\s\.\,\-]+$/.test(desc)) {
-            return { valid: false, message: "Mô tả công việc không được nhập toàn bộ là số! Vui lòng nhập mô tả bằng chữ." };
-        }
+        if (!desc || desc.trim().length === 0) return { valid: false, message: "Vui lòng nhập mô tả chi tiết công việc!" };
+        if (desc.trim().length < 20) return { valid: false, message: "Mô tả công việc phải có ít nhất 20 ký tự!" };
+        if (/^[\d\s\.\,\-]+$/.test(desc)) return { valid: false, message: "Mô tả công việc không được nhập toàn bộ là số! Vui lòng nhập mô tả bằng chữ." };
         return { valid: true };
     }
 
@@ -387,7 +372,6 @@
     let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Dashboard"];
     let skillsList = [];
     
-    // Biến phân trang
     let currentJobPage = 1;
     const jobsPerPage = 10;
     let filteredJobsList = [];
@@ -446,18 +430,55 @@
         if (startDateInput) { startDateInput.min = today; startDateInput.value = today; }
     }
     
-    // ==================== RENDER JOBS VỚI TÌM KIẾM VÀ PHÂN TRANG ====================
+    // ==================== YÊU CẦU XÓA TIN (GỬI ĐẾN ADMIN) ====================
+    function requestDeleteJob(jobId) {
+        const job = jobs.find(j => j.id == jobId);
+        if (!job) return;
+        
+        const reason = prompt(`Nhập lý do xóa tin tuyển dụng:\n\nTiêu đề: ${job.title}\nCông ty: ${job.company}`, "Tin không còn phù hợp");
+        if (!reason) return;
+        
+        if (confirm(`Xác nhận gửi yêu cầu xóa tin "${job.title}"?\n\nSau khi gửi, Admin sẽ xem xét và phê duyệt.`)) {
+            job.status = "pending_delete";
+            job.deleteRequest = {
+                requestedAt: new Date().toISOString(),
+                reason: reason,
+                requestedBy: currentUser?.email || 'HR',
+                jobTitle: job.title,
+                jobCompany: job.company
+            };
+            
+            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+            
+            let adminNotifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
+            adminNotifications.unshift({
+                id: Date.now(),
+                title: "🗑️ Yêu cầu xóa tin tuyển dụng",
+                content: `HR yêu cầu xóa tin "${job.title}" tại ${job.company}. Lý do: ${reason}`,
+                type: "delete_request",
+                jobId: job.id,
+                jobTitle: job.title,
+                jobCompany: job.company,
+                reason: reason,
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem("admin_notifications", JSON.stringify(adminNotifications));
+            
+            renderJobsWithPagination();
+            alert(`✅ Đã gửi yêu cầu xóa tin!\n\nTin "${job.title}" đang chờ Admin phê duyệt.`);
+        }
+    }
+    
     function renderJobsWithPagination() {
         const container = document.getElementById("job-cards-container");
         const paginationContainer = document.getElementById("jobPagination");
-        
         if (!container) return;
         
         const searchKeyword = document.getElementById("searchJobInput")?.value.toLowerCase().trim() || "";
         const statusFilter = document.getElementById("filterJobStatus")?.value || "all";
         
         let filtered = [...jobs];
-        
         if (searchKeyword) {
             filtered = filtered.filter(job => 
                 job.title?.toLowerCase().includes(searchKeyword) || 
@@ -470,6 +491,7 @@
             filtered = filtered.filter(job => {
                 if (statusFilter === "active") return job.status === "active" && new Date(job.expiryDate) >= new Date();
                 if (statusFilter === "pending") return job.status === "pending";
+                if (statusFilter === "pending_delete") return job.status === "pending_delete";
                 if (statusFilter === "expired") return job.expiryDate && new Date(job.expiryDate) < new Date();
                 return true;
             });
@@ -488,8 +510,6 @@
         const endIndex = startIndex + jobsPerPage;
         const paginatedJobs = filtered.slice(startIndex, endIndex);
         
-        updateStats();
-        
         if (paginatedJobs.length === 0) {
             container.innerHTML = `
                 <div class="no-job-found">
@@ -506,8 +526,26 @@
         
         container.innerHTML = paginatedJobs.map((job, index) => {
             const isExpired = job.expiryDate && new Date(job.expiryDate) < new Date();
-            const statusText = isExpired ? 'Hết hạn' : (job.status === 'active' ? 'Đang đăng' : (job.status === 'pending' ? '⏳ Chờ duyệt' : 'Đã đóng'));
-            const statusClass = isExpired ? 'tag-danger' : (job.status === 'active' ? 'tag-success' : (job.status === 'pending' ? 'tag-warning' : 'tag-warning'));
+            let statusText = '';
+            let statusClass = '';
+            
+            if (isExpired) {
+                statusText = 'Hết hạn';
+                statusClass = 'tag-danger';
+            } else if (job.status === 'active') {
+                statusText = 'Đang đăng';
+                statusClass = 'tag-success';
+            } else if (job.status === 'pending') {
+                statusText = '⏳ Chờ duyệt';
+                statusClass = 'tag-warning';
+            } else if (job.status === 'pending_delete') {
+                statusText = '🗑️ Chờ xóa';
+                statusClass = 'tag-warning';
+            } else {
+                statusText = 'Đã đóng';
+                statusClass = 'tag-warning';
+            }
+            
             return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
                 <div class="job-card-header">
                     <div class="job-card-title">${escapeHtml(job.title)}</div>
@@ -519,12 +557,11 @@
                 </div>
                 <div class="job-card-footer">
                     <span class="tag ${statusClass}">${statusText}</span>
-                    <button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); deleteJob(${jobs.indexOf(job)})"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    ${job.status !== 'pending_delete' ? `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>` : '<span class="tag tag-warning">⏳ Đang chờ duyệt xóa</span>'}
                 </div>
             </div>`;
         }).join('');
         
-        // Render phân trang
         if (totalPages > 1) {
             let paginationHtml = '';
             paginationHtml += `<button class="pagination-btn ${currentJobPage === 1 ? 'disabled' : ''}" onclick="${currentJobPage > 1 ? `goToJobPage(${currentJobPage - 1})` : ''}"><i class="fa-solid fa-chevron-left"></i></button>`;
@@ -548,10 +585,7 @@
         }
     }
     
-    function goToJobPage(page) {
-        currentJobPage = page;
-        renderJobsWithPagination();
-    }
+    function goToJobPage(page) { currentJobPage = page; renderJobsWithPagination(); }
     
     function resetJobSearch() {
         document.getElementById("searchJobInput").value = "";
@@ -561,9 +595,7 @@
         showToast("Đã đặt lại tìm kiếm", "success");
     }
     
-    function viewJobDetail(jobId) {
-        window.location.href = `job-detail.html?id=${jobId}`;
-    }
+    function viewJobDetail(jobId) { window.location.href = `job-detail.html?id=${jobId}`; }
     
     function showToast(message, type) {
         const toast = document.createElement('div');
@@ -575,20 +607,6 @@
             toast.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300);
         }, 3000);
-    }
-    
-    function deleteJob(index) {
-        if (confirm("Xóa tin tuyển dụng này?")) {
-            const title = jobs[index].title;
-            jobs.splice(index, 1);
-            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-            if (currentJobPage > 1 && filteredJobsList.length <= (currentJobPage - 1) * jobsPerPage) {
-                currentJobPage--;
-            }
-            renderJobsWithPagination();
-            addActivity(`🗑️ Đã xóa tin tuyển dụng: ${title}`);
-            showToast(`Đã xóa tin "${title}"`, "success");
-        }
     }
     
     function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails) {
@@ -844,7 +862,7 @@
     window.markNotificationRead = markNotificationRead;
     window.openCreateInterviewModal = openCreateInterviewModal;
     window.deleteInterview = deleteInterview;
-    window.deleteJob = deleteJob;
+    window.requestDeleteJob = requestDeleteJob;
     window.removeSkill = removeSkill;
     window.approveCandidate = approveCandidate;
     window.rejectCandidate = rejectCandidate;

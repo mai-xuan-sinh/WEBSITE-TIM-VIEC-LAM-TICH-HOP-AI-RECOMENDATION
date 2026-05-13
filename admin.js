@@ -277,6 +277,141 @@ function setupEditJobRealtimeValidation() {
     });
 }
 
+// ==================== QUẢN LÝ YÊU CẦU XÓA TỪ HR ====================
+function renderDeleteRequests() {
+    const notifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
+    const deleteRequests = notifications.filter(n => n.type === "delete_request" && !n.resolved);
+    
+    const container = document.getElementById("deleteRequestsList");
+    if (!container) return;
+    
+    if (deleteRequests.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="text-align:center; padding:40px; color:#94a3b8;">📭 Không có yêu cầu xóa nào</div>';
+        return;
+    }
+    
+    container.innerHTML = deleteRequests.map(req => `
+        <div class="delete-request-card" data-id="${req.id}">
+            <div class="request-header">
+                <strong>🗑️ Yêu cầu xóa tin</strong>
+                <span class="request-date">${new Date(req.createdAt).toLocaleString('vi-VN')}</span>
+            </div>
+            <div class="request-content">
+                <p><strong>Tiêu đề:</strong> ${escapeHtml(req.jobTitle)}</p>
+                <p><strong>Công ty:</strong> ${escapeHtml(req.jobCompany)}</p>
+                <p><strong>Lý do:</strong> ${escapeHtml(req.reason)}</p>
+            </div>
+            <div class="request-actions">
+                <button class="btn-success btn-sm" onclick="approveDeleteRequest(${req.id}, ${req.jobId})"><i class="fas fa-check"></i> Duyệt xóa</button>
+                <button class="btn-danger btn-sm" onclick="rejectDeleteRequest(${req.id})"><i class="fas fa-times"></i> Từ chối</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Duyệt yêu cầu xóa
+function approveDeleteRequest(notifId, jobId) {
+    if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?\n\nSau khi xóa, tin sẽ biến mất khỏi hệ thống!")) return;
+    
+    // 1. Xóa khỏi hr_jobs
+    let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    const deletedJob = hrJobs.find(j => j.id == jobId);
+    hrJobs = hrJobs.filter(j => j.id != jobId);
+    localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
+    
+    // 2. Xóa khỏi jobs (global)
+    let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+    globalJobs = globalJobs.filter(j => j.id != jobId);
+    localStorage.setItem("jobs", JSON.stringify(globalJobs));
+    
+    // 3. Xóa khỏi allJobs (nếu có)
+    if (typeof allJobs !== 'undefined') {
+        const index = allJobs.findIndex(j => j.id == jobId);
+        if (index !== -1) allJobs.splice(index, 1);
+    }
+    
+    // 4. Cập nhật thông báo Admin
+    let notifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
+    const notifIndex = notifications.findIndex(n => n.id == notifId);
+    if (notifIndex !== -1) {
+        notifications[notifIndex].resolved = true;
+        notifications[notifIndex].status = "approved";
+        notifications[notifIndex].resolvedAt = new Date().toISOString();
+    }
+    localStorage.setItem("admin_notifications", JSON.stringify(notifications));
+    
+    // 5. Gửi thông báo cho HR
+    let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    hrNotifications.unshift({
+        id: Date.now(),
+        title: "✅ Đã duyệt xóa tin",
+        content: `Yêu cầu xóa tin "${deletedJob?.title || 'không xác định'}" đã được Admin duyệt. Tin đã được xóa khỏi hệ thống.`,
+        type: "delete_approved",
+        time: "Vừa xong",
+        read: false
+    });
+    localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+    
+    // 6. Refresh giao diện
+    renderDeleteRequests();
+    renderJobs();
+    updateStats();
+    
+    // 7. Kích hoạt storage event để các tab khác cập nhật
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'hr_jobs',
+        newValue: JSON.stringify(hrJobs)
+    }));
+    
+    alert("✅ Đã duyệt xóa tin thành công!");
+}
+
+// Từ chối yêu cầu xóa
+function rejectDeleteRequest(notifId) {
+    const reason = prompt("Nhập lý do từ chối yêu cầu xóa:", "Tin vẫn còn giá trị sử dụng");
+    if (!reason) return;
+    
+    let notifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
+    const notifIndex = notifications.findIndex(n => n.id == notifId);
+    const jobId = notifications[notifIndex]?.jobId;
+    
+    // 1. Cập nhật trạng thái tin trở lại active
+    let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    const jobIndex = hrJobs.findIndex(j => j.id == jobId);
+    if (jobIndex !== -1) {
+        hrJobs[jobIndex].status = "active";
+        delete hrJobs[jobIndex].deleteRequest;
+        localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
+    }
+    
+    // 2. Cập nhật thông báo Admin
+    if (notifIndex !== -1) {
+        notifications[notifIndex].resolved = true;
+        notifications[notifIndex].status = "rejected";
+        notifications[notifIndex].rejectReason = reason;
+        notifications[notifIndex].resolvedAt = new Date().toISOString();
+    }
+    localStorage.setItem("admin_notifications", JSON.stringify(notifications));
+    
+    // 3. Gửi thông báo cho HR
+    let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    hrNotifications.unshift({
+        id: Date.now(),
+        title: "❌ Yêu cầu xóa tin bị từ chối",
+        content: `Yêu cầu xóa tin "${notifications[notifIndex]?.jobTitle || 'không xác định'}" đã bị từ chối. Lý do: ${reason}`,
+        type: "delete_rejected",
+        time: "Vừa xong",
+        read: false
+    });
+    localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+    
+    // 4. Refresh
+    renderDeleteRequests();
+    renderJobs();
+    
+    alert("❌ Đã từ chối yêu cầu xóa!");
+}
+
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
 function syncJobsFromData() {
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
@@ -492,7 +627,7 @@ function renderTransactions(data) {
                 <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
                     ${t.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
                 </span>
-                </td>
+              </td>
         </tr>
     `).join("");
 }
@@ -530,7 +665,7 @@ function renderUsers() {
                 <button class="btn-outline btn-sm" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-warning btn-sm" onclick="toggleUserStatus(${user.id})"><i class="fas ${user.status === "banned" ? "fa-unlock" : "fa-lock"}"></i></button>
-                </td>
+              </td>
         </tr>
     `).join("");
     
@@ -731,9 +866,9 @@ function renderJobs() {
             <td>
                 ${job.status === "pending" ? `<button class="btn-warning btn-sm" onclick="openApproveModal(${job.id})"><i class="fas fa-check-circle"></i> Duyệt</button>` : ''}
                 <button class="btn-outline btn-sm" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
-                <button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
+                ${job.status !== "deleted" ? `<button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i> Xóa</button>` : ''}
                 <button class="btn-primary btn-sm" onclick="toggleJobStatus(${job.id})"><i class="fas ${job.status === "active" ? "fa-eye-slash" : "fa-eye"}"></i> ${job.status === "active" ? "Ẩn" : "Hiện"}</button>
-                </td>
+              </td>
         </tr>
     `).join("");
     
@@ -819,13 +954,33 @@ function updateJob() {
 }
 
 function deleteJob(id) {
-    if (confirm("Xóa tin tuyển dụng này?")) {
+    if (confirm("Xóa tin tuyển dụng này?\n\nLưu ý: Hành động này sẽ xóa vĩnh viễn tin khỏi hệ thống!")) {
+        // 1. Xóa khỏi hr_jobs
         let jobs = syncJobsFromData();
         jobs = jobs.filter(j => j.id != id);
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        // 2. Xóa khỏi jobs (global)
+        let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+        globalJobs = globalJobs.filter(j => j.id != id);
+        localStorage.setItem("jobs", JSON.stringify(globalJobs));
+        
+        // 3. Xóa khỏi allJobs
+        if (typeof allJobs !== 'undefined') {
+            const index = allJobs.findIndex(j => j.id == id);
+            if (index !== -1) allJobs.splice(index, 1);
+        }
+        
         renderJobs();
         updateStats();
-        alert("Đã xóa tin tuyển dụng!");
+        
+        // 4. Kích hoạt storage event
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'hr_jobs',
+            newValue: JSON.stringify(jobs)
+        }));
+        
+        alert("Đã xóa tin tuyển dụng thành công!");
     }
 }
 
@@ -901,6 +1056,18 @@ function approveJob() {
         }
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
+        // Gửi thông báo đến HR
+        let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+        hrNotifications.unshift({
+            id: Date.now(),
+            title: "✅ Tin tuyển dụng được duyệt",
+            content: `Tin "${jobs[index].title}" đã được Admin duyệt và đăng tải thành công.`,
+            type: "job_approved",
+            time: "Vừa xong",
+            read: false
+        });
+        localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+        
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'hr_jobs',
             newValue: JSON.stringify(jobs)
@@ -934,6 +1101,18 @@ function rejectJob() {
             const originalIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
             if (originalIndex !== -1) allJobs[originalIndex].status = "rejected";
         }
+        
+        // Gửi thông báo đến HR
+        let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+        hrNotifications.unshift({
+            id: Date.now(),
+            title: "❌ Tin tuyển dụng bị từ chối",
+            content: `Tin "${jobs[index].title}" đã bị Admin từ chối. Lý do: ${reason}`,
+            type: "job_rejected",
+            time: "Vừa xong",
+            read: false
+        });
+        localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
         
         alert(`❌ Đã từ chối tin tuyển dụng.\nLý do: ${reason}`);
         closeJobApproveModal();
@@ -975,7 +1154,7 @@ function renderCompanies() {
             <td>
                 <button class="btn-outline btn-sm" onclick="editCompany(${company.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteCompany(${company.id})"><i class="fas fa-trash"></i></button>
-              </table>
+              </td>
         </tr>
     `).join("");
 }
@@ -1056,33 +1235,94 @@ function saveCompany() {
 function editCompany(id) { openCompanyModal(id); }
 
 function deleteCompany(id) {
-    if (confirm("Bạn có chắc muốn xóa công ty này? Các tin tuyển dụng liên quan cũng sẽ bị xóa!")) {
+    if (confirm("Bạn có chắc muốn xóa công ty này?\n\n⚠️ CẢNH BÁO: Việc xóa công ty sẽ:\n- Xóa công ty khỏi danh sách\n- Xóa TẤT CẢ tin tuyển dụng của công ty này\n- Xóa TẤT CẢ ứng tuyển vào các tin đó\n- Không thể khôi phục!")) {
+        
         let companies = syncCompaniesFromData();
         const company = companies.find(c => c.id === id);
         const companyName = company?.name;
+        const companyId = company?.id;
         
+        if (!companyName) {
+            alert("Không tìm thấy công ty!");
+            return;
+        }
+        
+        // 1. Xóa công ty khỏi danh sách companies
         companies = companies.filter(c => c.id !== id);
         localStorage.setItem("companies", JSON.stringify(companies));
         
-        if (companyName) {
-            let jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-            jobs = jobs.filter(j => j.company !== companyName);
-            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-            
-            if (typeof allJobs !== 'undefined') {
-                for (let i = 0; i < allJobs.length; i++) {
-                    if (allJobs[i].company === companyName) {
-                        allJobs.splice(i, 1);
-                        i--;
-                    }
+        // 2. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi hr_jobs
+        let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+        const deletedJobs = hrJobs.filter(j => j.company === companyName);
+        hrJobs = hrJobs.filter(j => j.company !== companyName);
+        localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
+        
+        // 3. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi jobs (global)
+        let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+        globalJobs = globalJobs.filter(j => j.company !== companyName);
+        localStorage.setItem("jobs", JSON.stringify(globalJobs));
+        
+        // 4. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi allJobs (nếu có)
+        if (typeof allJobs !== 'undefined') {
+            for (let i = 0; i < allJobs.length; i++) {
+                if (allJobs[i].company === companyName) {
+                    allJobs.splice(i, 1);
+                    i--;
                 }
             }
         }
         
+        // 5. Xóa TẤT CẢ ứng tuyển liên quan đến công ty này
+        let applications = JSON.parse(localStorage.getItem("applications")) || [];
+        const deletedAppCount = applications.filter(a => a.company === companyName).length;
+        applications = applications.filter(a => a.company !== companyName);
+        localStorage.setItem("applications", JSON.stringify(applications));
+        
+        // 6. Xóa TẤT CẢ ứng viên (candidates) liên quan đến công ty này
+        let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+        hrCandidates = hrCandidates.filter(c => c.company !== companyName);
+        localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
+        
+        // 7. Xóa TẤT CẢ giao dịch liên quan đến công ty này
+        let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+        transactions = transactions.filter(t => t.companyName !== companyName && t.jobTitle !== companyName);
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+        
+        // 8. Xóa TẤT CẢ lịch phỏng vấn liên quan đến công ty này
+        let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
+        interviews = interviews.filter(i => i.company !== companyName);
+        localStorage.setItem("hr_interviews", JSON.stringify(interviews));
+        
+        // 9. Gửi thông báo đến HR về việc công ty bị xóa
+        let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+        hrNotifications.unshift({
+            id: Date.now(),
+            title: "🏢 Công ty đã bị xóa khỏi hệ thống",
+            content: `Công ty "${companyName}" đã bị Admin xóa khỏi hệ thống. Tất cả tin tuyển dụng và dữ liệu liên quan đã được xóa.`,
+            type: "company_deleted",
+            time: "Vừa xong",
+            read: false
+        });
+        localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+        
+        // 10. Cập nhật lại giao diện
         renderCompanies();
         if (typeof renderJobs === 'function') renderJobs();
+        if (typeof renderCandidates === 'function') renderCandidates();
+        if (typeof renderInterviews === 'function') renderInterviews();
         updateStats();
-        alert("Đã xóa công ty và các tin tuyển dụng liên quan!");
+        
+        // 11. Kích hoạt storage event để các tab khác cập nhật
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'companies',
+            newValue: JSON.stringify(companies)
+        }));
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'hr_jobs',
+            newValue: JSON.stringify(hrJobs)
+        }));
+        
+        alert(`✅ Đã xóa công ty "${companyName}" thành công!\n\n📊 Đã xóa:\n- ${deletedJobs.length} tin tuyển dụng\n- ${deletedAppCount} lượt ứng tuyển`);
     }
 }
 
@@ -1096,7 +1336,7 @@ function renderCVs() {
     if (!tbody) return;
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có CV nào được lưu</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có CV nào được lưu<\/td><\/tr>`;
         return;
     }
     
@@ -1202,7 +1442,7 @@ function renderSupport() {
     if (!tbody) return;
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Không có yêu cầu hỗ trợ nào</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Không có yêu cầu hỗ trợ nào<\/td><\/tr>`;
         return;
     }
     
@@ -1302,7 +1542,8 @@ function initTabs() {
         cvs: "Quản lý CV",
         categories: "Danh mục hệ thống",
         reports: "Báo cáo & Thống kê",
-        support: "Hỗ trợ người dùng"
+        support: "Hỗ trợ người dùng",
+        deleterequests: "Yêu cầu xóa"
     };
     
     menuItems.forEach(item => {
@@ -1321,6 +1562,7 @@ function initTabs() {
             if (tabId === "cvs") renderCVs();
             if (tabId === "categories") renderCategories();
             if (tabId === "support") renderSupport();
+            if (tabId === "deleterequests") renderDeleteRequests();
         });
     });
 }
@@ -1390,6 +1632,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategories();
     renderSupport();
     renderTransactions();
+    renderDeleteRequests();
 });
 
 // Export global functions
@@ -1421,3 +1664,6 @@ window.addCategory = addCategory;
 window.deleteCategory = deleteCategory;
 window.updateSupportStatus = updateSupportStatus;
 window.handleAdminLogout = handleAdminLogout;
+window.approveDeleteRequest = approveDeleteRequest;
+window.rejectDeleteRequest = rejectDeleteRequest;
+window.renderDeleteRequests = renderDeleteRequests;

@@ -6,27 +6,25 @@ let allJobsData = [];
 function getAllJobsFromStorage() {
     let combined = [];
     
-    // 1. Lấy từ jobs-data.js (static data)
+    // Lấy từ jobs-data.js
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
         combined = [...allJobs];
     }
     
-    // 2. Lấy từ localStorage jobs (nơi Admin duyệt)
-    const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    // Lấy từ localStorage jobs (nơi Admin duyệt)
+    const storedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
     
-    // 3. Lấy từ hr_jobs (nơi HR đăng tin)
-    const hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    // Lấy từ hr_jobs (nơi HR đăng tin)
+    const hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     
     // Gộp tất cả
     combined = [...combined, ...storedJobs, ...hrJobs];
     
-    // Lọc chỉ lấy jobs có status = "active" hoặc "approved" hoặc không có status (job cũ)
+    // Lọc chỉ lấy jobs có status = "active" hoặc "approved"
     const activeJobs = combined.filter(job => {
-        // Nếu job có status và không phải active/approved thì bỏ qua
         if (job.status && job.status !== 'active' && job.status !== 'approved') {
             return false;
         }
-        // Đảm bảo có title
         return job.title && job.title.trim() !== '';
     });
     
@@ -40,7 +38,8 @@ function getAllJobsFromStorage() {
         }
     }
     
-    console.log(`📊 index.js: Đã tải ${uniqueJobs.length} việc làm (static: ${typeof allJobs !== 'undefined' ? allJobs.length : 0}, stored: ${storedJobs.length}, hr: ${hrJobs.length})`);
+    // Sắp xếp theo id mới nhất lên đầu
+    uniqueJobs.sort((a, b) => b.id - a.id);
     
     return uniqueJobs;
 }

@@ -97,6 +97,31 @@
         .form-group input.valid {
             border-color: #22c55e;
         }
+        
+        /* Toast message */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0f172a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
     </style>
 </head>
 
@@ -239,15 +264,12 @@
             if (name.trim().length < 2) {
                 return { valid: false, message: "Họ tên phải có ít nhất 2 ký tự" };
             }
-            // Kiểm tra không được chứa số
             if (/\d/.test(name)) {
                 return { valid: false, message: "Họ tên không được chứa số" };
             }
-            // Kiểm tra không được chứa ký tự đặc biệt
             if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) {
                 return { valid: false, message: "Họ tên không được chứa ký tự đặc biệt" };
             }
-            // Chỉ cho phép chữ cái (kể cả tiếng Việt) và dấu cách
             if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸửữựỵỷỹ\s]+$/.test(name)) {
                 return { valid: false, message: "Họ tên chỉ được chứa chữ cái và dấu cách" };
             }
@@ -258,15 +280,12 @@
             if (!phone || phone.trim().length === 0) {
                 return { valid: false, message: "Số điện thoại không được để trống" };
             }
-            // Kiểm tra không được chứa chữ cái
             if (/[a-zA-Z]/.test(phone)) {
                 return { valid: false, message: "Số điện thoại không được chứa chữ cái" };
             }
-            // Kiểm tra không được chứa ký tự đặc biệt (cho phép dấu +)
             if (/[!@#$%^&*()_=\[\]{};':"\\|,.<>\/?~`]/.test(phone) && !phone.includes('+')) {
                 return { valid: false, message: "Số điện thoại không được chứa ký tự đặc biệt" };
             }
-            // Kiểm tra định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 0)
             const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
             if (!phoneRegex.test(phone)) {
                 return { valid: false, message: "Số điện thoại không hợp lệ (VD: 0912345678)" };
@@ -274,13 +293,10 @@
             return { valid: true };
         }
 
-        // Hàm validate实时 cho họ tên
         function validateNameInput() {
             const nameInput = document.getElementById("applyName");
             const name = nameInput.value;
             const validation = validateFullName(name);
-            
-            // Xóa thông báo lỗi cũ
             const parent = nameInput.parentElement;
             const existingError = parent.querySelector('.field-error');
             if (existingError) existingError.remove();
@@ -300,12 +316,10 @@
             }
         }
 
-        // Hàm validate实时 cho số điện thoại
         function validatePhoneInput() {
             const phoneInput = document.getElementById("applyPhone");
             const phone = phoneInput.value;
             const validation = validatePhone(phone);
-            
             const parent = phoneInput.parentElement;
             const existingError = parent.querySelector('.field-error');
             if (existingError) existingError.remove();
@@ -329,7 +343,7 @@
         let currentJobsList = [];
         let currentAppliedFilter = null;
 
-        // ==================== LẤY JOBS TỪ NHIỀU NGUỒN ====================
+        // ==================== LẤY JOBS TỪ NHIỀU NGUỒN (CẬP NHẬT) ====================
         function getAllJobsFromStorage() {
             let combined = [];
             
@@ -343,6 +357,11 @@
             combined = [...combined, ...storedJobs, ...hrJobs];
             
             const activeJobs = combined.filter(job => {
+                // Không hiển thị job đang chờ xóa
+                if (job.status === 'pending_delete') {
+                    return false;
+                }
+                // Chỉ hiển thị job có status active hoặc approved
                 if (job.status && job.status !== 'active' && job.status !== 'approved') {
                     return false;
                 }
@@ -406,6 +425,18 @@
             });
         }
 
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.style.cssText = `position:fixed;bottom:30px;right:30px;background:${type === 'success' ? '#10b981' : '#0ea5e9'};color:white;padding:12px 24px;border-radius:12px;z-index:1100;animation:slideIn 0.3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300);
+            }, 3000);
+        }
+
         function renderJobs(jobs) {
             const container = document.getElementById("all-jobs-container");
             const resultsCount = document.getElementById("resultsCount");
@@ -414,7 +445,7 @@
             currentJobsList = jobs;
             
             if (jobs.length === 0) {
-                container.innerHTML = `<div class="no-job"><i class="fas fa-briefcase"></i><p>Không có công việc phù hợp</p></div>`;
+                container.innerHTML = `<div class="no-job"><i class="fas fa-briefcase"></i><h3>Không tìm thấy việc làm phù hợp</h3><p>Rất tiếc, chúng tôi không tìm thấy công việc nào phù hợp với tiêu chí của bạn.</p><p style="margin-top:10px;font-size:13px;">💡 Gợi ý: Hãy thử tìm kiếm với từ khóa khác hoặc bỏ bớt bộ lọc.</p><button onclick="resetSearch()" class="btn-reset-search" style="margin-top:20px;padding:10px 24px;background:#0ea5e9;color:white;border:none;border-radius:30px;cursor:pointer;"><i class="fas fa-undo-alt"></i> Đặt lại tìm kiếm</button></div>`;
                 if (resultsCount) resultsCount.textContent = `Hiển thị 0 việc làm`;
                 return;
             }
@@ -445,6 +476,14 @@
             `).join("");
             
             if (resultsCount) resultsCount.textContent = `Hiển thị ${jobs.length} việc làm`;
+        }
+
+        function resetSearch() {
+            document.getElementById("skillInput").value = "";
+            document.getElementById("districtSelect").value = "";
+            const allJobsList = getAllJobsFromStorage();
+            renderJobs(allJobsList);
+            showToast("Đã đặt lại tìm kiếm", "success");
         }
 
         function renderFieldCards() {
@@ -515,6 +554,14 @@
                 return matchKeyword && matchDistrict;
             });
             renderJobs(filtered);
+            
+            if (keyword || district) {
+                if (filtered.length === 0) {
+                    showToast(`🔍 Không tìm thấy kết quả cho "${keyword || district}"`, "info");
+                } else {
+                    showToast(`🔍 Tìm thấy ${filtered.length} việc làm`, "success");
+                }
+            }
         }
 
         function setupAutocomplete() {
@@ -567,6 +614,7 @@
 
         window.goToJobDetail = function(id) { window.location.href = `job-detail.html?id=${id}`; };
         window.viewDetail = function(event, id) { event.stopPropagation(); window.location.href = `job-detail.html?id=${id}`; };
+        window.resetSearch = resetSearch;
 
         // ==================== ỨNG TUYỂN CÓ VALIDATION ====================
         function submitApplication(jobId, jobTitle, company, location, salary, cvData, cccdFileName, passportFileName) {
@@ -578,7 +626,6 @@
                 return false;
             }
             
-            // VALIDATE HỌ TÊN
             const nameToValidate = cvData.fullName;
             const nameValidation = validateFullName(nameToValidate);
             if (!nameValidation.valid) {
@@ -586,7 +633,6 @@
                 return false;
             }
             
-            // VALIDATE SỐ ĐIỆN THOẠI
             const phoneToValidate = cvData.phone;
             const phoneValidation = validatePhone(phoneToValidate);
             if (!phoneValidation.valid) {
@@ -696,13 +742,11 @@
             document.getElementById("applyPhone").value = currentUser.phone || '';
             document.getElementById("applyMessage").value = '';
             
-            // Xóa style cũ
             const nameInput = document.getElementById("applyName");
             const phoneInput = document.getElementById("applyPhone");
             nameInput.classList.remove('error', 'valid');
             phoneInput.classList.remove('error', 'valid');
             
-            // Xóa thông báo lỗi cũ
             const nameParent = nameInput.parentElement;
             const phoneParent = phoneInput.parentElement;
             const oldNameError = nameParent.querySelector('.field-error');
@@ -710,7 +754,6 @@
             if (oldNameError) oldNameError.remove();
             if (oldPhoneError) oldPhoneError.remove();
             
-            // Gắn sự kiện realtime
             nameInput.removeEventListener('input', validateNameInput);
             phoneInput.removeEventListener('input', validatePhoneInput);
             nameInput.addEventListener('input', validateNameInput);
@@ -759,7 +802,6 @@
                     document.getElementById("applyMessage").value = cv.intro;
                 }
                 
-                // Validate lại sau khi fill
                 validateNameInput();
                 validatePhoneInput();
             }
@@ -778,7 +820,6 @@
             const phone = document.getElementById("applyPhone").value.trim();
             const message = document.getElementById("applyMessage").value.trim();
             
-            // VALIDATE TRƯỚC KHI GỬI
             const nameValidation = validateFullName(name);
             if (!nameValidation.valid) {
                 alert(`❌ ${nameValidation.message}`);

@@ -273,8 +273,8 @@
         if (!bio || bio.trim().length === 0) {
             return { valid: false, message: "Vui lòng nhập giới thiệu về bản thân!" };
         }
-        if (bio.trim().length < 20) {
-            return { valid: false, message: "Giới thiệu phải có ít nhất 20 ký tự!" };
+        if (bio.trim().length < 10) {
+            return { valid: false, message: "Giới thiệu phải có ít nhất 10 ký tự!" };
         }
         if (bio.trim().length > 500) {
             return { valid: false, message: "Giới thiệu không được vượt quá 500 ký tự!" };

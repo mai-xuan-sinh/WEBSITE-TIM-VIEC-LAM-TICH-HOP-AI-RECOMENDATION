@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
+
 </head>
 <body>
 
@@ -26,6 +27,7 @@
             <li data-tab="categories"><a href="#"><i class="fas fa-tags"></i><span>Danh mục hệ thống</span></a></li>
             <li data-tab="reports"><a href="#"><i class="fas fa-chart-bar"></i><span>Báo cáo & Thống kê</span></a></li>
             <li data-tab="support"><a href="#"><i class="fas fa-headset"></i><span>Hỗ trợ người dùng</span></a></li>
+            <li data-tab="deleterequests"><a href="#"><i class="fas fa-trash-alt"></i><span>Yêu cầu xóa</span></a></li>
         </ul>
         <div class="sidebar-footer">
             <div class="admin-info">
@@ -232,6 +234,20 @@
                     </thead>
                     <tbody id="supportList"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: YÊU CẦU XÓA ==================== -->
+        <div id="tab-deleterequests" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-trash-alt"></i> Yêu cầu xóa tin</h2>
+                <p>Quản lý yêu cầu xóa tin từ HR</p>
+            </div>
+            <div id="deleteRequestsList" class="delete-requests-container">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>Đang tải danh sách yêu cầu xóa...</p>
+                </div>
             </div>
         </div>
     </main>
