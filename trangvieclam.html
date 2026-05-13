@@ -83,6 +83,20 @@
             margin-bottom: 16px;
             color: #0ea5e9;
         }
+        
+        /* Field error styles */
+        .field-error {
+            color: #ef4444;
+            font-size: 11px;
+            margin-top: 4px;
+            display: block;
+        }
+        .form-group input.error, .form-group input:invalid {
+            border-color: #ef4444;
+        }
+        .form-group input.valid {
+            border-color: #22c55e;
+        }
     </style>
 </head>
 
@@ -179,9 +193,18 @@
                 </div>
             </div>
             <form id="applyForm">
-                <div class="form-group"><label>Họ và tên</label><input type="text" id="applyName" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="applyEmail" required></div>
-                <div class="form-group"><label>Số điện thoại</label><input type="text" id="applyPhone" required></div>
+                <div class="form-group">
+                    <label>Họ và tên <span style="color:#ef4444">*</span></label>
+                    <input type="text" id="applyName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email <span style="color:#ef4444">*</span></label>
+                    <input type="email" id="applyEmail" required readonly style="background:#f5f5f5">
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại <span style="color:#ef4444">*</span></label>
+                    <input type="text" id="applyPhone" required>
+                </div>
                 <div class="form-group">
                     <label>Chọn CV đã lưu</label>
                     <select id="savedCVSelect"><option value="">-- Chọn CV --</option></select>
@@ -192,12 +215,14 @@
                     <textarea id="applyMessage" rows="4" placeholder="Nhập giới thiệu ngắn..."></textarea>
                 </div>
                 <div class="form-group form-full">
-                    <label>Tải lên CCCD/CMND</label>
+                    <label>Tải lên CCCD/CMND <span style="color:#ef4444">*</span></label>
                     <input type="file" id="applyCCCD">
+                    <small class="upload-note">File ảnh rõ nét, dung lượng dưới 5MB</small>
                 </div>
                 <div class="form-group form-full">
                     <label>Tải lên Hộ chiếu</label>
                     <input type="file" id="applyPassport">
+                    <small class="upload-note">Dành cho người nước ngoài</small>
                 </div>
                 <button type="submit" class="submit-apply-btn"><i class="fas fa-paper-plane"></i> Gửi ứng tuyển</button>
             </form>
@@ -206,6 +231,100 @@
 
     <script src="jobs-data.js"></script>
     <script>
+        // ==================== VALIDATION FUNCTIONS ====================
+        function validateFullName(name) {
+            if (!name || name.trim().length === 0) {
+                return { valid: false, message: "Họ tên không được để trống" };
+            }
+            if (name.trim().length < 2) {
+                return { valid: false, message: "Họ tên phải có ít nhất 2 ký tự" };
+            }
+            // Kiểm tra không được chứa số
+            if (/\d/.test(name)) {
+                return { valid: false, message: "Họ tên không được chứa số" };
+            }
+            // Kiểm tra không được chứa ký tự đặc biệt
+            if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) {
+                return { valid: false, message: "Họ tên không được chứa ký tự đặc biệt" };
+            }
+            // Chỉ cho phép chữ cái (kể cả tiếng Việt) và dấu cách
+            if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸửữựỵỷỹ\s]+$/.test(name)) {
+                return { valid: false, message: "Họ tên chỉ được chứa chữ cái và dấu cách" };
+            }
+            return { valid: true };
+        }
+
+        function validatePhone(phone) {
+            if (!phone || phone.trim().length === 0) {
+                return { valid: false, message: "Số điện thoại không được để trống" };
+            }
+            // Kiểm tra không được chứa chữ cái
+            if (/[a-zA-Z]/.test(phone)) {
+                return { valid: false, message: "Số điện thoại không được chứa chữ cái" };
+            }
+            // Kiểm tra không được chứa ký tự đặc biệt (cho phép dấu +)
+            if (/[!@#$%^&*()_=\[\]{};':"\\|,.<>\/?~`]/.test(phone) && !phone.includes('+')) {
+                return { valid: false, message: "Số điện thoại không được chứa ký tự đặc biệt" };
+            }
+            // Kiểm tra định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 0)
+            const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
+            if (!phoneRegex.test(phone)) {
+                return { valid: false, message: "Số điện thoại không hợp lệ (VD: 0912345678)" };
+            }
+            return { valid: true };
+        }
+
+        // Hàm validate实时 cho họ tên
+        function validateNameInput() {
+            const nameInput = document.getElementById("applyName");
+            const name = nameInput.value;
+            const validation = validateFullName(name);
+            
+            // Xóa thông báo lỗi cũ
+            const parent = nameInput.parentElement;
+            const existingError = parent.querySelector('.field-error');
+            if (existingError) existingError.remove();
+            
+            if (!validation.valid && name.length > 0) {
+                nameInput.classList.add('error');
+                nameInput.classList.remove('valid');
+                const errorSpan = document.createElement("span");
+                errorSpan.className = "field-error";
+                errorSpan.innerText = validation.message;
+                parent.appendChild(errorSpan);
+            } else if (validation.valid && name.length > 0) {
+                nameInput.classList.remove('error');
+                nameInput.classList.add('valid');
+            } else {
+                nameInput.classList.remove('error', 'valid');
+            }
+        }
+
+        // Hàm validate实时 cho số điện thoại
+        function validatePhoneInput() {
+            const phoneInput = document.getElementById("applyPhone");
+            const phone = phoneInput.value;
+            const validation = validatePhone(phone);
+            
+            const parent = phoneInput.parentElement;
+            const existingError = parent.querySelector('.field-error');
+            if (existingError) existingError.remove();
+            
+            if (!validation.valid && phone.length > 0) {
+                phoneInput.classList.add('error');
+                phoneInput.classList.remove('valid');
+                const errorSpan = document.createElement("span");
+                errorSpan.className = "field-error";
+                errorSpan.innerText = validation.message;
+                parent.appendChild(errorSpan);
+            } else if (validation.valid && phone.length > 0) {
+                phoneInput.classList.remove('error');
+                phoneInput.classList.add('valid');
+            } else {
+                phoneInput.classList.remove('error', 'valid');
+            }
+        }
+
         // ==================== BIẾN TOÀN CỤC ====================
         let currentJobsList = [];
         let currentAppliedFilter = null;
@@ -214,21 +333,15 @@
         function getAllJobsFromStorage() {
             let combined = [];
             
-            // 1. Lấy từ jobs-data.js (static data)
             if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
                 combined = [...allJobs];
             }
             
-            // 2. Lấy từ localStorage jobs (nơi Admin duyệt)
             const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-            
-            // 3. Lấy từ hr_jobs (nơi HR đăng tin)
             const hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
             
-            // Gộp tất cả
             combined = [...combined, ...storedJobs, ...hrJobs];
             
-            // Lọc chỉ lấy jobs có status = "active" hoặc "approved"
             const activeJobs = combined.filter(job => {
                 if (job.status && job.status !== 'active' && job.status !== 'approved') {
                     return false;
@@ -236,7 +349,6 @@
                 return job.title && job.title.trim() !== '';
             });
             
-            // Loại bỏ trùng lặp theo id
             const uniqueJobs = [];
             const ids = new Set();
             for (const job of activeJobs) {
@@ -246,30 +358,19 @@
                 }
             }
             
-            // Sắp xếp theo id mới nhất lên đầu
             uniqueJobs.sort((a, b) => b.id - a.id);
-            
-            console.log(`📊 Đã tải ${uniqueJobs.length} việc làm`);
             return uniqueJobs;
         }
 
-        // ==================== LẤY DANH MỤC TỪ LOCALSTORAGE (ĐỒNG BỘ VỚI ADMIN) ====================
         function getIndustriesFromStorage() {
             const stored = JSON.parse(localStorage.getItem('industries'));
-            if (stored && stored.length > 0) {
-                return stored;
-            }
-            // Fallback: lấy từ allJobs
+            if (stored && stored.length > 0) return stored;
+            
             const jobs = getAllJobsFromStorage();
             const industriesSet = new Set();
-            jobs.forEach(job => {
-                if (job.field) industriesSet.add(job.field);
-            });
+            jobs.forEach(job => { if (job.field) industriesSet.add(job.field); });
             let industries = Array.from(industriesSet);
-            if (industries.length > 0) {
-                localStorage.setItem('industries', JSON.stringify(industries));
-            } else {
-                // Danh mục mặc định
+            if (industries.length === 0) {
                 industries = ["Công nghệ thông tin", "Du lịch - Khách sạn", "Xây dựng - Bất động sản", 
                               "Kinh doanh - Marketing", "Logistics - Vận hành", "Giáo dục - Đào tạo",
                               "Tài chính - Ngân hàng", "Thiết kế - Sáng tạo"];
@@ -279,10 +380,8 @@
 
         function getSkillsFromStorage() {
             const stored = JSON.parse(localStorage.getItem('skills'));
-            if (stored && stored.length > 0) {
-                return stored;
-            }
-            // Fallback: lấy từ allJobs
+            if (stored && stored.length > 0) return stored;
+            
             const jobs = getAllJobsFromStorage();
             const skillsSet = new Set();
             jobs.forEach(job => {
@@ -291,15 +390,12 @@
                 }
             });
             let skills = Array.from(skillsSet).slice(0, 30);
-            if (skills.length > 0) {
-                localStorage.setItem('skills', JSON.stringify(skills));
-            } else {
+            if (skills.length === 0) {
                 skills = ["ReactJS", "NodeJS", "Python", "Java", "PHP", "Flutter", "JavaScript", "HTML/CSS", "SQL", "MongoDB"];
             }
             return skills;
         }
 
-        // ==================== ESCAPE HTML ====================
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
@@ -310,7 +406,6 @@
             });
         }
 
-        // ==================== RENDER JOBS ====================
         function renderJobs(jobs) {
             const container = document.getElementById("all-jobs-container");
             const resultsCount = document.getElementById("resultsCount");
@@ -352,30 +447,21 @@
             if (resultsCount) resultsCount.textContent = `Hiển thị ${jobs.length} việc làm`;
         }
 
-        // ==================== RENDER FIELD CARDS TỪ LOCALSTORAGE ====================
         function renderFieldCards() {
             const fieldContainer = document.getElementById("fieldCards");
             if (!fieldContainer) return;
             
-            // Lấy danh mục ngành nghề từ localStorage (đồng bộ với Admin)
             let industries = getIndustriesFromStorage();
-            
-            // Đếm số lượng jobs theo từng ngành
             const jobs = getAllJobsFromStorage();
             const counts = {};
-            jobs.forEach(job => { 
-                if (job.field) counts[job.field] = (counts[job.field] || 0) + 1; 
-            });
+            jobs.forEach(job => { if (job.field) counts[job.field] = (counts[job.field] || 0) + 1; });
             
             if (industries.length === 0 && Object.keys(counts).length === 0) {
                 fieldContainer.innerHTML = `<div class="no-job" style="grid-column:1/-1">Đang tải danh mục...</div>`;
                 return;
             }
             
-            // Nếu industries trống, dùng từ counts
-            if (industries.length === 0) {
-                industries = Object.keys(counts);
-            }
+            if (industries.length === 0) industries = Object.keys(counts);
             
             fieldContainer.innerHTML = industries.map(field => `
                 <div class="field-card" data-field="${escapeHtml(field)}">
@@ -386,17 +472,14 @@
             
             document.querySelectorAll(".field-card").forEach(card => {
                 card.addEventListener("click", () => {
-                    // Xóa active class cũ
                     document.querySelectorAll(".field-card").forEach(c => c.classList.remove("active-field"));
                     card.classList.add("active-field");
-                    // Lọc jobs theo ngành
                     const jobs = getAllJobsFromStorage();
                     renderJobs(jobs.filter(job => job.field === card.dataset.field));
                 });
             });
         }
 
-        // ==================== CẬP NHẬT GỢI Ý TÌM KIẾM ====================
         function updateSearchSuggestions() {
             const suggestionsContainer = document.getElementById('searchSuggestions');
             if (!suggestionsContainer) return;
@@ -406,7 +489,6 @@
             
             suggestionsContainer.innerHTML = `<i class="fas fa-lightbulb"></i> Gợi ý: ${topSkills.map(skill => `<span class="suggestion-tag">${escapeHtml(skill)}</span>`).join(', ')}`;
             
-            // Gắn sự kiện click cho các gợi ý
             document.querySelectorAll('.suggestion-tag').forEach(el => {
                 el.addEventListener('click', () => {
                     const skillInput = document.getElementById('skillInput');
@@ -418,7 +500,6 @@
             });
         }
 
-        // ==================== TÌM KIẾM ====================
         function searchJobs() {
             const keyword = document.getElementById("skillInput").value.toLowerCase().trim();
             const district = document.getElementById("districtSelect").value.toLowerCase().trim();
@@ -436,7 +517,6 @@
             renderJobs(filtered);
         }
 
-        // ==================== AUTOCOMPLETE ====================
         function setupAutocomplete() {
             const skillInput = document.getElementById("skillInput");
             const suggestionsList = document.getElementById("suggestionsList");
@@ -444,15 +524,11 @@
             
             skillInput.addEventListener("input", () => {
                 const value = skillInput.value.toLowerCase().trim();
-                if (!value) { 
-                    suggestionsList.innerHTML = ""; 
-                    return;
-                }
+                if (!value) { suggestionsList.innerHTML = ""; return; }
                 
                 const allJobsList = getAllJobsFromStorage();
                 const suggestions = [];
                 
-                // Lấy gợi ý từ jobs và từ localStorage skills
                 allJobsList.forEach(job => {
                     if (job.title?.toLowerCase().includes(value)) suggestions.push(job.title);
                     if (job.company?.toLowerCase().includes(value)) suggestions.push(job.company);
@@ -461,7 +537,6 @@
                     });
                 });
                 
-                // Thêm gợi ý từ localStorage skills
                 const storedSkills = getSkillsFromStorage();
                 storedSkills.forEach(skill => {
                     if (skill.toLowerCase().includes(value) && !suggestions.includes(skill)) {
@@ -470,11 +545,7 @@
                 });
                 
                 const uniqueSuggestions = [...new Set(suggestions)].slice(0, 8);
-                
-                if (uniqueSuggestions.length === 0) {
-                    suggestionsList.innerHTML = "";
-                    return;
-                }
+                if (uniqueSuggestions.length === 0) { suggestionsList.innerHTML = ""; return; }
                 
                 suggestionsList.innerHTML = uniqueSuggestions.map(item => `<div class="suggestion-item">${escapeHtml(item)}</div>`).join("");
                 
@@ -487,7 +558,6 @@
                 });
             });
             
-            // Click ra ngoài đóng dropdown
             document.addEventListener("click", (e) => {
                 if (!skillInput.contains(e.target) && !suggestionsList.contains(e.target)) {
                     suggestionsList.innerHTML = "";
@@ -495,23 +565,32 @@
             });
         }
 
-        // ==================== HÀM ĐIỀU HƯỚNG ====================
-        window.goToJobDetail = function(id) { 
-            window.location.href = `job-detail.html?id=${id}`; 
-        };
-        
-        window.viewDetail = function(event, id) { 
-            event.stopPropagation(); 
-            window.location.href = `job-detail.html?id=${id}`; 
-        };
+        window.goToJobDetail = function(id) { window.location.href = `job-detail.html?id=${id}`; };
+        window.viewDetail = function(event, id) { event.stopPropagation(); window.location.href = `job-detail.html?id=${id}`; };
 
-        // ==================== ỨNG TUYỂN ====================
+        // ==================== ỨNG TUYỂN CÓ VALIDATION ====================
         function submitApplication(jobId, jobTitle, company, location, salary, cvData, cccdFileName, passportFileName) {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             
             if (!currentUser) {
                 alert('Vui lòng đăng nhập để ứng tuyển!');
                 window.location.href = 'login.html';
+                return false;
+            }
+            
+            // VALIDATE HỌ TÊN
+            const nameToValidate = cvData.fullName;
+            const nameValidation = validateFullName(nameToValidate);
+            if (!nameValidation.valid) {
+                alert(`❌ ${nameValidation.message}`);
+                return false;
+            }
+            
+            // VALIDATE SỐ ĐIỆN THOẠI
+            const phoneToValidate = cvData.phone;
+            const phoneValidation = validatePhone(phoneToValidate);
+            if (!phoneValidation.valid) {
+                alert(`❌ ${phoneValidation.message}`);
                 return false;
             }
             
@@ -528,10 +607,10 @@
                 salary: salary,
                 userEmail: currentUser.email,
                 candidateEmail: currentUser.email,
-                userName: cvData.fullName || currentUser.name || currentUser.fullname || 'Ứng viên',
-                candidateName: cvData.fullName || currentUser.name || currentUser.fullname || 'Ứng viên',
-                userPhone: cvData.phone || currentUser.phone || '',
-                phone: cvData.phone || currentUser.phone || '',
+                userName: nameToValidate,
+                candidateName: nameToValidate,
+                userPhone: phoneToValidate,
+                phone: phoneToValidate,
                 skills: cvData.skills || '',
                 experience: cvData.experience || '',
                 education: cvData.education || '',
@@ -555,10 +634,10 @@
             if (existingIndex === -1) {
                 const newCandidate = {
                     id: applicationId,
-                    name: application.userName,
+                    name: nameToValidate,
                     email: currentUser.email,
                     candidateEmail: currentUser.email,
-                    phone: application.userPhone,
+                    phone: phoneToValidate,
                     position: jobTitle,
                     company: company,
                     jobId: jobId,
@@ -580,7 +659,7 @@
             notifications.unshift({
                 id: Date.now(),
                 title: '📝 Ứng viên mới',
-                content: `${application.userName} đã ứng tuyển vị trí "${jobTitle}" tại ${company}`,
+                content: `${nameToValidate} đã ứng tuyển vị trí "${jobTitle}" tại ${company}`,
                 type: 'application',
                 time: 'Vừa xong',
                 read: false,
@@ -601,7 +680,6 @@
             if (!job) return;
             
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
             if (!currentUser) {
                 alert('Vui lòng đăng nhập để ứng tuyển!');
                 window.location.href = 'login.html';
@@ -617,6 +695,26 @@
             document.getElementById("applyEmail").value = currentUser.email || '';
             document.getElementById("applyPhone").value = currentUser.phone || '';
             document.getElementById("applyMessage").value = '';
+            
+            // Xóa style cũ
+            const nameInput = document.getElementById("applyName");
+            const phoneInput = document.getElementById("applyPhone");
+            nameInput.classList.remove('error', 'valid');
+            phoneInput.classList.remove('error', 'valid');
+            
+            // Xóa thông báo lỗi cũ
+            const nameParent = nameInput.parentElement;
+            const phoneParent = phoneInput.parentElement;
+            const oldNameError = nameParent.querySelector('.field-error');
+            const oldPhoneError = phoneParent.querySelector('.field-error');
+            if (oldNameError) oldNameError.remove();
+            if (oldPhoneError) oldPhoneError.remove();
+            
+            // Gắn sự kiện realtime
+            nameInput.removeEventListener('input', validateNameInput);
+            phoneInput.removeEventListener('input', validatePhoneInput);
+            nameInput.addEventListener('input', validateNameInput);
+            phoneInput.addEventListener('input', validatePhoneInput);
             
             const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
             const cvSelect = document.getElementById("savedCVSelect");
@@ -660,6 +758,10 @@
                 if (cv.intro && !document.getElementById("applyMessage").value) {
                     document.getElementById("applyMessage").value = cv.intro;
                 }
+                
+                // Validate lại sau khi fill
+                validateNameInput();
+                validatePhoneInput();
             }
         });
         
@@ -672,16 +774,24 @@
                 return;
             }
             
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) {
-                alert("Vui lòng đăng nhập!");
-                window.location.href = "login.html";
-                return;
-            }
-            
             const name = document.getElementById("applyName").value.trim();
             const phone = document.getElementById("applyPhone").value.trim();
             const message = document.getElementById("applyMessage").value.trim();
+            
+            // VALIDATE TRƯỚC KHI GỬI
+            const nameValidation = validateFullName(name);
+            if (!nameValidation.valid) {
+                alert(`❌ ${nameValidation.message}`);
+                document.getElementById("applyName").focus();
+                return;
+            }
+            
+            const phoneValidation = validatePhone(phone);
+            if (!phoneValidation.valid) {
+                alert(`❌ ${phoneValidation.message}`);
+                document.getElementById("applyPhone").focus();
+                return;
+            }
             
             const selectedCVIndex = document.getElementById("savedCVSelect").value;
             const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
@@ -720,7 +830,8 @@
             if (passportFile) passportFileName = passportFile.name;
             
             if (!cccdFile && !passportFile) {
-                alert("Vui lòng tải lên CCCD (Công dân Việt Nam) hoặc Hộ chiếu (Người nước ngoài)!");
+                alert("⚠️ Vui lòng tải lên CCCD (Công dân Việt Nam) hoặc Hộ chiếu (Người nước ngoài)!");
+                document.getElementById("applyCCCD").focus();
                 return;
             }
             
@@ -736,8 +847,6 @@
                 document.getElementById("selectedCVInfo").style.display = "none";
                 document.getElementById("applyModal").classList.remove("active");
                 window.currentApplyingJob = null;
-            } else {
-                alert("❌ Có lỗi xảy ra, vui lòng thử lại!");
             }
         });
         
@@ -751,44 +860,36 @@
             }
         });
 
-        // ==================== KHỞI TẠO & LẮNG NGHE STORAGE ====================
+        // ==================== KHỞI TẠO ====================
         function init() {
-            // Hiển thị loading
             document.getElementById("all-jobs-container").innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i><p>Đang tải việc làm...</p></div>';
             
-            // Render dữ liệu
             const jobs = getAllJobsFromStorage();
             renderJobs(jobs);
             renderFieldCards();
             updateSearchSuggestions();
             setupAutocomplete();
             
-            // Gắn sự kiện tìm kiếm
             document.getElementById("searchBtn")?.addEventListener("click", searchJobs);
             document.getElementById("skillInput")?.addEventListener("keyup", (e) => { if (e.key === "Enter") searchJobs(); });
             document.getElementById("districtSelect")?.addEventListener("change", searchJobs);
         }
         
-        // Lắng nghe thay đổi từ localStorage (khi Admin thêm/xóa danh mục hoặc duyệt tin)
         window.addEventListener('storage', (e) => {
             if (e.key === 'industries' || e.key === 'skills' || e.key === 'locations' || e.key === 'jobTypes') {
-                console.log(`🔄 Phát hiện thay đổi danh mục: ${e.key}, đang cập nhật...`);
                 renderFieldCards();
                 updateSearchSuggestions();
             }
             if (e.key === 'jobs' || e.key === 'hr_jobs') {
-                console.log("🔄 Phát hiện thay đổi jobs, đang cập nhật...");
                 const jobs = getAllJobsFromStorage();
                 renderJobs(jobs);
                 renderFieldCards();
             }
             if (e.key === 'currentUser' || e.key === 'isLoggedIn') {
-                console.log("🔄 Phát hiện thay đổi auth, đang cập nhật...");
                 updateAuthUI();
             }
         });
         
-        // Khởi chạy
         document.addEventListener('DOMContentLoaded', init);
     </script>
 

@@ -11,7 +11,7 @@
         .skills-tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 8px; background: var(--gray-50); border-radius: 12px; min-height: 50px; }
         .skill-tag-item { background: var(--primary-light); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
         .skill-tag-item i { cursor: pointer; color: var(--danger); font-size: 11px; }
-        .step-indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .step-indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; flex-wrap: wrap; }
         .step { padding: 4px 12px; border-radius: 20px; background: var(--gray-200); color: var(--gray-600); }
         .step.active { background: var(--primary); color: white; }
         .step-content { display: none; }
@@ -30,6 +30,116 @@
         .toast-message { position: fixed; bottom: 30px; right: 30px; background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1100; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        .required-star { color: #ef4444; margin-left: 2px; }
+        .field-error { color: #ef4444; font-size: 11px; margin-top: 4px; display: block; }
+        input.error, select.error, textarea.error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        input.valid, select.valid, textarea.valid { border-color: #22c55e !important; }
+        
+        /* Search and Pagination styles */
+        .search-job-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        .search-input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-input-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .pagination-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .no-job-found {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+        }
+        .no-job-found i {
+            font-size: 64px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+        .no-job-found h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+        .no-job-found p {
+            color: var(--gray-500);
+            margin-bottom: 20px;
+        }
+        .reset-search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .reset-search-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -77,7 +187,35 @@
             <div class="panel"><div class="panel-header"><i class="fa-regular fa-clock"></i> Hoạt động gần đây</div><ul class="activity-list" id="activity-feed"><li><span class="dot"></span> ✨ Chào mừng bạn đến với HR Dashboard</li></ul></div>
         </section>
 
-        <section id="view-jobs" class="view-section"><div class="section-header"><div><h2 class="title">Quản lý tin đăng</h2><p class="subtitle">Quản lý tin tuyển dụng của bạn</p></div><button class="btn-primary" id="btn-add-job"><i class="fa-solid fa-plus"></i> Đăng tin mới</button></div><div id="job-cards-container" class="job-cards-grid"></div></section>
+        <section id="view-jobs" class="view-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="title">Quản lý tin đăng</h2>
+                    <p class="subtitle">Quản lý tin tuyển dụng của bạn</p>
+                </div>
+                <button class="btn-primary" id="btn-add-job"><i class="fa-solid fa-plus"></i> Đăng tin mới</button>
+            </div>
+            
+            <!-- Thanh tìm kiếm và lọc -->
+            <div class="search-job-bar">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchJobInput" placeholder="Tìm kiếm theo tiêu đề, công ty, địa điểm...">
+                </div>
+                <select id="filterJobStatus" class="form-control" style="width: 160px;">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="active">Đang đăng</option>
+                    <option value="pending">Chờ duyệt</option>
+                    <option value="expired">Hết hạn</option>
+                </select>
+                <button id="resetJobSearchBtn" class="reset-search-btn"><i class="fa-solid fa-undo-alt"></i> Đặt lại</button>
+            </div>
+            
+            <div id="job-cards-container" class="job-cards-grid"></div>
+            
+            <!-- Phân trang -->
+            <div id="jobPagination" class="pagination-container"></div>
+        </section>
 
         <section id="view-candidates" class="view-section"><h2 class="title">Duyệt hồ sơ ứng viên</h2><div class="panel"><div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;"><select id="candidateFilter" class="form-control" style="width: 150px;"><option value="all">Tất cả</option><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Từ chối</option></select><select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select></div><div class="table-responsive"><table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="candidate-list"></tbody></table></div></div></section>
 
@@ -87,8 +225,8 @@
             <form id="createInterviewForm">
                 <input type="hidden" id="createInterviewCandidateId">
                 <div class="form-row"><div class="form-group"><label>Ứng viên</label><input type="text" class="form-control" id="createInterviewCandidate" readonly></div><div class="form-group"><label>Vị trí</label><input type="text" class="form-control" id="createInterviewPosition" readonly></div></div>
-                <div class="form-row"><div class="form-group"><label>Email ứng viên *</label><input type="email" class="form-control" id="createInterviewCandidateEmail" required></div><div class="form-group"><label>&nbsp;</label></div></div>
-                <div class="form-row"><div class="form-group"><label>Ngày</label><input type="date" class="form-control" id="createInterviewDate" required></div><div class="form-group"><label>Giờ</label><input type="time" class="form-control" id="createInterviewTime" required></div></div>
+                <div class="form-row"><div class="form-group"><label>Email ứng viên <span class="required-star">*</span></label><input type="email" class="form-control" id="createInterviewCandidateEmail" required></div><div class="form-group"><label>&nbsp;</label></div></div>
+                <div class="form-row"><div class="form-group"><label>Ngày <span class="required-star">*</span></label><input type="date" class="form-control" id="createInterviewDate" required></div><div class="form-group"><label>Giờ <span class="required-star">*</span></label><input type="time" class="form-control" id="createInterviewTime" required></div></div>
                 <div class="form-row"><div class="form-group"><label>Hình thức</label><select class="form-control" id="createInterviewType"><option value="online">Online</option><option value="offline">Offline</option></select></div><div class="form-group"><label>Địa điểm</label><input type="text" class="form-control" id="createInterviewLocation"></div></div>
                 <div class="form-group"><label>Ghi chú</label><textarea class="form-control" id="createInterviewNote" rows="2"></textarea></div>
                 <button type="submit" class="btn-primary w-100">Tạo lịch</button>
@@ -113,13 +251,24 @@
     <div class="modal-box job-posting-modal" style="max-width: 680px;">
         <div class="flex-between"><h3 id="jobModalTitle"><i class="fa-solid fa-bullhorn"></i> Đăng tin tuyển dụng</h3><div class="step-indicator"><span class="step active" data-step="1">1. Thông tin</span><i class="fa-solid fa-arrow-right"></i><span class="step" data-step="2">2. Chi tiết</span><i class="fa-solid fa-arrow-right"></i><span class="step" data-step="3">3. Thanh toán</span></div><button class="btn-close" id="closeJobPostModal"><i class="fa-solid fa-xmark"></i></button></div>
         <div id="step1" class="step-content active">
-            <form id="step1Form"><div class="form-group"><label><i class="fa-solid fa-tag"></i> Tiêu đề tin <span>*</span></label><input type="text" class="form-control" id="jobTitle" placeholder="VD: Senior Frontend Developer" required></div><div class="form-group"><label><i class="fa-solid fa-layer-group"></i> Lĩnh vực <span>*</span></label><select class="form-control" id="jobCategory" required><option value="">-- Chọn lĩnh vực --</option><option value="Công nghệ thông tin">Công nghệ thông tin</option><option value="Du lịch - Khách sạn">Du lịch - Khách sạn</option><option value="Xây dựng - Bất động sản">Xây dựng - Bất động sản</option><option value="Kinh doanh - Marketing">Kinh doanh - Marketing</option><option value="Logistics - Vận hành">Logistics - Vận hành</option><option value="Giáo dục - Đào tạo">Giáo dục - Đào tạo</option><option value="Tài chính - Ngân hàng">Tài chính - Ngân hàng</option><option value="Thiết kế - Sáng tạo">Thiết kế - Sáng tạo</option></select></div><div class="form-row"><div class="form-group"><label><i class="fa-solid fa-coins"></i> Mức lương <span>*</span></label><input type="text" class="form-control" id="jobSalary" placeholder="VD: 15-25 triệu" required></div><div class="form-group"><label><i class="fa-solid fa-calendar-alt"></i> Ngày bắt đầu <span>*</span></label><input type="date" class="form-control" id="jobStartDate" required><div class="form-hint">Chọn ngày bắt đầu đăng tin (từ hôm nay trở đi)</div></div></div><div class="form-row"><div class="form-group"><label><i class="fa-solid fa-clock"></i> Thời gian đăng <span>*</span></label><select class="form-control" id="jobDuration" required><option value="1">1 ngày - 50,000đ</option><option value="3">3 ngày - 150,000đ</option><option value="5">5 ngày - 250,000đ</option><option value="7" selected>7 ngày - 350,000đ (Phổ biến)</option><option value="10">10 ngày - 500,000đ</option><option value="15">15 ngày - 750,000đ</option><option value="20">20 ngày - 1,000,000đ</option><option value="25">25 ngày - 1,250,000đ</option><option value="30">30 ngày - 1,500,000đ</option></select><div class="form-hint">Tối đa 30 ngày, giá 50,000đ/ngày</div></div><div class="form-group"><label><i class="fa-solid fa-location-dot"></i> Địa chỉ <span>*</span></label><select class="form-control" id="jobLocation" required><option value="">-- Chọn Quận --</option><option value="Hải Châu">Quận Hải Châu</option><option value="Thanh Khê">Quận Thanh Khê</option><option value="Liên Chiểu">Quận Liên Chiểu</option><option value="Ngũ Hành Sơn">Quận Ngũ Hành Sơn</option><option value="Sơn Trà">Quận Sơn Trà</option><option value="Cẩm Lệ">Quận Cẩm Lệ</option></select></div></div><div class="form-group"><label><i class="fa-solid fa-align-left"></i> Mô tả ngắn</label><textarea class="form-control" id="jobShortDesc" rows="2" placeholder="Mô tả ngắn gọn về công việc..."></textarea></div><div class="form-actions"><button type="button" class="btn-primary next-step" id="nextToStep2">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div></form>
+            <form id="step1Form"><div class="form-group"><label><i class="fa-solid fa-tag"></i> Tiêu đề tin <span class="required-star">*</span></label><input type="text" class="form-control" id="jobTitle" placeholder="VD: Senior Frontend Developer" required></div>
+            <div class="form-group"><label><i class="fa-solid fa-layer-group"></i> Lĩnh vực <span class="required-star">*</span></label><select class="form-control" id="jobCategory" required><option value="">-- Chọn lĩnh vực --</option><option value="Công nghệ thông tin">Công nghệ thông tin</option><option value="Du lịch - Khách sạn">Du lịch - Khách sạn</option><option value="Xây dựng - Bất động sản">Xây dựng - Bất động sản</option><option value="Kinh doanh - Marketing">Kinh doanh - Marketing</option><option value="Logistics - Vận hành">Logistics - Vận hành</option><option value="Giáo dục - Đào tạo">Giáo dục - Đào tạo</option><option value="Tài chính - Ngân hàng">Tài chính - Ngân hàng</option><option value="Thiết kế - Sáng tạo">Thiết kế - Sáng tạo</option></select></div>
+            <div class="form-row"><div class="form-group"><label><i class="fa-solid fa-coins"></i> Mức lương <span class="required-star">*</span></label><input type="text" class="form-control" id="jobSalary" placeholder="VD: 15-25 triệu" required><div class="form-hint">Chỉ nhập số, dấu -, chữ "triệu/tr/USD/K"</div></div>
+            <div class="form-group"><label><i class="fa-solid fa-calendar-alt"></i> Ngày bắt đầu <span class="required-star">*</span></label><input type="date" class="form-control" id="jobStartDate" required><div class="form-hint">Chọn ngày bắt đầu đăng tin (từ hôm nay trở đi)</div></div></div>
+            <div class="form-row"><div class="form-group"><label><i class="fa-solid fa-clock"></i> Thời gian đăng <span class="required-star">*</span></label><select class="form-control" id="jobDuration" required><option value="1">1 ngày - 50,000đ</option><option value="3">3 ngày - 150,000đ</option><option value="5">5 ngày - 250,000đ</option><option value="7" selected>7 ngày - 350,000đ (Phổ biến)</option><option value="10">10 ngày - 500,000đ</option><option value="15">15 ngày - 750,000đ</option><option value="20">20 ngày - 1,000,000đ</option><option value="25">25 ngày - 1,250,000đ</option><option value="30">30 ngày - 1,500,000đ</option></select><div class="form-hint">Tối đa 30 ngày, giá 50,000đ/ngày</div></div>
+            <div class="form-group"><label><i class="fa-solid fa-location-dot"></i> Địa chỉ <span class="required-star">*</span></label><select class="form-control" id="jobLocation" required><option value="">-- Chọn Quận --</option><option value="Hải Châu">Quận Hải Châu</option><option value="Thanh Khê">Quận Thanh Khê</option><option value="Liên Chiểu">Quận Liên Chiểu</option><option value="Ngũ Hành Sơn">Quận Ngũ Hành Sơn</option><option value="Sơn Trà">Quận Sơn Trà</option><option value="Cẩm Lệ">Quận Cẩm Lệ</option></select></div></div>
+            <div class="form-group"><label><i class="fa-solid fa-align-left"></i> Mô tả ngắn</label><textarea class="form-control" id="jobShortDesc" rows="2" placeholder="Mô tả ngắn gọn về công việc..."></textarea></div>
+            <div class="form-actions"><button type="button" class="btn-primary next-step" id="nextToStep2">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div></form>
         </div>
         <div id="step2" class="step-content">
-            <form id="step2Form"><div class="form-group"><label><i class="fa-solid fa-list-check"></i> Mô tả chi tiết <span>*</span></label><textarea class="form-control" id="jobFullDesc" rows="4" placeholder="- Phát triển sản phẩm web...&#10;- Phối hợp với team...&#10;- Báo cáo tiến độ..."></textarea></div><div class="form-group"><label><i class="fa-solid fa-user-graduate"></i> Yêu cầu ứng viên</label><textarea class="form-control" id="jobRequirement" rows="3" placeholder="- Tốt nghiệp Đại học chuyên ngành CNTT&#10;- Kinh nghiệm 2+ năm&#10;- Thành thạo ReactJS, Node.js"></textarea></div><div class="form-group"><label><i class="fa-solid fa-code"></i> Kỹ năng yêu cầu</label><input type="text" id="skillInput" class="form-control" placeholder="Nhập kỹ năng và nhấn Enter"><div id="skillsList" class="skills-tags-container"></div><input type="hidden" id="jobTechSkills" value=""></div><div class="form-group"><label><i class="fa-solid fa-gift"></i> Quyền lợi</label><textarea class="form-control" id="jobBenefits" rows="3" placeholder="- Lương cạnh tranh&#10;- Bảo hiểm đầy đủ&#10;- Môi trường chuyên nghiệp"></textarea></div><div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep1"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary next-step" id="nextToStep3">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div></form>
+            <form id="step2Form"><div class="form-group"><label><i class="fa-solid fa-list-check"></i> Mô tả chi tiết <span class="required-star">*</span></label><textarea class="form-control" id="jobFullDesc" rows="4" placeholder="- Phát triển sản phẩm web...&#10;- Phối hợp với team...&#10;- Báo cáo tiến độ..."></textarea><div class="form-hint">Tối thiểu 20 ký tự, không được nhập toàn bộ là số</div></div>
+            <div class="form-group"><label><i class="fa-solid fa-user-graduate"></i> Yêu cầu ứng viên</label><textarea class="form-control" id="jobRequirement" rows="3" placeholder="- Tốt nghiệp Đại học chuyên ngành CNTT&#10;- Kinh nghiệm 2+ năm&#10;- Thành thạo ReactJS, Node.js"></textarea></div>
+            <div class="form-group"><label><i class="fa-solid fa-code"></i> Kỹ năng yêu cầu</label><input type="text" id="skillInput" class="form-control" placeholder="Nhập kỹ năng và nhấn Enter"><div id="skillsList" class="skills-tags-container"></div><input type="hidden" id="jobTechSkills" value=""></div>
+            <div class="form-group"><label><i class="fa-solid fa-gift"></i> Quyền lợi</label><textarea class="form-control" id="jobBenefits" rows="3" placeholder="- Lương cạnh tranh&#10;- Bảo hiểm đầy đủ&#10;- Môi trường chuyên nghiệp"></textarea></div>
+            <div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep1"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary next-step" id="nextToStep3">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div></form>
         </div>
         <div id="step3" class="step-content">
-            <div class="payment-container"><div class="payment-info"><h4><i class="fa-regular fa-rectangle-list"></i> Thông tin tin đăng</h4><div id="jobSummary" class="price-breakdown"><div class="price-item"><span>Tiêu đề:</span><span id="summaryTitle">---</span></div><div class="price-item"><span>Lĩnh vực:</span><span id="summaryCategory">---</span></div><div class="price-item"><span>Mức lương:</span><span id="summarySalary">---</span></div><div class="price-item"><span>Địa điểm:</span><span id="summaryLocation">---</span></div><div class="price-item"><span>Ngày đăng:</span><span id="summaryStartDate">---</span></div><div class="price-item"><span>Ngày hết hạn:</span><span id="summaryEndDate">---</span></div><div class="price-item"><span>Thời gian đăng:</span><span id="summaryDuration">--- ngày</span></div><div class="price-item total"><span>Tổng phí đăng tin:</span><span id="totalPriceDisplay" class="price-highlight">0đ</span></div></div></div><div class="qr-payment"><div class="qr-code"><i class="fa-solid fa-qrcode" style="font-size: 80px; color: var(--primary);"></i></div><p class="qr-note">Quét mã QR để thanh toán</p><div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;"><p><strong>Ngân hàng:</strong> Vietcombank</p><p><strong>Số TK:</strong> 1234567890</p><p><strong>Chủ TK:</strong> DANANG WORK</p><p><strong>Nội dung:</strong> DANGTIN_<span id="transactionCode"></span></p></div></div></div>
+            <div class="payment-container"><div class="payment-info"><h4><i class="fa-regular fa-rectangle-list"></i> Thông tin tin đăng</h4><div id="jobSummary" class="price-breakdown"><div class="price-item"><span>Tiêu đề:</span><span id="summaryTitle">---</span></div><div class="price-item"><span>Lĩnh vực:</span><span id="summaryCategory">---</span></div><div class="price-item"><span>Mức lương:</span><span id="summarySalary">---</span></div><div class="price-item"><span>Địa điểm:</span><span id="summaryLocation">---</span></div><div class="price-item"><span>Ngày đăng:</span><span id="summaryStartDate">---</span></div><div class="price-item"><span>Ngày hết hạn:</span><span id="summaryEndDate">---</span></div><div class="price-item"><span>Thời gian đăng:</span><span id="summaryDuration">--- ngày</span></div><div class="price-item total"><span>Tổng phí đăng tin:</span><span id="totalPriceDisplay" class="price-highlight">0đ</span></div></div></div><div class="qr-payment"><div class="qr-code"><i class="fa-solid fa-qrcode" style="font-size: 80px; color: var(--primary);"></i></div><p class="qr-note">Quét mã QR để thanh toán</p><div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;"><p><strong>Ngân hàng:</strong> Vietcombank</p><p><strong>Số TK:</strong> 1234567890</p><p><strong>Chủ TK:</strong> DANANG WORK</p><p><strong>Nội dung:</strong> <span id="transactionCode" style="font-weight: bold; color: #ef4444;"></span></p></div></div></div>
             <div class="date-range" id="dateRangeInfo"><i class="fa-regular fa-calendar-check"></i> Tin sẽ được đăng từ <span id="displayStartDate">---</span> đến hết <span id="displayEndDate">---</span></div>
             <div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep2"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary" id="submitJobPost"><i class="fa-solid fa-check-circle"></i> Xác nhận đăng tin</button></div>
         </div>
@@ -127,6 +276,84 @@
 </div>
 
 <script>
+    // ==================== VALIDATION FUNCTIONS ====================
+    function validateSalary(salary) {
+        if (!salary || salary.trim().length === 0) {
+            return { valid: false, message: "Vui lòng nhập mức lương!" };
+        }
+        const allowedPattern = /^[\d\s\.\-]+(triệu|tr|USD|K|k)?$/i;
+        if (!allowedPattern.test(salary)) {
+            return { valid: false, message: "Mức lương chỉ được nhập số, dấu '-', và chữ 'triệu' (VD: 15-25 triệu)" };
+        }
+        if (/^[a-zA-Z\s]+$/.test(salary)) {
+            return { valid: false, message: "Mức lương không được nhập toàn bộ bằng chữ! (VD: 15-25 triệu)" };
+        }
+        return { valid: true };
+    }
+
+    function validateDescription(desc) {
+        if (!desc || desc.trim().length === 0) {
+            return { valid: false, message: "Vui lòng nhập mô tả chi tiết công việc!" };
+        }
+        if (desc.trim().length < 20) {
+            return { valid: false, message: "Mô tả công việc phải có ít nhất 20 ký tự!" };
+        }
+        if (/^[\d\s\.\,\-]+$/.test(desc)) {
+            return { valid: false, message: "Mô tả công việc không được nhập toàn bộ là số! Vui lòng nhập mô tả bằng chữ." };
+        }
+        return { valid: true };
+    }
+
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+        field.classList.add('error');
+        let parent = field.closest('.form-group');
+        if (!parent) parent = field.parentElement;
+        const oldError = parent.querySelector('.field-error');
+        if (oldError) oldError.remove();
+        const errorSpan = document.createElement('span');
+        errorSpan.className = 'field-error';
+        errorSpan.innerText = message;
+        parent.appendChild(errorSpan);
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function validateStep1() {
+        let isValid = true;
+        document.querySelectorAll('.field-error').forEach(el => el.remove());
+        document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('error'));
+        
+        const title = document.getElementById('jobTitle').value.trim();
+        const category = document.getElementById('jobCategory').value;
+        const salary = document.getElementById('jobSalary').value.trim();
+        const location = document.getElementById('jobLocation').value;
+        const startDate = document.getElementById('jobStartDate').value;
+        
+        if (!title) { showFieldError('jobTitle', 'Vui lòng nhập tiêu đề tin!'); isValid = false; }
+        else if (title.length < 5) { showFieldError('jobTitle', 'Tiêu đề tin phải có ít nhất 5 ký tự!'); isValid = false; }
+        if (!category || category === '') { showFieldError('jobCategory', 'Vui lòng chọn lĩnh vực!'); isValid = false; }
+        const salaryValidation = validateSalary(salary);
+        if (!salaryValidation.valid) { showFieldError('jobSalary', salaryValidation.message); isValid = false; }
+        if (!location || location === '') { showFieldError('jobLocation', 'Vui lòng chọn địa điểm!'); isValid = false; }
+        if (!startDate) { showFieldError('jobStartDate', 'Vui lòng chọn ngày bắt đầu!'); isValid = false; }
+        else {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            if (new Date(startDate) < today) { showFieldError('jobStartDate', 'Ngày bắt đầu không được nhỏ hơn hôm nay!'); isValid = false; }
+        }
+        return isValid;
+    }
+
+    function validateStep2() {
+        let isValid = true;
+        document.querySelectorAll('.field-error').forEach(el => el.remove());
+        document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('error'));
+        const fullDesc = document.getElementById('jobFullDesc').value.trim();
+        const descValidation = validateDescription(fullDesc);
+        if (!descValidation.valid) { showFieldError('jobFullDesc', descValidation.message); isValid = false; }
+        return isValid;
+    }
+
     function checkHRAuth() {
         const authGuard = document.getElementById('hr-auth-guard');
         const appLayout = document.getElementById('app-layout');
@@ -159,6 +386,11 @@
     let notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     let activities = JSON.parse(localStorage.getItem("hr_activities")) || ["✨ Chào mừng bạn đến với HR Dashboard"];
     let skillsList = [];
+    
+    // Biến phân trang
+    let currentJobPage = 1;
+    const jobsPerPage = 10;
+    let filteredJobsList = [];
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     
@@ -214,129 +446,202 @@
         if (startDateInput) { startDateInput.min = today; startDateInput.value = today; }
     }
     
-    function renderJobs() {
+    // ==================== RENDER JOBS VỚI TÌM KIẾM VÀ PHÂN TRANG ====================
+    function renderJobsWithPagination() {
         const container = document.getElementById("job-cards-container");
+        const paginationContainer = document.getElementById("jobPagination");
+        
         if (!container) return;
-        if (jobs.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-briefcase"></i><h3>Chưa có tin tuyển dụng</h3><p>Nhấn "Đăng tin mới" để tạo tin đầu tiên</p></div>'; return; }
-        container.innerHTML = jobs.map((job, index) => { const isExpired = job.expiryDate && new Date(job.expiryDate) < new Date(); const statusText = isExpired ? 'Hết hạn' : (job.status === 'active' ? 'Đang đăng' : 'Đã đóng'); const statusClass = isExpired ? 'tag-danger' : (job.status === 'active' ? 'tag-success' : 'tag-warning'); return `<div class="job-card"><div class="job-card-header"><div class="job-card-title">${escapeHtml(job.title)}</div><div class="job-card-salary">${escapeHtml(job.salary)}</div></div><div class="job-card-details"><div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location)}</div><div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div></div><div class="job-card-footer"><span class="tag ${statusClass}">${statusText}</span><button class="btn-sm" style="color:var(--danger)" onclick="deleteJob(${index})"><i class="fa-solid fa-trash"></i> Xóa</button></div></div>`; }).join('');
+        
+        const searchKeyword = document.getElementById("searchJobInput")?.value.toLowerCase().trim() || "";
+        const statusFilter = document.getElementById("filterJobStatus")?.value || "all";
+        
+        let filtered = [...jobs];
+        
+        if (searchKeyword) {
+            filtered = filtered.filter(job => 
+                job.title?.toLowerCase().includes(searchKeyword) || 
+                job.company?.toLowerCase().includes(searchKeyword) ||
+                (job.location || job.district || "").toLowerCase().includes(searchKeyword)
+            );
+        }
+        
+        if (statusFilter !== "all") {
+            filtered = filtered.filter(job => {
+                if (statusFilter === "active") return job.status === "active" && new Date(job.expiryDate) >= new Date();
+                if (statusFilter === "pending") return job.status === "pending";
+                if (statusFilter === "expired") return job.expiryDate && new Date(job.expiryDate) < new Date();
+                return true;
+            });
+        }
+        
+        filtered.sort((a, b) => new Date(b.createdAt || b.postDate) - new Date(a.createdAt || a.postDate));
+        filteredJobsList = filtered;
+        
+        const totalJobs = filtered.length;
+        const totalPages = Math.ceil(totalJobs / jobsPerPage);
+        
+        if (currentJobPage > totalPages) currentJobPage = totalPages || 1;
+        if (currentJobPage < 1) currentJobPage = 1;
+        
+        const startIndex = (currentJobPage - 1) * jobsPerPage;
+        const endIndex = startIndex + jobsPerPage;
+        const paginatedJobs = filtered.slice(startIndex, endIndex);
+        
         updateStats();
+        
+        if (paginatedJobs.length === 0) {
+            container.innerHTML = `
+                <div class="no-job-found">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <h3>Không tìm thấy tin tuyển dụng</h3>
+                    <p>Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng nào phù hợp với tiêu chí của bạn.</p>
+                    <p style="font-size: 13px;">💡 Gợi ý: Hãy thử tìm kiếm với từ khóa khác hoặc bỏ bớt bộ lọc.</p>
+                    <button onclick="resetJobSearch()" class="reset-search-btn" style="margin-top: 16px;"><i class="fa-solid fa-undo-alt"></i> Đặt lại tìm kiếm</button>
+                </div>
+            `;
+            paginationContainer.innerHTML = '';
+            return;
+        }
+        
+        container.innerHTML = paginatedJobs.map((job, index) => {
+            const isExpired = job.expiryDate && new Date(job.expiryDate) < new Date();
+            const statusText = isExpired ? 'Hết hạn' : (job.status === 'active' ? 'Đang đăng' : (job.status === 'pending' ? '⏳ Chờ duyệt' : 'Đã đóng'));
+            const statusClass = isExpired ? 'tag-danger' : (job.status === 'active' ? 'tag-success' : (job.status === 'pending' ? 'tag-warning' : 'tag-warning'));
+            return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
+                <div class="job-card-header">
+                    <div class="job-card-title">${escapeHtml(job.title)}</div>
+                    <div class="job-card-salary">${escapeHtml(job.salary)}</div>
+                </div>
+                <div class="job-card-details">
+                    <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
+                    <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
+                </div>
+                <div class="job-card-footer">
+                    <span class="tag ${statusClass}">${statusText}</span>
+                    <button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); deleteJob(${jobs.indexOf(job)})"><i class="fa-solid fa-trash"></i> Xóa</button>
+                </div>
+            </div>`;
+        }).join('');
+        
+        // Render phân trang
+        if (totalPages > 1) {
+            let paginationHtml = '';
+            paginationHtml += `<button class="pagination-btn ${currentJobPage === 1 ? 'disabled' : ''}" onclick="${currentJobPage > 1 ? `goToJobPage(${currentJobPage - 1})` : ''}"><i class="fa-solid fa-chevron-left"></i></button>`;
+            
+            let startPage = Math.max(1, currentJobPage - 2);
+            let endPage = Math.min(totalPages, currentJobPage + 2);
+            
+            if (startPage > 1) paginationHtml += `<button class="pagination-btn" onclick="goToJobPage(1)">1</button>${startPage > 2 ? '<span class="pagination-dots">...</span>' : ''}`;
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `<button class="pagination-btn ${i === currentJobPage ? 'active' : ''}" onclick="goToJobPage(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) paginationHtml += `${endPage < totalPages - 1 ? '<span class="pagination-dots">...</span>' : ''}<button class="pagination-btn" onclick="goToJobPage(${totalPages})">${totalPages}</button>`;
+            
+            paginationHtml += `<button class="pagination-btn ${currentJobPage === totalPages ? 'disabled' : ''}" onclick="${currentJobPage < totalPages ? `goToJobPage(${currentJobPage + 1})` : ''}"><i class="fa-solid fa-chevron-right"></i></button>`;
+            
+            paginationContainer.innerHTML = paginationHtml;
+        } else {
+            paginationContainer.innerHTML = '';
+        }
     }
     
-    function deleteJob(index) { if (confirm("Xóa tin tuyển dụng này?")) { const title = jobs[index].title; jobs.splice(index, 1); localStorage.setItem("hr_jobs", JSON.stringify(jobs)); renderJobs(); addActivity(`🗑️ Đã xóa tin tuyển dụng: ${title}`); addNotification("Đã xóa tin", `Tin "${title}" đã được xóa`, "system"); } }
+    function goToJobPage(page) {
+        currentJobPage = page;
+        renderJobsWithPagination();
+    }
     
-    // ==================== HÀM GỬI THÔNG BÁO QUA BROADCAST CHANNEL ====================
+    function resetJobSearch() {
+        document.getElementById("searchJobInput").value = "";
+        document.getElementById("filterJobStatus").value = "all";
+        currentJobPage = 1;
+        renderJobsWithPagination();
+        showToast("Đã đặt lại tìm kiếm", "success");
+    }
+    
+    function viewJobDetail(jobId) {
+        window.location.href = `job-detail.html?id=${jobId}`;
+    }
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.style.cssText = `position: fixed; bottom: 30px; right: 30px; background: ${type === 'success' ? '#10b981' : '#0ea5e9'}; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1100; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px;`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300);
+        }, 3000);
+    }
+    
+    function deleteJob(index) {
+        if (confirm("Xóa tin tuyển dụng này?")) {
+            const title = jobs[index].title;
+            jobs.splice(index, 1);
+            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+            if (currentJobPage > 1 && filteredJobsList.length <= (currentJobPage - 1) * jobsPerPage) {
+                currentJobPage--;
+            }
+            renderJobsWithPagination();
+            addActivity(`🗑️ Đã xóa tin tuyển dụng: ${title}`);
+            showToast(`Đã xóa tin "${title}"`, "success");
+        }
+    }
+    
     function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails) {
         if (!candidateEmail) { console.warn('⚠️ Không có email ứng viên'); return; }
-        
-        console.log('📤 Gửi thông báo đến:', candidateEmail, title);
-        
-        const newNotif = {
-            id: Date.now(),
-            userId: candidateEmail,
-            title: title,
-            content: content,
-            type: type,
-            read: false,
-            createdAt: new Date().toISOString()
-        };
+        const newNotif = { id: Date.now(), userId: candidateEmail, title: title, content: content, type: type, read: false, createdAt: new Date().toISOString() };
         if (interviewDetails) newNotif.interviewDetails = interviewDetails;
-        
         let notifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
         notifs.unshift(newNotif);
         if (notifs.length > 50) notifs.pop();
         localStorage.setItem('candidate_notifications', JSON.stringify(notifs));
-        
-        // Gửi qua BroadcastChannel để các tab khác nhận được ngay
-        try {
-            const channel = new BroadcastChannel('danangwork_notify');
-            channel.postMessage({ type: 'NEW_NOTIFICATION', data: newNotif });
-            setTimeout(() => channel.close(), 100);
-        } catch(e) { console.warn('BroadcastChannel error:', e); }
-        
-        // Dispatch storage event
-        window.dispatchEvent(new StorageEvent('storage', {
-            key: 'candidate_notifications',
-            newValue: JSON.stringify(notifs)
-        }));
-        
-        // Dispatch custom event
+        try { const channel = new BroadcastChannel('danangwork_notify'); channel.postMessage({ type: 'NEW_NOTIFICATION', data: newNotif }); setTimeout(() => channel.close(), 100); } catch(e) {}
         window.dispatchEvent(new CustomEvent('realtime-notification', { detail: newNotif }));
-        
-        console.log('✅ Đã gửi thông báo thành công');
         return newNotif;
     }
     
-    // ==================== DUYỆT HỒ SƠ ====================
     function approveCandidate(id) {
         let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
         const candidate = data.find(c => c.id === id);
         if (!candidate) { alert("❌ Không tìm thấy ứng viên!"); return; }
-        if (candidate.status !== 'pending') { alert(`⚠️ Hồ sơ này đã được ${candidate.status === 'approved' ? 'duyệt' : 'từ chối'} trước đó!`); return; }
-        
+        if (candidate.status !== 'pending') { alert(`⚠️ Hồ sơ này đã được xử lý!`); return; }
         candidate.status = "approved";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
-        
-        let applications = JSON.parse(localStorage.getItem("applications")) || [];
-        const app = applications.find(a => a.id === id || a.candidateEmail === candidate.email || a.userEmail === candidate.email);
-        if (app) { app.status = "approved"; localStorage.setItem("applications", JSON.stringify(applications)); }
-        
-        // GỬI THÔNG BÁO
-        sendNotificationToCandidate(candidate.email, "✅ Hồ sơ được duyệt", `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt. Vui lòng chờ lịch phỏng vấn.`, "approved");
-        
+        sendNotificationToCandidate(candidate.email, "✅ Hồ sơ được duyệt", `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt.`, "approved");
         renderCandidates();
         addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
-        addNotification('Hồ sơ được duyệt', `Hồ sơ của ${candidate.name} đã được duyệt`, "application");
-        
-        if (confirm(`✅ Đã duyệt hồ sơ của ${candidate.name}!\n\n📧 Thông báo đã được gửi.\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) {
+        if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) {
             openCreateInterviewModal(candidate.id, candidate.name, candidate.position);
         }
     }
     
-    // ==================== TỪ CHỐI HỒ SƠ ====================
     function rejectCandidate(id) {
         if (!confirm("❌ Từ chối hồ sơ này?")) return;
         let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
         const candidate = data.find(c => c.id === id);
         if (!candidate) { alert("❌ Không tìm thấy ứng viên!"); return; }
-        if (candidate.status !== 'pending') { alert(`⚠️ Hồ sơ này đã được xử lý!`); return; }
-        
         candidate.status = "rejected";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
-        
-        let applications = JSON.parse(localStorage.getItem("applications")) || [];
-        const app = applications.find(a => a.id === id || a.candidateEmail === candidate.email || a.userEmail === candidate.email);
-        if (app) { app.status = "rejected"; localStorage.setItem("applications", JSON.stringify(applications)); }
-        
-        // GỬI THÔNG BÁO
-        sendNotificationToCandidate(candidate.email, "❌ Hồ sơ không được duyệt", `Rất tiếc, hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} không phù hợp. Chúc bạn may mắn!`, "rejected");
-        
+        sendNotificationToCandidate(candidate.email, "❌ Hồ sơ không được duyệt", `Rất tiếc, hồ sơ của bạn không phù hợp.`, "rejected");
         renderCandidates();
         addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
-        addNotification('Hồ sơ bị từ chối', `Rất tiếc, hồ sơ của ${candidate.name} không phù hợp`, "system");
-        alert(`❌ Đã từ chối hồ sơ và gửi thông báo!`);
+        alert(`❌ Đã từ chối hồ sơ!`);
     }
     
-    // ==================== TẠO LỊCH PHỎNG VẤN ====================
     function openCreateInterviewModal(id, name, position) {
         const modal = document.getElementById("createInterviewModal");
         if (!modal) return;
         document.getElementById("createInterviewCandidateId").value = id;
         document.getElementById("createInterviewCandidate").value = name;
         document.getElementById("createInterviewPosition").value = position;
-        
-        let candidatesList = JSON.parse(localStorage.getItem("hr_candidates")) || [];
-        let applicationsList = JSON.parse(localStorage.getItem("applications")) || [];
-        const candidate = candidatesList.find(c => c.id === id);
+        let candidate = (JSON.parse(localStorage.getItem("hr_candidates")) || []).find(c => c.id === id);
         let candidateEmail = candidate?.email || '';
-        if (!candidateEmail) {
-            const app = applicationsList.find(a => a.id === id || a.candidateId === id);
-            if (app) candidateEmail = app.userEmail || app.candidateEmail || '';
-        }
-        const emailField = document.getElementById("createInterviewCandidateEmail");
-        if (emailField) emailField.value = candidateEmail;
-        
-        if (!candidateEmail) alert(`⚠️ Không tìm thấy email của ứng viên "${name}". Vui lòng nhập thủ công!`);
-        
+        document.getElementById("createInterviewCandidateEmail").value = candidateEmail;
+        if (!candidateEmail) alert(`⚠️ Không tìm thấy email!`);
         const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
         document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
         document.getElementById("createInterviewTime").value = "09:00";
@@ -354,95 +659,111 @@
         const interviewType = document.getElementById("createInterviewType").value;
         const interviewLocation = document.getElementById("createInterviewLocation").value;
         const note = document.getElementById("createInterviewNote").value;
-        
         if (!candidateName || !position || !interviewDate || !interviewTime) { alert("❌ Vui lòng điền đầy đủ!"); return; }
-        if (!candidateEmail) { alert("❌ Vui lòng nhập email của ứng viên!"); return; }
-        
         const newInterview = { id: Date.now(), candidateId: candidateId, candidateName: candidateName, candidateEmail: candidateEmail, position: position, date: interviewDate, time: interviewTime, type: interviewType, location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'), note: note || '', status: "upcoming", createdAt: new Date().toISOString() };
-        
         let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
         allInterviews.push(newInterview);
         localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
         interviews = allInterviews;
-        
         const formattedDate = new Date(interviewDate).toLocaleDateString('vi-VN');
-        
-        // GỬI THÔNG BÁO LỊCH PHỎNG VẤN
-        sendNotificationToCandidate(candidateEmail, "📅 Lịch phỏng vấn", `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}. Hình thức: ${interviewType === 'online' ? 'Online' : 'Trực tiếp'}. Địa điểm: ${newInterview.location}`, "interview", { date: interviewDate, time: interviewTime, type: interviewType, location: newInterview.location, position: position, note: note });
-        
+        sendNotificationToCandidate(candidateEmail, "📅 Lịch phỏng vấn", `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}.`, "interview", { date: interviewDate, time: interviewTime, type: interviewType, location: newInterview.location, position: position, note: note });
         renderInterviews();
         addActivity(`📅 Đã tạo lịch phỏng vấn cho ${candidateName}`);
-        addNotification("Lịch phỏng vấn mới", `Phỏng vấn ${candidateName} lúc ${interviewTime} ngày ${interviewDate}`, "interview");
         document.getElementById("createInterviewModal").classList.remove("show");
-        alert(`✅ Đã tạo lịch phỏng vấn cho ${candidateName}!\n\n📧 Thông báo đã được gửi đến email: ${candidateEmail}`);
+        alert(`✅ Đã tạo lịch phỏng vấn cho ${candidateName}!`);
         this.reset();
     });
     
     let currentStep = 1;
-    function showStep(step) { currentStep = step; document.querySelectorAll('.step-content').forEach((el, i) => { el.classList.toggle('active', i + 1 === step); }); document.querySelectorAll('.step').forEach((el, i) => { el.classList.toggle('active', i + 1 === step); }); if (step === 3) { document.getElementById('summaryTitle').innerText = document.getElementById('jobTitle').value || '---'; document.getElementById('summaryCategory').innerText = document.getElementById('jobCategory').value || '---'; document.getElementById('summarySalary').innerText = document.getElementById('jobSalary').value || '---'; document.getElementById('summaryLocation').innerText = document.getElementById('jobLocation').value || '---'; updatePriceAndDate(); } }
+    function showStep(step) { 
+        currentStep = step; 
+        document.querySelectorAll('.step-content').forEach((el, i) => { el.classList.toggle('active', i + 1 === step); }); 
+        document.querySelectorAll('.step').forEach((el, i) => { el.classList.toggle('active', i + 1 === step); }); 
+        if (step === 3) { 
+            document.getElementById('summaryTitle').innerText = document.getElementById('jobTitle').value || '---'; 
+            document.getElementById('summaryCategory').innerText = document.getElementById('jobCategory').value || '---'; 
+            document.getElementById('summarySalary').innerText = document.getElementById('jobSalary').value || '---'; 
+            document.getElementById('summaryLocation').innerText = document.getElementById('jobLocation').value || '---'; 
+            updatePriceAndDate(); 
+        } 
+    }
     
-    function renderSkillsTags() { const container = document.getElementById('skillsList'); if (!container) return; container.innerHTML = skillsList.map((skill, index) => `<span class="skill-tag-item">${escapeHtml(skill)}<i class="fa-solid fa-xmark" onclick="removeSkill(${index})"></i></span>`).join(''); document.getElementById('jobTechSkills').value = skillsList.join(','); }
+    function renderSkillsTags() { 
+        const container = document.getElementById('skillsList'); 
+        if (!container) return; 
+        container.innerHTML = skillsList.map((skill, index) => `<span class="skill-tag-item">${escapeHtml(skill)}<i class="fa-solid fa-xmark" onclick="removeSkill(${index})"></i></span>`).join(''); 
+        document.getElementById('jobTechSkills').value = skillsList.join(','); 
+    }
     window.removeSkill = function(index) { skillsList.splice(index, 1); renderSkillsTags(); };
     
     function submitJobPost() {
-    const title = document.getElementById('jobTitle').value.trim(),
-          category = document.getElementById('jobCategory').value,
-          salary = document.getElementById('jobSalary').value.trim(),
-          location = document.getElementById('jobLocation').value,
-          startDate = document.getElementById('jobStartDate').value,
-          duration = parseInt(document.getElementById('jobDuration').value),
-          shortDesc = document.getElementById('jobShortDesc').value,
-          fullDesc = document.getElementById('jobFullDesc').value,
-          requirement = document.getElementById('jobRequirement').value,
-          benefits = document.getElementById('jobBenefits').value;
-
-    if (!title || !category || !fullDesc) { 
-        alert('Vui lòng nhập đầy đủ thông tin bắt buộc!'); 
-        return; 
+        if (!validateStep1()) { showStep(1); return; }
+        if (!validateStep2()) { showStep(2); return; }
+        
+        const title = document.getElementById('jobTitle').value.trim();
+        const category = document.getElementById('jobCategory').value;
+        const salary = document.getElementById('jobSalary').value.trim();
+        const location = document.getElementById('jobLocation').value;
+        const startDate = document.getElementById('jobStartDate').value;
+        const duration = parseInt(document.getElementById('jobDuration').value);
+        const shortDesc = document.getElementById('jobShortDesc').value;
+        const fullDesc = document.getElementById('jobFullDesc').value;
+        const requirement = document.getElementById('jobRequirement').value;
+        const benefits = document.getElementById('jobBenefits').value;
+        
+        const expiryDate = getEndDate(startDate, duration);
+        const totalPrice = calculateTotalPrice(duration);
+        const transactionCode = 'DT' + Date.now();
+        
+        document.getElementById('transactionCode').innerText = transactionCode;
+        updatePriceAndDate();
+        
+        const confirmMessage = `📋 XÁC NHẬN ĐĂNG TIN\n\nThông tin tin đăng:\n• Tiêu đề: ${title}\n• Lĩnh vực: ${category}\n• Mức lương: ${salary}\n• Địa điểm: ${location}\n• Thời gian đăng: ${duration} ngày\n• Tổng phí: ${formatCurrency(totalPrice)}\n\n💰 MÃ GIAO DỊCH: ${transactionCode}\n\n🔔 VUI LÒNG CHUYỂN KHOẢN THEO MÃ TRÊN\nNgân hàng: Vietcombank\nSố TK: 1234567890\nChủ TK: DANANG WORK\nNội dung: ${transactionCode}\n\n✅ Sau khi chuyển khoản, nhấn "OK" để gửi tin đến Admin duyệt.`;
+        
+        if (!confirm(confirmMessage)) return;
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        const newJob = { 
+            id: Date.now(), 
+            title: title, 
+            field: category, 
+            salary: salary, 
+            location: location, 
+            district: location, 
+            startDate: startDate, 
+            expiryDate: expiryDate.toISOString(), 
+            duration: duration, 
+            totalPrice: totalPrice,
+            transactionCode: transactionCode,
+            desc: fullDesc, 
+            shortDesc: shortDesc, 
+            requirement: requirement, 
+            benefits: benefits, 
+            skills: [...skillsList], 
+            company: currentUser?.company?.name || 'Công ty của bạn', 
+            status: 'pending',
+            hrId: currentUser?.id,
+            hrEmail: currentUser?.email,
+            createdAt: new Date().toISOString(), 
+            postDate: new Date().toLocaleDateString('vi-VN') 
+        };
+        
+        jobs.unshift(newJob);
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        document.getElementById('jobPostModal').classList.remove('show');
+        currentJobPage = 1;
+        renderJobsWithPagination();
+        
+        addActivity(`⏳ Đã gửi tin "${title}" - Mã GD: ${transactionCode} (Chờ duyệt)`);
+        showStep(1);
+        skillsList = [];
+        renderSkillsTags();
+        document.getElementById('skillInput').value = '';
+        
+        alert(`✅ GỬI TIN THÀNH CÔNG!\n\n📌 Mã giao dịch: ${transactionCode}\n📌 Tiêu đề: ${title}\n📌 Thời gian: ${duration} ngày\n📌 Tổng phí: ${formatCurrency(totalPrice)}\n\n⏳ Tin của bạn đang chờ Admin duyệt.`);
     }
-
-    const expiryDate = getEndDate(startDate, duration);
-    const totalPrice = calculateTotalPrice(duration);
-    const transactionCode = 'DT' + Date.now();
-
-    if (!confirm(`Xác nhận gửi tin tuyển dụng? \nTrạng thái: Chờ Admin phê duyệt.`)) return;
-
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    const newJob = { 
-        id: Date.now(), 
-        title: title, 
-        field: category, 
-        salary: salary, 
-        location: location, 
-        district: location, 
-        startDate: startDate, 
-        expiryDate: expiryDate.toISOString(), 
-        duration: duration, 
-        desc: fullDesc, 
-        shortDesc: shortDesc, 
-        requirement: requirement, 
-        benefits: benefits, 
-        skills: skillsList, 
-        company: currentUser?.company?.name || 'Công ty Công nghệ Đà Nẵng', 
-        status: 'pending', // 🔥 LUÔN ĐỂ PENDING KHI MỚI TẠO
-        createdAt: new Date().toISOString(), 
-        postDate: new Date().toLocaleDateString('vi-VN') 
-    };
-
-    // LƯU VÀO 'hr_jobs' (Dùng chung cho cả Admin và HR)
-    let allJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-    allJobs.unshift(newJob);
-    localStorage.setItem("hr_jobs", JSON.stringify(allJobs));
-
-    // Reset Form
-    document.getElementById('jobPostModal').classList.remove('show');
-    if(typeof renderJobs === 'function') renderJobs();
-    
-    addActivity(`⏳ Đang chờ duyệt tin: ${title}`);
-    alert(`✅ Gửi tin thành công! \nTin tuyển dụng của bạn đang ở trạng thái "Chờ duyệt". \nVui lòng đợi Admin kiểm tra.`);
-    showStep(1);
-}
     
     function renderCandidates() {
         const container = document.getElementById("candidate-list"); if (!container) return;
@@ -464,7 +785,7 @@
         updateStats();
     }
     
-    function showCVModal(candidate) { if (!candidate) return; const modal = document.getElementById("cvModal"); document.getElementById("cvContent").innerHTML = `<div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div><div class="cv-info"><h2>${escapeHtml(candidate.name)}</h2><p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p><p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p><p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p><div class="skills-tags"><strong>Kỹ năng:</strong> ${(candidate.skills || []).map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join('')}</div><p><i class="fa-solid fa-clock"></i> <strong>Kinh nghiệm:</strong> ${escapeHtml(candidate.experience)}</p></div>`; modal.classList.add("show"); }
+    function showCVModal(candidate) { if (!candidate) return; const modal = document.getElementById("cvModal"); document.getElementById("cvContent").innerHTML = `<div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div><div class="cv-info"><h2>${escapeHtml(candidate.name)}</h2><p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p><p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p><p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p></div>`; modal.classList.add("show"); }
     
     function renderNotifications() { const container = document.getElementById("notification-list"); if (!container) return; if (notifications.length === 0) { container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>'; return; } container.innerHTML = notifications.map(n => `<div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})"><div class="notification-icon ${n.type}"><i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-calendar-check'}"></i></div><div class="notification-content"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-desc">${escapeHtml(n.content)}</div><div class="notification-time">${n.time}</div></div></div>`).join(''); updateStats(); }
     function addNotification(title, content, type = "system") { notifications.unshift({ id: Date.now(), title, content, type, time: "Vừa xong", read: false }); if (notifications.length > 30) notifications.pop(); localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
@@ -482,15 +803,23 @@
         document.getElementById("closeCvModal")?.addEventListener("click", () => document.getElementById("cvModal").classList.remove("show"));
         document.getElementById("closeCreateInterviewModal")?.addEventListener("click", () => document.getElementById("createInterviewModal").classList.remove("show"));
         document.getElementById("btn-add-job")?.addEventListener("click", () => { setMinDate(); document.getElementById("jobPostModal").classList.add("show"); showStep(1); });
-        document.getElementById("nextToStep2")?.addEventListener("click", () => showStep(2)); document.getElementById("backToStep1")?.addEventListener("click", () => showStep(1));
-        document.getElementById("nextToStep3")?.addEventListener("click", () => showStep(3)); document.getElementById("backToStep2")?.addEventListener("click", () => showStep(2));
+        document.getElementById("nextToStep2")?.addEventListener("click", () => { if (validateStep1()) showStep(2); });
+        document.getElementById("backToStep1")?.addEventListener("click", () => showStep(1));
+        document.getElementById("nextToStep3")?.addEventListener("click", () => { if (validateStep2()) { updatePriceAndDate(); showStep(3); } });
+        document.getElementById("backToStep2")?.addEventListener("click", () => showStep(2));
         document.getElementById("submitJobPost")?.addEventListener("click", submitJobPost);
-        document.getElementById("jobDuration")?.addEventListener("change", updatePriceAndDate); document.getElementById("jobStartDate")?.addEventListener("change", updatePriceAndDate);
+        document.getElementById("jobDuration")?.addEventListener("change", updatePriceAndDate);
+        document.getElementById("jobStartDate")?.addEventListener("change", updatePriceAndDate);
         document.getElementById("skillInput")?.addEventListener("keypress", function(e) { if (e.key === 'Enter') { e.preventDefault(); const skill = this.value.trim(); if (skill && !skillsList.includes(skill)) { skillsList.push(skill); renderSkillsTags(); this.value = ''; } } });
-        document.querySelectorAll(".menu-item").forEach(item => { item.addEventListener("click", function(e) { e.preventDefault(); document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active")); document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active")); this.classList.add("active"); document.getElementById(this.dataset.target).classList.add("active"); if (this.dataset.target === "view-candidates") renderCandidates(); if (this.dataset.target === "view-jobs") renderJobs(); if (this.dataset.target === "view-interviews") renderInterviews(); }); });
-        document.getElementById("candidateFilter")?.addEventListener("change", () => renderCandidates()); document.getElementById("positionFilter")?.addEventListener("change", () => renderCandidates());
+        document.getElementById("searchJobInput")?.addEventListener("input", () => { currentJobPage = 1; renderJobsWithPagination(); });
+        document.getElementById("filterJobStatus")?.addEventListener("change", () => { currentJobPage = 1; renderJobsWithPagination(); });
+        document.getElementById("resetJobSearchBtn")?.addEventListener("click", resetJobSearch);
+        
+        document.querySelectorAll(".menu-item").forEach(item => { item.addEventListener("click", function(e) { e.preventDefault(); document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active")); document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active")); this.classList.add("active"); document.getElementById(this.dataset.target).classList.add("active"); if (this.dataset.target === "view-candidates") renderCandidates(); if (this.dataset.target === "view-jobs") renderJobsWithPagination(); if (this.dataset.target === "view-interviews") renderInterviews(); }); });
+        document.getElementById("candidateFilter")?.addEventListener("change", () => renderCandidates());
+        document.getElementById("positionFilter")?.addEventListener("change", () => renderCandidates());
         document.getElementById("interviewSearch")?.addEventListener("input", () => renderInterviews());
-        document.getElementById("refreshDashboardBtn")?.addEventListener("click", () => { renderJobs(); renderCandidates(); renderInterviews(); renderActivityFeed(); addActivity("🔄 Làm mới dữ liệu"); alert("Đã làm mới!"); });
+        document.getElementById("refreshDashboardBtn")?.addEventListener("click", () => { renderJobsWithPagination(); renderCandidates(); renderInterviews(); renderActivityFeed(); addActivity("🔄 Làm mới dữ liệu"); alert("Đã làm mới!"); });
         document.getElementById("hrLogoutBtn")?.addEventListener("click", () => { localStorage.removeItem("currentUser"); window.location.href = "login.html"; });
         window.onclick = (e) => { if (e.target.classList?.contains("modal")) e.target.classList.remove("show"); };
         const positions = [...new Set(candidates.map(c => c.position))]; const select = document.getElementById("positionFilter"); if (select) positions.forEach(p => { const opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
@@ -499,15 +828,29 @@
     function init() {
         initHRAccount();
         if (!checkHRAuth()) return;
-        if (JSON.parse(localStorage.getItem("hr_jobs")) === null) localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-        if (JSON.parse(localStorage.getItem("hr_candidates")) === null) localStorage.setItem("hr_candidates", JSON.stringify(candidates));
-        renderJobs(); renderCandidates(); renderInterviews(); renderActivityFeed(); renderNotifications(); updateStats(); initEventListeners();
+        renderJobsWithPagination();
+        renderCandidates();
+        renderInterviews();
+        renderActivityFeed();
+        renderNotifications();
+        updateStats();
+        initEventListeners();
     }
     init();
     
-    window.searchCandidates = searchCandidates; window.toggleNotificationPanel = toggleNotificationPanel; window.markAllNotificationsRead = markAllNotificationsRead;
-    window.markNotificationRead = markNotificationRead; window.openCreateInterviewModal = openCreateInterviewModal; window.deleteInterview = deleteInterview;
-    window.deleteJob = deleteJob; window.removeSkill = removeSkill; window.approveCandidate = approveCandidate; window.rejectCandidate = rejectCandidate;
+    window.searchCandidates = searchCandidates;
+    window.toggleNotificationPanel = toggleNotificationPanel;
+    window.markAllNotificationsRead = markAllNotificationsRead;
+    window.markNotificationRead = markNotificationRead;
+    window.openCreateInterviewModal = openCreateInterviewModal;
+    window.deleteInterview = deleteInterview;
+    window.deleteJob = deleteJob;
+    window.removeSkill = removeSkill;
+    window.approveCandidate = approveCandidate;
+    window.rejectCandidate = rejectCandidate;
+    window.goToJobPage = goToJobPage;
+    window.resetJobSearch = resetJobSearch;
+    window.viewJobDetail = viewJobDetail;
 </script>
 </body>
 </html>

@@ -49,10 +49,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (closeBtn) closeBtn.addEventListener("click", () => modal.classList.remove("show"));
   window.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("show"); });
 
-  // VALIDATION FUNCTIONS
+  // ==================== VALIDATION FUNCTIONS ====================
   const validateFullName = (name) => {
     if (!name || name.trim().length < 2) return { valid: false, message: "Họ và tên phải có ít nhất 2 ký tự" };
     if (/\d/.test(name)) return { valid: false, message: "Họ và tên không được chứa số" };
+    if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) return { valid: false, message: "Họ và tên không được chứa ký tự đặc biệt" };
     return { valid: true };
   };
 
@@ -138,7 +139,8 @@ document.addEventListener("DOMContentLoaded", () => {
     optionsDiv.appendChild(errorSpan);
   };
 
-  // REGISTER HANDLER
+  // ==================== REGISTER HANDLER ====================
+  // QUAN TRỌNG: Sau khi đăng ký thành công, chuyển đến trang LOGIN
   const handleRegister = () => {
     clearErrors();
     
@@ -181,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (hasError) return;
 
-    // SAVE USER
+    // LƯU USER MỚI
     const newUser = {
       id: Date.now(),
       name: fullname,
@@ -191,7 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
       password: password,
       userType: userType,
       role: userType === "employer" ? "employer" : "candidate",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      status: "active"
     };
     
     if (userType === "employer") {
@@ -205,10 +208,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let users = JSON.parse(localStorage.getItem("users")) || [];
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
     
-    alert("Đăng ký thành công! Chào mừng bạn đến với Danang Work.");
-    window.location.href = "index.html";
+    // KHÔNG TỰ ĐỘNG ĐĂNG NHẬP - XÓA currentUser nếu có
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("isLoggedIn");
+    
+    // HIỂN THỊ THÔNG BÁO THÀNH CÔNG
+    alert("✅ Đăng ký thành công!\n\nVui lòng đăng nhập để tiếp tục sử dụng dịch vụ.");
+    
+    // CHUYỂN ĐẾN TRANG ĐĂNG NHẬP
+    window.location.href = "login.html";
   };
   
   registerBtn.addEventListener("click", handleRegister);

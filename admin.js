@@ -60,6 +60,223 @@ function checkAdminAuth() {
     return true;
 }
 
+// ==================== VALIDATE FULLNAME (KHÔNG SỐ) ====================
+function validateFullName(name) {
+    if (!name || name.trim().length === 0) {
+        return { valid: false, message: "Họ tên không được để trống!" };
+    }
+    if (name.trim().length < 2) {
+        return { valid: false, message: "Họ tên phải có ít nhất 2 ký tự!" };
+    }
+    if (/\d/.test(name)) {
+        return { valid: false, message: "Họ tên không được chứa số!" };
+    }
+    if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) {
+        return { valid: false, message: "Họ tên không được chứa ký tự đặc biệt!" };
+    }
+    if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸửữựỵỷỹ\s]+$/.test(name)) {
+        return { valid: false, message: "Họ tên chỉ được chứa chữ cái và dấu cách!" };
+    }
+    return { valid: true };
+}
+
+function validateFullNameRealtime() {
+    const nameField = document.getElementById("userFullname");
+    if (!nameField) return;
+    
+    const name = nameField.value.trim();
+    const validation = validateFullName(name);
+    const parent = nameField.closest('.form-group') || nameField.parentElement;
+    const oldError = parent.querySelector('.name-error');
+    
+    if (oldError) oldError.remove();
+    
+    if (!validation.valid && name.length > 0) {
+        nameField.style.border = "1px solid #ef4444";
+        const errorSpan = document.createElement("span");
+        errorSpan.className = "name-error";
+        errorSpan.style.color = "#ef4444";
+        errorSpan.style.fontSize = "11px";
+        errorSpan.style.marginTop = "4px";
+        errorSpan.style.display = "block";
+        errorSpan.innerText = validation.message;
+        parent.appendChild(errorSpan);
+    } else if (validation.valid && name.length > 0) {
+        nameField.style.border = "1px solid #22c55e";
+    } else {
+        nameField.style.border = "";
+    }
+}
+
+// ==================== VALIDATE PHONE NUMBER ====================
+function validatePhoneNumber(phone) {
+    if (!phone || phone.trim().length === 0) {
+        return { valid: false, message: "Số điện thoại không được để trống!" };
+    }
+    if (/[a-zA-Z]/.test(phone)) {
+        return { valid: false, message: "Số điện thoại không được chứa chữ cái!" };
+    }
+    if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(phone)) {
+        return { valid: false, message: "Số điện thoại không được chứa ký tự đặc biệt!" };
+    }
+    const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
+    if (!phoneRegex.test(phone)) {
+        return { valid: false, message: "Số điện thoại không hợp lệ! (VD: 0912345678)" };
+    }
+    return { valid: true };
+}
+
+function validatePhoneRealtime() {
+    const phoneField = document.getElementById("userPhone");
+    if (!phoneField) return;
+    
+    const phone = phoneField.value.trim();
+    const validation = validatePhoneNumber(phone);
+    const parent = phoneField.closest('.form-group') || phoneField.parentElement;
+    const oldError = parent.querySelector('.phone-error');
+    
+    if (oldError) oldError.remove();
+    
+    if (!validation.valid && phone.length > 0) {
+        phoneField.style.border = "1px solid #ef4444";
+        const errorSpan = document.createElement("span");
+        errorSpan.className = "phone-error";
+        errorSpan.style.color = "#ef4444";
+        errorSpan.style.fontSize = "11px";
+        errorSpan.style.marginTop = "4px";
+        errorSpan.style.display = "block";
+        errorSpan.innerText = validation.message;
+        parent.appendChild(errorSpan);
+    } else if (validation.valid && phone.length > 0) {
+        phoneField.style.border = "1px solid #22c55e";
+    } else {
+        phoneField.style.border = "";
+    }
+}
+
+// ==================== VALIDATE EDIT JOB FORM ====================
+function validateEditJobForm() {
+    const title = document.getElementById("editJobTitle").value.trim();
+    const company = document.getElementById("editJobCompany").value.trim();
+    const field = document.getElementById("editJobField").value;
+    const location = document.getElementById("editJobLocation").value.trim();
+    const salary = document.getElementById("editJobSalary").value.trim();
+    const desc = document.getElementById("editJobDesc").value.trim();
+    const status = document.getElementById("editJobStatus").value;
+    
+    let isValid = true;
+    
+    document.querySelectorAll(".edit-job-error").forEach(el => el.remove());
+    document.querySelectorAll("#editJobModal input, #editJobModal select, #editJobModal textarea").forEach(el => {
+        el.classList.remove("error");
+        el.style.border = "";
+    });
+    
+    if (!title) {
+        showEditJobError("editJobTitle", "Vui lòng nhập tiêu đề tin!");
+        isValid = false;
+    } else if (title.length < 5) {
+        showEditJobError("editJobTitle", "Tiêu đề phải có ít nhất 5 ký tự!");
+        isValid = false;
+    }
+    
+    if (!company) {
+        showEditJobError("editJobCompany", "Vui lòng nhập tên công ty!");
+        isValid = false;
+    }
+    
+    if (!field || field === "") {
+        showEditJobError("editJobField", "Vui lòng chọn lĩnh vực!");
+        isValid = false;
+    }
+    
+    if (!location) {
+        showEditJobError("editJobLocation", "Vui lòng nhập địa điểm!");
+        isValid = false;
+    }
+    
+    if (!salary) {
+        showEditJobError("editJobSalary", "Vui lòng nhập mức lương!");
+        isValid = false;
+    }
+    
+    if (!desc) {
+        showEditJobError("editJobDesc", "Vui lòng nhập mô tả công việc!");
+        isValid = false;
+    } else if (desc.length < 20) {
+        showEditJobError("editJobDesc", "Mô tả phải có ít nhất 20 ký tự!");
+        isValid = false;
+    }
+    
+    if (!status) {
+        showEditJobError("editJobStatus", "Vui lòng chọn trạng thái!");
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showEditJobError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    field.classList.add("error");
+    field.style.border = "1px solid #ef4444";
+    
+    let parent = field.closest('.form-group');
+    if (!parent) parent = field.parentElement;
+    
+    const oldError = parent.querySelector('.edit-job-error');
+    if (oldError) oldError.remove();
+    
+    const errorSpan = document.createElement("span");
+    errorSpan.className = "edit-job-error";
+    errorSpan.style.color = "#ef4444";
+    errorSpan.style.fontSize = "11px";
+    errorSpan.style.marginTop = "4px";
+    errorSpan.style.display = "block";
+    errorSpan.innerText = message;
+    parent.appendChild(errorSpan);
+}
+
+function clearEditJobErrors() {
+    document.querySelectorAll(".edit-job-error").forEach(el => el.remove());
+    document.querySelectorAll("#editJobModal input, #editJobModal select, #editJobModal textarea").forEach(el => {
+        el.classList.remove("error");
+        el.style.border = "";
+    });
+}
+
+function setupEditJobRealtimeValidation() {
+    const fields = ["editJobTitle", "editJobCompany", "editJobLocation", "editJobSalary", "editJobDesc"];
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener("input", function() {
+                const parent = this.closest('.form-group') || this.parentElement;
+                const oldError = parent.querySelector('.edit-job-error');
+                if (oldError) oldError.remove();
+                this.classList.remove("error");
+                this.style.border = "";
+            });
+        }
+    });
+    
+    const selects = ["editJobField", "editJobStatus"];
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select) {
+            select.addEventListener("change", function() {
+                const parent = this.closest('.form-group') || this.parentElement;
+                const oldError = parent.querySelector('.edit-job-error');
+                if (oldError) oldError.remove();
+                this.classList.remove("error");
+                this.style.border = "";
+            });
+        }
+    });
+}
+
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
 function syncJobsFromData() {
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
@@ -275,7 +492,7 @@ function renderTransactions(data) {
                 <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
                     ${t.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
                 </span>
-             </td>
+                </td>
         </tr>
     `).join("");
 }
@@ -313,7 +530,7 @@ function renderUsers() {
                 <button class="btn-outline btn-sm" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-warning btn-sm" onclick="toggleUserStatus(${user.id})"><i class="fas ${user.status === "banned" ? "fa-unlock" : "fa-lock"}"></i></button>
-             </td>
+                </td>
         </tr>
     `).join("");
     
@@ -331,6 +548,10 @@ function openUserModal(userId = null) {
     if (!modal) return;
     modal.classList.add("active");
     
+    const emailField = document.getElementById("userEmail");
+    const phoneField = document.getElementById("userPhone");
+    const nameField = document.getElementById("userFullname");
+    
     if (userId) {
         document.getElementById("userModalTitle").innerText = "Sửa người dùng";
         const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -343,16 +564,64 @@ function openUserModal(userId = null) {
             document.getElementById("userRole").value = user.role === "admin" ? "admin" : (user.role === "employer" || user.role === "hr" ? "employer" : "candidate");
             document.getElementById("userStatus").value = user.status === "banned" ? "banned" : "active";
             document.getElementById("userPassword").value = "";
+            
+            if (emailField) {
+                emailField.readOnly = true;
+                emailField.style.backgroundColor = "#f1f5f9";
+                emailField.style.cursor = "not-allowed";
+            }
         }
     } else {
         document.getElementById("userModalTitle").innerText = "Thêm người dùng";
         document.getElementById("userForm").reset();
         document.getElementById("userId").value = "";
         document.getElementById("userPassword").value = "";
+        
+        if (emailField) {
+            emailField.readOnly = false;
+            emailField.style.backgroundColor = "";
+            emailField.style.cursor = "text";
+        }
+    }
+    
+    if (phoneField) {
+        phoneField.removeEventListener('input', validatePhoneRealtime);
+        phoneField.addEventListener('input', validatePhoneRealtime);
+    }
+    
+    if (nameField) {
+        nameField.removeEventListener('input', validateFullNameRealtime);
+        nameField.addEventListener('input', validateFullNameRealtime);
     }
 }
 
-function closeUserModal() { document.getElementById("userModal").classList.remove("active"); }
+function closeUserModal() { 
+    const modal = document.getElementById("userModal");
+    if (modal) modal.classList.remove("active");
+    
+    const emailField = document.getElementById("userEmail");
+    if (emailField) {
+        emailField.readOnly = false;
+        emailField.style.backgroundColor = "";
+        emailField.style.cursor = "text";
+    }
+    
+    const phoneField = document.getElementById("userPhone");
+    if (phoneField) {
+        phoneField.style.border = "";
+        const phoneParent = phoneField.closest('.form-group') || phoneField.parentElement;
+        const phoneError = phoneParent.querySelector('.phone-error');
+        if (phoneError) phoneError.remove();
+    }
+    
+    const nameField = document.getElementById("userFullname");
+    if (nameField) {
+        nameField.style.border = "";
+        const nameParent = nameField.closest('.form-group') || nameField.parentElement;
+        const nameError = nameParent.querySelector('.name-error');
+        if (nameError) nameError.remove();
+    }
+}
 
 function saveUser() {
     const id = document.getElementById("userId").value;
@@ -362,6 +631,20 @@ function saveUser() {
     const role = document.getElementById("userRole").value;
     const status = document.getElementById("userStatus").value;
     const password = document.getElementById("userPassword").value;
+    
+    const nameValidation = validateFullName(fullname);
+    if (!nameValidation.valid) {
+        alert(`❌ ${nameValidation.message}`);
+        document.getElementById("userFullname").focus();
+        return;
+    }
+    
+    const phoneValidation = validatePhoneNumber(phone);
+    if (!phoneValidation.valid) {
+        alert(`❌ ${phoneValidation.message}`);
+        document.getElementById("userPhone").focus();
+        return;
+    }
     
     let users = JSON.parse(localStorage.getItem("users")) || [];
     
@@ -376,6 +659,11 @@ function saveUser() {
             if (password) users[index].password = password;
         }
     } else {
+        if (users.some(u => u.email === email)) {
+            alert("❌ Email đã tồn tại trong hệ thống!");
+            document.getElementById("userEmail").focus();
+            return;
+        }
         const newUser = {
             id: Date.now(),
             name: fullname,
@@ -423,6 +711,12 @@ function renderJobs() {
     const tbody = document.getElementById("jobList");
     if (!tbody) return;
     
+    if (paginated.length === 0 && filtered.length > 0) {
+        currentJobPage = Math.max(1, Math.ceil(filtered.length / jobsPerPage));
+        renderJobs();
+        return;
+    }
+    
     tbody.innerHTML = paginated.map(job => `
         <tr>
             <td>${job.id}</td>
@@ -439,7 +733,7 @@ function renderJobs() {
                 <button class="btn-outline btn-sm" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-primary btn-sm" onclick="toggleJobStatus(${job.id})"><i class="fas ${job.status === "active" ? "fa-eye-slash" : "fa-eye"}"></i> ${job.status === "active" ? "Ẩn" : "Hiện"}</button>
-             </td>
+                </td>
         </tr>
     `).join("");
     
@@ -471,13 +765,29 @@ function editJob(id) {
             fieldSelect.innerHTML = industries.map(ind => `<option value="${escapeHtml(ind)}" ${job.field === ind ? 'selected' : ''}>${escapeHtml(ind)}</option>`).join("");
         }
         
+        clearEditJobErrors();
+        setupEditJobRealtimeValidation();
+        
         document.getElementById("editJobModal").classList.add("active");
     }
 }
 
-function closeEditJobModal() { document.getElementById("editJobModal").classList.remove("active"); editingJobId = null; }
+function closeEditJobModal() { 
+    document.getElementById("editJobModal").classList.remove("active"); 
+    editingJobId = null;
+    clearEditJobErrors();
+}
 
 function updateJob() {
+    if (!validateEditJobForm()) {
+        const firstError = document.querySelector('.edit-job-error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        alert("❌ Vui lòng điền đầy đủ thông tin bắt buộc!");
+        return;
+    }
+    
     if (!editingJobId) return;
     let jobs = syncJobsFromData();
     
@@ -566,14 +876,13 @@ function approveJob() {
         return;
     }
     
-    let jobs = syncJobsFromData();  // lấy từ hr_jobs
+    let jobs = syncJobsFromData();
     const index = jobs.findIndex(j => j.id == currentApproveJobId);
     
     if (index !== -1) {
         jobs[index].status = "active";
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
-        // 🔥 QUAN TRỌNG: Đồng bộ vào allJobs (cho trang người dùng)
         if (typeof allJobs !== 'undefined') {
             const existingIndex = allJobs.findIndex(j => j.id == currentApproveJobId);
             if (existingIndex !== -1) {
@@ -581,10 +890,8 @@ function approveJob() {
             } else {
                 allJobs.unshift(jobs[index]);
             }
-            localStorage.setItem("allJobs", JSON.stringify(allJobs));
         }
         
-        // 🔥 Lưu vào cả localStorage "jobs" để đồng bộ với các trang khác
         let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
         const globalIndex = globalJobs.findIndex(j => j.id == currentApproveJobId);
         if (globalIndex !== -1) {
@@ -594,7 +901,6 @@ function approveJob() {
         }
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
-        // 🔥 Gửi thông báo đến các tab khác
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'hr_jobs',
             newValue: JSON.stringify(jobs)
@@ -656,7 +962,7 @@ function renderCompanies() {
     if (!tbody) return;
     
     tbody.innerHTML = filtered.map(company => `
-        <table>
+        <tr>
             <td>${company.id}</td>
             <td><div class="company-logo-cell"><img src="${company.logo || 'https://placehold.co/40'}" style="width:35px;height:35px;object-fit:contain; border-radius: 8px;" onerror="this.src='https://placehold.co/40'"></div></td>
             <td><strong>${escapeHtml(company.name)}</strong></td>
@@ -669,7 +975,7 @@ function renderCompanies() {
             <td>
                 <button class="btn-outline btn-sm" onclick="editCompany(${company.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn-danger btn-sm" onclick="deleteCompany(${company.id})"><i class="fas fa-trash"></i></button>
-             </td>
+              </table>
         </tr>
     `).join("");
 }
@@ -863,7 +1169,6 @@ function addCategory(type) {
         renderCategories();
         alert(`✅ Đã thêm "${name}" vào danh mục!`);
         
-        // 🔥 Kích hoạt storage event để các tab khác cập nhật
         window.dispatchEvent(new StorageEvent('storage', {
             key: `${type}s`,
             newValue: JSON.stringify(list)
@@ -880,7 +1185,6 @@ function deleteCategory(type, index) {
         renderCategories();
         alert("Đã xóa danh mục!");
         
-        // 🔥 Kích hoạt storage event để các tab khác cập nhật
         window.dispatchEvent(new StorageEvent('storage', {
             key: `${type}s`,
             newValue: JSON.stringify(list)
