@@ -817,8 +817,39 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
     
     function showCVModal(candidate) { if (!candidate) return; const modal = document.getElementById("cvModal"); document.getElementById("cvContent").innerHTML = `<div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div><div class="cv-info"><h2>${escapeHtml(candidate.name)}</h2><p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p><p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p><p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p></div>`; modal.classList.add("show"); }
     
-    function renderNotifications() { const container = document.getElementById("notification-list"); if (!container) return; if (notifications.length === 0) { container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>'; return; } container.innerHTML = notifications.map(n => `<div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})"><div class="notification-icon ${n.type}"><i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-calendar-check'}"></i></div><div class="notification-content"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-desc">${escapeHtml(n.content)}</div><div class="notification-time">${n.time}</div></div></div>`).join(''); updateStats(); }
-    function addNotification(title, content, type = "system") { notifications.unshift({ id: Date.now(), title, content, type, time: "Vừa xong", read: false }); if (notifications.length > 30) notifications.pop(); localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
+   function renderNotifications() {
+    const container = document.getElementById("notification-list");
+    if (!container) return;
+    
+    // Luôn lấy dữ liệu mới nhất từ Storage
+    notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    
+    if (notifications.length === 0) {
+        container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>';
+        return;
+    }
+    
+    container.innerHTML = notifications.map(n => `
+        <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
+            <div class="notification-icon ${n.type || 'system'}">
+                <i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-bell'}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${escapeHtml(n.title)}</div>
+                <div class="notification-desc">${escapeHtml(n.content)}</div>
+                <div class="notification-time">${n.time}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Cập nhật con số đỏ trên quả chuông
+    const unreadCount = notifications.filter(n => !n.read).length;
+    const badge = document.getElementById("notifBadge");
+    if (badge) {
+        badge.innerText = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
+}
     function markNotificationRead(id) { const n = notifications.find(n => n.id === id); if (n) n.read = true; localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
     function markAllNotificationsRead() { notifications.forEach(n => n.read = true); localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
     function toggleNotificationPanel() { document.getElementById("notificationPanel")?.classList.toggle("show"); }
@@ -881,6 +912,97 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
     window.goToJobPage = goToJobPage;
     window.resetJobSearch = resetJobSearch;
     window.viewJobDetail = viewJobDetail;
+
+
+
+
+
+
+// Bổ sung thêm vào hàm initAdminStorageListener hiện có hoặc chèn mới
+function initHRNotificationListener() {
+    window.addEventListener("storage", (e) => {
+        if (e.key === "hr_notifications") {
+            // Lấy dữ liệu mới nhất từ local
+            notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+            // Render lại danh sách thông báo và cập nhật con số trên chuông
+            renderNotifications();
+            updateStats();
+            
+            // Hiện một thông báo nhanh (Toast) để HR biết có tin mới
+            const latest = notifications[0];
+            if (latest && !latest.read) {
+                showToast(`Thông báo mới: ${latest.title}`, "info");
+            }
+        }
+    });
+}
+
+// Gọi hàm này khi khởi tạo trang
+initHRNotificationListener();
+
+
+
+
+
+
+
+
+// Thay thế toàn bộ đoạn code từ "initHRNotificationListener" đến hết file bằng đoạn này:
+
+function initAdminActionListeners() {
+    window.addEventListener("storage", (e) => {
+        // 1. Khi Admin xóa tin
+        if (e.key === "hr_jobs") {
+            console.log("⚡ Admin vừa cập nhật danh sách tin!");
+            // Cập nhật lại dữ liệu mới từ máy vào biến jobs đang chạy
+            const freshJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+            jobs = freshJobs; 
+            
+            // Vẽ lại giao diện ngay lập tức
+            renderJobsWithPagination(); 
+            updateStats();
+        }
+        
+        // 2. Khi Admin gửi thông báo mới
+        if (e.key === "hr_notifications") {
+            console.log("🔔 Có thông báo mới từ Admin!");
+            notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+            renderNotifications();
+            updateStats();
+            
+            // Hiện Toast báo hiệu
+            const latest = notifications[0];
+            if (latest && !latest.read) {
+                showToast(latest.title, "success");
+            }
+        }
+    });
+}
+
+// Ghi đè lại hàm khởi tạo duy nhất một lần để tránh xung đột
+const startApp = () => {
+    initHRAccount();
+    if (!checkHRAuth()) return;
+    
+    // Load dữ liệu ban đầu
+    jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    
+    renderJobsWithPagination();
+    renderCandidates();
+    renderInterviews();
+    renderActivityFeed();
+    renderNotifications();
+    updateStats();
+    initEventListeners();
+    
+    // Kích hoạt bộ lắng nghe Realtime
+    initAdminActionListeners();
+};
+
+// Chạy ứng dụng
+startApp();
+
 </script>
 </body>
 </html>

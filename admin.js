@@ -311,59 +311,43 @@ function renderDeleteRequests() {
 
 // Duyệt yêu cầu xóa
 function approveDeleteRequest(notifId, jobId) {
-    if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?\n\nSau khi xóa, tin sẽ biến mất khỏi hệ thống!")) return;
+    if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?")) return;
     
-    // 1. Xóa khỏi hr_jobs
+    // 1. Xóa khỏi hr_jobs (Dữ liệu gốc của HR)
     let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-    const deletedJob = hrJobs.find(j => j.id == jobId);
-    hrJobs = hrJobs.filter(j => j.id != jobId);
+    const deletedJob = hrJobs.find(j => String(j.id) === String(jobId));
+    hrJobs = hrJobs.filter(j => String(j.id) !== String(jobId));
     localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
     
-    // 2. Xóa khỏi jobs (global)
-    let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-    globalJobs = globalJobs.filter(j => j.id != jobId);
-    localStorage.setItem("jobs", JSON.stringify(globalJobs));
+    // 2. Xóa yêu cầu trong danh sách jobDeleteRequests (Để Admin không thấy nữa)
+    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+    requests = requests.filter(r => String(r.jobId) !== String(jobId));
+    localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
     
-    // 3. Xóa khỏi allJobs (nếu có)
-    if (typeof allJobs !== 'undefined') {
-        const index = allJobs.findIndex(j => j.id == jobId);
-        if (index !== -1) allJobs.splice(index, 1);
-    }
-    
-    // 4. Cập nhật thông báo Admin
-    let notifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
-    const notifIndex = notifications.findIndex(n => n.id == notifId);
-    if (notifIndex !== -1) {
-        notifications[notifIndex].resolved = true;
-        notifications[notifIndex].status = "approved";
-        notifications[notifIndex].resolvedAt = new Date().toISOString();
-    }
-    localStorage.setItem("admin_notifications", JSON.stringify(notifications));
-    
-    // 5. Gửi thông báo cho HR
+    // 3. Gửi thông báo VỀ cho HR
     let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     hrNotifications.unshift({
         id: Date.now(),
-        title: "✅ Đã duyệt xóa tin",
-        content: `Yêu cầu xóa tin "${deletedJob?.title || 'không xác định'}" đã được Admin duyệt. Tin đã được xóa khỏi hệ thống.`,
-        type: "delete_approved",
-        time: "Vừa xong",
+        title: "✅ Tin tuyển dụng đã được xóa",
+        content: `Admin đã phê duyệt yêu cầu xóa tin: "${deletedJob?.title || 'Tin tuyển dụng'}".`,
+        type: "system",
+        time: new Date().toLocaleTimeString('vi-VN'),
         read: false
     });
     localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
     
-    // 6. Refresh giao diện
-    renderDeleteRequests();
-    renderJobs();
-    updateStats();
-    
-    // 7. Kích hoạt storage event để các tab khác cập nhật
+    // 4. Kích hoạt sự kiện để tab HR cập nhật ngay lập tức
     window.dispatchEvent(new StorageEvent('storage', {
         key: 'hr_jobs',
         newValue: JSON.stringify(hrJobs)
     }));
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'hr_notifications',
+        newValue: JSON.stringify(hrNotifications)
+    }));
     
-    alert("✅ Đã duyệt xóa tin thành công!");
+    alert("✅ Đã xóa tin và gửi thông báo cho HR!");
+    renderDeleteRequests(); // Cập nhật lại giao diện Admin
 }
 
 // Từ chối yêu cầu xóa
@@ -1878,45 +1862,44 @@ function renderDeleteRequests() {
 // ====================== DUYỆT XÓA ======================
 
 function confirmDeleteJob(jobId, requestIndex) {
-
-    const confirmDelete = confirm(
-        'Xác nhận xóa vĩnh viễn tin tuyển dụng này?'
-    );
-
+    const confirmDelete = confirm('Xác nhận xóa vĩnh viễn tin tuyển dụng này?');
     if (!confirmDelete) return;
 
-    // ===== XÓA REQUEST =====
-    let requests = JSON.parse(
-        localStorage.getItem('jobDeleteRequests')
-    ) || [];
-
+    // 1. Xóa yêu cầu xóa (Requests)
+    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
     requests.splice(requestIndex, 1);
+    localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
 
-    localStorage.setItem(
-        'jobDeleteRequests',
-        JSON.stringify(requests)
-    );
+    // 2. Xóa tin trong danh sách jobs chung (Dùng cho trang chủ)
+    let allJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    allJobs = allJobs.filter(job => String(job.id) !== String(jobId));
+    localStorage.setItem('jobs', JSON.stringify(allJobs));
 
-    // ===== XÓA JOB =====
-    let allJobs = JSON.parse(
-        localStorage.getItem('jobs')
-    ) || [];
+    // 3. Xóa tin trong danh sách hr_jobs (Dùng cho HR Dashboard) - QUAN TRỌNG
+    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    const jobInfo = hrJobs.find(j => String(j.id) === String(jobId));
+    hrJobs = hrJobs.filter(job => String(job.id) !== String(jobId));
+    localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
 
-    allJobs = allJobs.filter(job =>
-        String(job.id) !== String(jobId)
-    );
+    // 4. Gửi thông báo cho HR
+    let hrNotifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+    hrNotifications.unshift({
+        id: Date.now(),
+        title: "✅ Tin đã được xóa",
+        content: `Tin tuyển dụng "${jobInfo?.title || 'của bạn'}" đã được Admin phê duyệt xóa thành công.`,
+        type: "system",
+        time: new Date().toLocaleTimeString('vi-VN'),
+        read: false
+    });
+    localStorage.setItem('hr_notifications', JSON.stringify(hrNotifications));
 
-    localStorage.setItem(
-        'jobs',
-        JSON.stringify(allJobs)
-    );
+    // 5. KÍCH HOẠT REALTIME
+    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_jobs' }));
+    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_notifications' }));
 
-    alert('Đã xóa tin tuyển dụng thành công!');
-
+    alert('Đã duyệt xóa và thông báo cho HR!');
     renderDeleteRequests();
-
 }
-
 
 
 // ====================== TỪ CHỐI ======================
@@ -1957,3 +1940,22 @@ function handleAdminLogout() {
     }
 
 }
+// ... (đoạn code xóa job giữ nguyên)
+
+// 5. Gửi thông báo cho HR (Cập nhật lại để khớp format của HR)
+let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+hrNotifications.unshift({
+    id: Date.now(),
+    title: "✅ Tin tuyển dụng đã bị xóa",
+    content: `Yêu cầu xóa tin "${deletedJob?.title || 'Tin tuyển dụng'}" đã được Admin phê duyệt và gỡ bỏ khỏi hệ thống.`,
+    type: "system", // Dùng 'system' để hiện icon chuông mặc định của HR
+    time: new Date().toLocaleTimeString('vi-VN'),
+    read: false
+});
+localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+
+// 6. Quan trọng: Tạo một sự kiện để tab HR biết mà cập nhật ngay lập tức
+window.dispatchEvent(new StorageEvent('storage', {
+    key: 'hr_notifications',
+    newValue: JSON.stringify(hrNotifications)
+}));
