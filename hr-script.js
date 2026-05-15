@@ -260,15 +260,78 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
     }
     
-    window.deleteJob = function(idx) {
-        if (confirm("Xóa tin này?")) {
-            const title = jobs[idx].title;
-            jobs.splice(idx, 1);
-            renderJobs();
-            addActivity('🗑️ Xóa tin: ' + title);
-            addNotification('Đã xóa tin tuyển dụng', `Tin "${title}" đã được xóa khỏi hệ thống`, "system");
-        }
+    // ================= GỬI YÊU CẦU XÓA =================
+
+function requestDelete(jobId) {
+
+    // Lấy danh sách jobs
+    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+
+    // Tìm job cần xóa
+    const job = jobs.find(j => String(j.id) === String(jobId));
+
+    if (!job) {
+        alert('Không tìm thấy tin tuyển dụng!');
+        return;
+    }
+
+    // Nhập lý do
+    const reason = prompt('Nhập lý do xóa tin tuyển dụng:');
+
+    if (!reason || reason.trim() === '') {
+        alert('Vui lòng nhập lý do!');
+        return;
+    }
+
+    // Lấy danh sách yêu cầu cũ
+    let requests = JSON.parse(
+        localStorage.getItem('jobDeleteRequests')
+    ) || [];
+
+    // Kiểm tra đã gửi chưa
+    const alreadySent = requests.some(
+        r => String(r.jobId) === String(jobId)
+    );
+
+    if (alreadySent) {
+        alert('Yêu cầu xóa đã được gửi trước đó!');
+        return;
+    }
+
+    // Tạo request mới
+    const newRequest = {
+
+        jobId: job.id,
+
+        jobTitle:
+            job.title ||
+            job.jobTitle ||
+            'Tin tuyển dụng',
+
+        companyName:
+            job.company ||
+            job.companyName ||
+            'Công ty',
+
+        reason: reason,
+
+        requestDate: new Date().toLocaleString('vi-VN')
+
     };
+
+    // Thêm vào danh sách
+    requests.push(newRequest);
+
+    // Lưu localStorage
+    localStorage.setItem(
+        'jobDeleteRequests',
+        JSON.stringify(requests)
+    );
+
+    console.log('Đã gửi yêu cầu:', newRequest);
+
+    alert('Đã gửi yêu cầu xóa đến Admin!');
+}
     
     // ==================== RENDER CANDIDATES ====================
     function renderCandidates() {
@@ -692,3 +755,4 @@ document.addEventListener("DOMContentLoaded", () => {
         positions.forEach(pos => { const option = document.createElement("option"); option.value = pos; option.textContent = pos; positionFilter.appendChild(option); });
     }
 });
+

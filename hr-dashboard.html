@@ -431,44 +431,52 @@
     }
     
     // ==================== YÊU CẦU XÓA TIN (GỬI ĐẾN ADMIN) ====================
-    function requestDeleteJob(jobId) {
-        const job = jobs.find(j => j.id == jobId);
-        if (!job) return;
-        
-        const reason = prompt(`Nhập lý do xóa tin tuyển dụng:\n\nTiêu đề: ${job.title}\nCông ty: ${job.company}`, "Tin không còn phù hợp");
-        if (!reason) return;
-        
-        if (confirm(`Xác nhận gửi yêu cầu xóa tin "${job.title}"?\n\nSau khi gửi, Admin sẽ xem xét và phê duyệt.`)) {
-            job.status = "pending_delete";
-            job.deleteRequest = {
-                requestedAt: new Date().toISOString(),
-                reason: reason,
-                requestedBy: currentUser?.email || 'HR',
-                jobTitle: job.title,
-                jobCompany: job.company
-            };
-            
-            localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-            
-            let adminNotifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
-            adminNotifications.unshift({
-                id: Date.now(),
-                title: "🗑️ Yêu cầu xóa tin tuyển dụng",
-                content: `HR yêu cầu xóa tin "${job.title}" tại ${job.company}. Lý do: ${reason}`,
-                type: "delete_request",
-                jobId: job.id,
-                jobTitle: job.title,
-                jobCompany: job.company,
-                reason: reason,
-                read: false,
-                createdAt: new Date().toISOString()
-            });
-            localStorage.setItem("admin_notifications", JSON.stringify(adminNotifications));
-            
-            renderJobsWithPagination();
-            alert(`✅ Đã gửi yêu cầu xóa tin!\n\nTin "${job.title}" đang chờ Admin phê duyệt.`);
-        }
+    // ================= GỬI YÊU CẦU XÓA =================
+
+// Đổi tên từ requestDelete thành requestDeleteJob để khớp với lệnh gọi trong HTML
+window.requestDeleteJob = function(jobId) {
+    // 1. Lấy danh sách jobs từ hr_jobs (đây là key bạn đang dùng cho HR)
+    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    const jobIndex = hrJobs.findIndex(j => String(j.id) === String(jobId));
+
+    if (jobIndex === -1) {
+        alert('Không tìm thấy tin tuyển dụng!');
+        return;
     }
+
+    const reason = prompt('Nhập lý do xóa tin tuyển dụng:');
+    if (!reason || reason.trim() === '') {
+        alert('Vui lòng nhập lý do!');
+        return;
+    }
+
+    // 2. Cập nhật trạng thái tin tuyển dụng thành 'pending_delete'
+    hrJobs[jobIndex].status = 'pending_delete';
+    localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
+    jobs = hrJobs; // Cập nhật biến cục bộ
+
+    // 3. Lưu yêu cầu vào danh sách gửi Admin
+    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+    const alreadySent = requests.some(r => String(r.jobId) === String(jobId));
+
+    if (!alreadySent) {
+        const newRequest = {
+            jobId: jobId,
+            jobTitle: hrJobs[jobIndex].title,
+            companyName: hrJobs[jobIndex].company,
+            reason: reason,
+            requestDate: new Date().toLocaleString('vi-VN'),
+            status: 'pending'
+        };
+        requests.push(newRequest);
+        localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
+    }
+
+    // 4. Render lại giao diện và thông báo
+    renderJobsWithPagination();
+    addActivity(`🗑️ Đã gửi yêu cầu xóa tin: ${hrJobs[jobIndex].title}`);
+    alert('Đã gửi yêu cầu xóa đến Admin! Trạng thái tin đã chuyển sang "Chờ xóa".');
+};
     
     function renderJobsWithPagination() {
         const container = document.getElementById("job-cards-container");
@@ -546,20 +554,24 @@
                 statusClass = 'tag-warning';
             }
             
-            return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
-                <div class="job-card-header">
-                    <div class="job-card-title">${escapeHtml(job.title)}</div>
-                    <div class="job-card-salary">${escapeHtml(job.salary)}</div>
-                </div>
-                <div class="job-card-details">
-                    <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
-                    <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
-                </div>
-                <div class="job-card-footer">
-                    <span class="tag ${statusClass}">${statusText}</span>
-                    ${job.status !== 'pending_delete' ? `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>` : '<span class="tag tag-warning">⏳ Đang chờ duyệt xóa</span>'}
-                </div>
-            </div>`;
+           // Tìm đoạn này trong renderJobsWithPagination và thay thế:
+return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
+    <div class="job-card-header">
+        <div class="job-card-title">${escapeHtml(job.title)}</div>
+        <div class="job-card-salary">${escapeHtml(job.salary)}</div>
+    </div>
+    <div class="job-card-details">
+        <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
+        <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
+    </div>
+    <div class="job-card-footer">
+        <span class="tag ${statusClass}">${statusText}</span>
+        ${job.status === 'pending_delete' 
+            ? '<span class="tag tag-warning" style="background:#fef3c7; color:#92400e;">⏳ Đang chờ Admin xóa</span>' 
+            : `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>`
+        }
+    </div>
+</div>`;
         }).join('');
         
         if (totalPages > 1) {

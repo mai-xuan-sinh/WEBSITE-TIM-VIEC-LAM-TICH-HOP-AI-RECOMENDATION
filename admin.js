@@ -1667,3 +1667,293 @@ window.handleAdminLogout = handleAdminLogout;
 window.approveDeleteRequest = approveDeleteRequest;
 window.rejectDeleteRequest = rejectDeleteRequest;
 window.renderDeleteRequests = renderDeleteRequests;
+
+
+
+
+
+
+
+
+
+
+// ====================== ADMIN DASHBOARD ======================
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // KHÔNG dùng dữ liệu fake nữa
+    // initSampleData();
+
+    // ================= TAB =================
+    const menuItems = document.querySelectorAll('.sidebar-menu li');
+    const tabs = document.querySelectorAll('.tab-content');
+
+    menuItems.forEach(item => {
+
+        item.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            const tabId = this.getAttribute('data-tab');
+
+            // Active menu
+            menuItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show tab
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+
+                if (tab.id === `tab-${tabId}`) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Title
+            const title = this.querySelector('span').innerText;
+            document.getElementById('pageTitle').innerText = title;
+
+            // Render yêu cầu xóa
+            if (tabId === 'deleterequests') {
+                renderDeleteRequests();
+            }
+
+        });
+
+    });
+
+    // ================= DATE =================
+    const now = new Date();
+
+    document.getElementById('currentDate').innerText =
+        now.toLocaleDateString('vi-VN', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+    // ================= LOAD LẦN ĐẦU =================
+    renderDeleteRequests();
+
+    // ================= REALTIME UPDATE =================
+    window.addEventListener('storage', function (event) {
+
+        if (event.key === 'jobDeleteRequests') {
+            renderDeleteRequests();
+        }
+
+    });
+
+});
+
+
+// ====================== RENDER YÊU CẦU XÓA ======================
+
+function renderDeleteRequests() {
+
+    const container = document.getElementById('deleteRequestsList');
+
+    if (!container) return;
+
+    let requests = [];
+
+    try {
+
+        requests = JSON.parse(
+            localStorage.getItem('jobDeleteRequests')
+        ) || [];
+
+    } catch (error) {
+
+        console.error('Lỗi đọc yêu cầu xóa:', error);
+
+        requests = [];
+
+    }
+
+    // Không có dữ liệu
+    if (requests.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-state" style="text-align:center;padding:50px;color:#666;">
+                <i class="fas fa-inbox" style="font-size:48px;margin-bottom:12px;"></i>
+                <p>Hiện chưa có yêu cầu xóa nào.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tin tuyển dụng</th>
+                    <th>Công ty</th>
+                    <th>Lý do</th>
+                    <th>Ngày gửi</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    requests.forEach((req, index) => {
+
+        html += `
+            <tr>
+                <td>#${req.jobId || '---'}</td>
+
+                <td>
+                    <strong>${req.jobTitle || 'Không có tiêu đề'}</strong>
+                </td>
+
+                <td>
+                    ${req.companyName || 'Không rõ công ty'}
+                </td>
+
+                <td>
+                    <span style="color:#e74c3c;">
+                        ${req.reason || 'Không có lý do'}
+                    </span>
+                </td>
+
+                <td>
+                    ${req.requestDate || '---'}
+                </td>
+
+                <td style="white-space:nowrap;">
+
+                    <button
+                        class="btn-primary"
+                        onclick="confirmDeleteJob('${req.jobId}', ${index})"
+                        style="
+                            padding:6px 10px;
+                            border:none;
+                            border-radius:6px;
+                            cursor:pointer;
+                            background:#e74c3c;
+                            color:white;
+                            font-size:12px;
+                        "
+                    >
+                        <i class="fas fa-check"></i>
+                        Duyệt xóa
+                    </button>
+
+                    <button
+                        class="btn-outline"
+                        onclick="rejectDeleteRequest(${index})"
+                        style="
+                            padding:6px 10px;
+                            border:1px solid #ccc;
+                            border-radius:6px;
+                            cursor:pointer;
+                            margin-left:6px;
+                            font-size:12px;
+                        "
+                    >
+                        Từ chối
+                    </button>
+
+                </td>
+            </tr>
+        `;
+
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+
+}
+
+
+
+// ====================== DUYỆT XÓA ======================
+
+function confirmDeleteJob(jobId, requestIndex) {
+
+    const confirmDelete = confirm(
+        'Xác nhận xóa vĩnh viễn tin tuyển dụng này?'
+    );
+
+    if (!confirmDelete) return;
+
+    // ===== XÓA REQUEST =====
+    let requests = JSON.parse(
+        localStorage.getItem('jobDeleteRequests')
+    ) || [];
+
+    requests.splice(requestIndex, 1);
+
+    localStorage.setItem(
+        'jobDeleteRequests',
+        JSON.stringify(requests)
+    );
+
+    // ===== XÓA JOB =====
+    let allJobs = JSON.parse(
+        localStorage.getItem('jobs')
+    ) || [];
+
+    allJobs = allJobs.filter(job =>
+        String(job.id) !== String(jobId)
+    );
+
+    localStorage.setItem(
+        'jobs',
+        JSON.stringify(allJobs)
+    );
+
+    alert('Đã xóa tin tuyển dụng thành công!');
+
+    renderDeleteRequests();
+
+}
+
+
+
+// ====================== TỪ CHỐI ======================
+
+function rejectDeleteRequest(index) {
+
+    const confirmReject = confirm(
+        'Bạn muốn từ chối yêu cầu này?'
+    );
+
+    if (!confirmReject) return;
+
+    let requests = JSON.parse(
+        localStorage.getItem('jobDeleteRequests')
+    ) || [];
+
+    requests.splice(index, 1);
+
+    localStorage.setItem(
+        'jobDeleteRequests',
+        JSON.stringify(requests)
+    );
+
+    renderDeleteRequests();
+
+}
+
+
+
+// ====================== LOGOUT ======================
+
+function handleAdminLogout() {
+
+    if (confirm('Bạn muốn đăng xuất?')) {
+
+        window.location.href = 'login.html';
+
+    }
+
+}
