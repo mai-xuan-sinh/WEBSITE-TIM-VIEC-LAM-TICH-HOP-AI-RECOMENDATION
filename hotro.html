@@ -1,358 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đà Nẵng Work - Hỗ trợ</title>
-  <link rel="stylesheet" href="floating.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #1f2937; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đà Nẵng Work - Hỗ trợ</title>
+
+    <!-- FONT & ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    /* HEADER */
-    .top-header {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      backdrop-filter: blur(18px);
-      background: rgba(255,255,255,0.95);
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .header-flex {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      min-height: 70px;
-      max-width: 1320px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-    .logo-area h1 {
-      font-size: 24px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .nav-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-    .nav-links a {
-      font-size: 14px;
-      font-weight: 600;
-      color: #334155;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 30px;
-      transition: 0.25s;
-    }
-    .nav-links a:hover { background: #f1f5f9; color: #0ea5e9; }
-    .nav-links a.active { color: #0ea5e9 !important; background: #eff6ff; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    #authButtons { display: flex; gap: 8px; }
-    #authButtons a {
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    #authButtons a:first-child { background: #e0f2fe; color: #0369a1; }
-    #authButtons a:last-child { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #f1f5f9;
-      padding: 5px 12px;
-      border-radius: 40px;
-    }
-    .user-avatar {
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-    }
-    .logout-btn { background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 30px; cursor: pointer; }
-    #userBox { display: none; }
-
-    /* HERO */
-    .hero {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      color: white;
-      text-align: center;
-      padding: 80px 20px;
-    }
-    .hero .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 20px;
-      border-radius: 30px;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .hero h1 { font-size: 42px; margin-bottom: 20px; }
-    .hero h1 .highlight { color: #facc15; }
-    .hero p { max-width: 600px; margin: 0 auto; color: #cbd5e1; }
-
-    /* CONTAINER */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-    .section-padding { padding: 60px 0; }
-    .section-header { text-align: center; margin-bottom: 40px; }
-    .section-header h2 { font-size: 32px; margin-bottom: 10px; }
-    .section-header p { color: #6b7280; }
-
-    /* GRID */
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-    .card {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      border: 1px solid #e5e7eb;
-      transition: 0.3s;
-      text-align: center;
-    }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    .icon-box {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-    }
-    .bg-green { background: #dcfce7; color: #10b981; }
-    .bg-blue { background: #dbeafe; color: #3b82f6; }
-    .bg-purple { background: #f3e8ff; color: #8b5cf6; }
-    .card h3 { font-size: 18px; margin-bottom: 8px; }
-    .card p { font-size: 14px; color: #6b7280; margin-bottom: 12px; }
-    .btn-gradient {
-      background: linear-gradient(135deg, #4f46e5, #9333ea);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .search-box {
-      max-width: 500px;
-      margin: 0 auto 30px;
-      position: relative;
-    }
-    .search-box input {
-      width: 100%;
-      padding: 14px 20px 14px 45px;
-      border: 1px solid #e5e7eb;
-      border-radius: 40px;
-      outline: none;
-    }
-    .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
-    .tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
-    .tag {
-      background: white;
-      border: 1px solid #e5e7eb;
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .tag.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-    .accordion-list { max-width: 800px; margin: 0 auto 40px; }
-    details {
-      background: white;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #e5e7eb;
-    }
-    summary {
-      padding: 18px 24px;
-      font-weight: 600;
-      cursor: pointer;
-      list-style: none;
-    }
-    .accordion-content { padding: 0 24px 20px; color: #6b7280; }
-    .still-questions {
-      text-align: center;
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin: 40px 0;
-    }
-    .statistics {
-      background: #0f172a;
-      padding: 80px 0;
-      color: white;
-    }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; text-align: center; }
-    .stat-item h3 { font-size: 32px; color: #3b82f6; margin-bottom: 8px; }
-
-    @media (max-width: 992px) {
-      .grid-3, .grid-4, .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .grid-3, .grid-4, .stats-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 32px; }
-      .header-flex { flex-wrap: wrap; justify-content: center; }
-      .nav-links { justify-content: center; }
-    }
-  </style>
+    <!-- LINK CSS -->
+    <link rel="stylesheet" href="hotro.css">
 </head>
+
 <body>
+    <!-- HEADER -->
+    <header class="top-header">
+        <div class="header-flex">
+            <div class="logo-area">
+                <a href="index.html" style="text-decoration: none;"><h1>DANANG WORK</h1></a>
+            </div>
 
-<div class="top-header">
-  <div class="header-flex">
-    <div class="logo-area"><h1>DANANG WORK</h1></div>
-    <div class="nav-links">
-      <a href="index.html">Trang chủ</a>
-      <a href="trangvieclam.html">Việc làm</a>
-      <a href="congty.html">Công ty</a>
-      <a href="xuhuong.html">Xu hướng</a>
-      <a href="huongdan.html">Hướng dẫn</a>
-      <a href="taocv.html">Tạo CV</a>
-      <a href="hotro.html" class="active">Hỗ trợ</a>
+            <nav class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="trangvieclam.html">Việc làm</a>
+                <a href="congty.html">Công ty</a>
+                <a href="xuhuong.html">Xu hướng</a>
+                <a href="huongdan.html">Hướng dẫn</a>
+                <a href="taocv.html">Tạo CV</a>
+                <a href="hotro.html" class="active">Hỗ trợ</a>
+            </nav>
+
+            <div class="nav-right">
+                <!-- Nơi hiển thị nút Đăng nhập hoặc Thông tin User -->
+                <div id="authContent" class="auth-wrapper">
+                    <div id="authButtons">
+                        <a href="login.html" class="login-btn">Đăng nhập</a>
+                        <a href="register.html" class="register-btn">Đăng ký</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-badge">
+                <i class="fa-solid fa-headset"></i> Trung tâm trợ giúp
+            </div>
+            <h1>Chúng tôi có thể giúp gì cho bạn?</h1>
+            <p>Tìm kiếm câu trả lời nhanh chóng về quy trình tìm việc, tạo hồ sơ và kết nối với nhà tuyển dụng tại Đà Nẵng.</p>
+        </div>
+    </section>
+
+    <!-- FAQ GRID -->
+    <section class="support-section">
+        <div class="section-title">
+            <span>HỖ TRỢ NGƯỜI DÙNG</span>
+            <h2>Câu hỏi thường gặp</h2>
+        </div>
+
+        <div class="support-grid">
+            <div class="support-card">
+                <div class="support-icon"><i class="fa-solid fa-user-plus"></i></div>
+                <h3>Đăng ký tài khoản</h3>
+                <p>Hướng dẫn tạo tài khoản ứng viên và xác thực email để bắt đầu tìm việc.</p>
+            </div>
+
+            <div class="support-card">
+                <div class="support-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                <h3>Tối ưu hồ sơ CV</h3>
+                <p>Cách sử dụng công cụ tạo CV online của Đà Nẵng Work để thu hút nhà tuyển dụng.</p>
+            </div>
+
+            <div class="support-card">
+                <div class="support-icon"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                <h3>Lọc việc làm theo quận</h3>
+                <p>Mẹo tìm kiếm việc làm nhanh tại các quận Liên Chiểu, Hải Châu, Thanh Khê...</p>
+            </div>
+
+            <div class="support-card">
+                <div class="support-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Bảo mật thông tin</h3>
+                <p>Quy định về bảo mật dữ liệu cá nhân và thông tin liên lạc của ứng viên.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT BOX -->
+    <section class="contact-section">
+        <div class="contact-box">
+            <div class="contact-left">
+                <span class="contact-tag">LIÊN HỆ TRỰC TIẾP</span>
+                <h2>Vẫn cần hỗ trợ?</h2>
+                <p>Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn qua các kênh liên lạc sau.</p>
+                
+                <div class="contact-info">
+                    <div><i class="fa-solid fa-envelope"></i> hotro@danangwork.vn</div>
+                    <div><i class="fa-solid fa-phone"></i> 0236 3123 456</div>
+                    <div><i class="fa-solid fa-location-dot"></i> Hòa Khánh Bắc, Liên Chiểu, Đà Nẵng</div>
+                </div>
+            </div>
+
+            <div class="contact-right">
+                <div class="contact-card">
+                    <i class="fa-solid fa-comments"></i>
+                    <h3>Chat trực tuyến</h3>
+                    <p>Nhân viên hỗ trợ sẽ phản hồi bạn trong vòng 5-10 phút làm việc.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JAVASCRIPT XỬ LÝ AUTH -->
+    <script>
+        function updateAuthUI() {
+            const authContent = document.getElementById('authContent');
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+
+            if (user) {
+                // Nếu đã đăng nhập: Hiển thị Profile (link thẳng) + Nút Logout
+               authContent.innerHTML = `
+    <div class="mini-profile">
+        <a href="profile.html" class="mini-user">
+            <div class="mini-avatar">
+                ${(user.name || 'S').charAt(0).toUpperCase()}
+            </div>
+
+            <span class="mini-name">
+                ${user.name || 'Sinh'}
+            </span>
+        </a>
+
+        <button onclick="handleLogout()" class="mini-logout">
+            Đăng xuất
+        </button>
     </div>
-    <div class="nav-right">
-      <div id="authButtons"><a href="login.html">Đăng nhập</a><a href="register.html">Đăng ký</a></div>
-      <div id="userBox"></div>
-    </div>
-  </div>
-</div>
+`;
+            }
+        }
 
-<section class="hero">
-  <div class="badge"><i class="fa-solid fa-life-ring"></i> Hỗ trợ 24/7</div>
-  <h1>Chúng tôi luôn sẵn sàng<br><span class="highlight">giúp đỡ bạn</span></h1>
-  <p>Đội ngũ hỗ trợ của chúng tôi luôn ở đây để giúp bạn 24/7</p>
-</section>
+        function handleLogout() {
+            if(confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
 
-<div class="container">
-  <div class="section-padding">
-    <div class="section-header"><h2>Các kênh hỗ trợ</h2><p>Chọn kênh liên hệ phù hợp nhất với bạn</p></div>
-    <div class="grid-3">
-      <div class="card"><div class="icon-box bg-green"><i class="fa-solid fa-phone"></i></div><h3>Hotline</h3><p>Hỗ trợ khẩn cấp 24/7</p><strong>1900 1234</strong></div>
-      <div class="card"><div class="icon-box bg-blue"><i class="fa-regular fa-envelope"></i></div><h3>Email</h3><p>Phản hồi trong 24h</p><strong>support@danangwork.vn</strong></div>
-      <div class="card"><div class="icon-box bg-purple"><i class="fa-regular fa-comments"></i></div><h3>Chat trực tuyến</h3><p>Hỗ trợ tức thì</p><strong>Nhấn để chat</strong></div>
-    </div>
-  </div>
-
-  <div style="text-align: center; margin: -30px 0 40px;"><button class="btn-gradient"><i class="fa-regular fa-envelope"></i> Gửi yêu cầu hỗ trợ</button></div>
-
-  <div class="section-padding">
-    <div class="section-header"><h2>Câu hỏi thường gặp</h2><p>Tìm câu trả lời cho những thắc mắc phổ biến</p></div>
-    <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchFAQ" placeholder="Tìm kiếm câu hỏi..."></div>
-    <div class="tags">
-      <span class="tag active" data-cat="all">Tất cả</span>
-      <span class="tag" data-cat="account">Tài khoản</span>
-      <span class="tag" data-cat="cv">Tạo CV</span>
-      <span class="tag" data-cat="job">Tìm việc</span>
-      <span class="tag" data-cat="apply">Ứng tuyển</span>
-    </div>
-    <div class="accordion-list" id="faqList">
-      <details><summary><i class="fa-regular fa-circle-question"></i> Làm thế nào để đăng ký tài khoản?</summary><div class="accordion-content">Bạn có thể nhấp vào nút "Đăng ký" ở góc phải màn hình, điền đầy đủ thông tin và xác nhận email.</div></details>
-      <details><summary><i class="fa-regular fa-circle-question"></i> Tôi quên mật khẩu phải làm sao?</summary><div class="accordion-content">Nhấp vào nút "Quên mật khẩu" ở màn hình đăng nhập, hệ thống sẽ gửi email hướng dẫn đặt lại mật khẩu.</div></details>
-      <details><summary><i class="fa-regular fa-circle-question"></i> Làm sao để AI gợi ý việc làm chính xác?</summary><div class="accordion-content">Cập nhật đầy đủ thông tin kỹ năng, kinh nghiệm và ngành nghề trong hồ sơ cá nhân để AI phân tích chính xác nhất.</div></details>
-      <details><summary><i class="fa-regular fa-circle-question"></i> Tôi có thể tạo bao nhiêu CV?</summary><div class="accordion-content">Bạn có thể tạo không giới hạn số lượng CV và lưu lại để sử dụng khi ứng tuyển.</div></details>
-      <details><summary><i class="fa-regular fa-circle-question"></i> Làm sao để biết nhà tuyển dụng đã xem hồ sơ?</summary><div class="accordion-content">Hệ thống sẽ gửi thông báo khi có nhà tuyển dụng xem hồ sơ của bạn.</div></details>
-    </div>
-    <div class="still-questions"><h3>Vẫn còn thắc mắc?</h3><p>Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7</p><button class="btn-gradient" style="margin-top: 20px;"><i class="fa-regular fa-comments"></i> Liên hệ hỗ trợ</button></div>
-  </div>
-
-  <div class="statistics">
-    <div class="container"><div class="section-header"><h2 style="color:white;">Con số ấn tượng</h2><p style="color:#94a3b8;">Chúng tôi tự hào về chất lượng hỗ trợ khách hàng</p></div>
-    <div class="stats-grid">
-      <div class="stat-item"><h3>10,000+</h3><p>Người dùng đã được hỗ trợ</p></div>
-      <div class="stat-item"><h3>15 phút</h3><p>Thời gian phản hồi trung bình</p></div>
-      <div class="stat-item"><h3>4.9/5</h3><p>Đánh giá hài lòng</p></div>
-      <div class="stat-item"><h3>98%</h3><p>Câu hỏi được giải đáp</p></div>
-    </div></div>
-  </div>
-</div>
-
-<script>
-  // 1. Khai báo hàm điều hướng toàn cục (Giữ nguyên của bạn)
-  window.goToProfile = function() {
-    window.location.href = 'profile.html';
-  };
-
-  function updateAuthUI() {
-    const authDiv = document.getElementById('authButtons');
-    const userDiv = document.getElementById('userBox');
-    if (!authDiv || !userDiv) return;
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (user && user.email) {
-      const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
-      authDiv.style.display = 'none';
-      userDiv.style.display = 'block';
-      userDiv.innerHTML = `
-        <div class="user-info">
-          <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer;">${displayName.charAt(0).toUpperCase()}</div>
-          <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">${displayName}</span>
-          <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-        </div>`;
-    }
-  }
-
-  function handleLogout() { 
-    localStorage.removeItem('currentUser'); 
-    localStorage.removeItem('isLoggedIn'); 
-    localStorage.removeItem('userName'); 
-    window.location.href = 'index.html'; 
-  }
-
-  // ==========================================
-  // AI HỖ TRỢ TRỰC TIẾP (KHÔNG THÊM HTML MỚI)
-  // ==========================================
-  window.askAI = function(question) {
-    // Nếu không có câu hỏi sẵn, cho người dùng nhập
-    const userQuest = question || prompt("🤖 AI Danang Work: Bạn cần hỗ trợ gì ạ?");
-    
-    if (userQuest) {
-      let reply = "Cảm ơn bạn! Đội ngũ AI đang xử lý yêu cầu: '" + userQuest + "'. Chúng mình sẽ phản hồi qua Email của bạn trong ít phút!";
-      
-      // Logic trả lời nhanh một số câu phổ biến
-      const q = userQuest.toLowerCase();
-      if(q.includes("cv")) reply = "Để tạo CV, bạn hãy vào menu 'Tạo CV' trên thanh điều hướng nhé. Rất nhiều mẫu đẹp chờ bạn!";
-      if(q.includes("đăng ký")) reply = "Bạn nhấn nút Đăng ký ở góc trên bên phải màn hình để tạo tài khoản bằng Email hoặc Google nhé.";
-      
-      alert("🤖 Trợ lý AI trả lời:\n\n" + reply);
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    updateAuthUI();
-
-    // Tìm và gán sự kiện cho nút "Nhấn để chat" của bạn mà không cần sửa HTML
-    const chatBtn = document.querySelector('.bg-purple').closest('.card');
-    if(chatBtn) {
-        chatBtn.style.cursor = "pointer";
-        chatBtn.onclick = () => window.askAI();
-    }
-
-    // FAQ FILTER LOGIC (Giữ nguyên 100%)
-    const faqItems = document.querySelectorAll('details');
-    const searchInput = document.getElementById('searchFAQ');
-    if(searchInput) {
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            faqItems.forEach(item => {
-                const text = item.querySelector('summary').innerText.toLowerCase();
-                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        });
-    }
-  });
-</script>
-<script src="floating.js"></script>
-<script src="notify-bridge.js"></script>
+        document.addEventListener('DOMContentLoaded', updateAuthUI);
+    </script>
 </body>
 </html>
