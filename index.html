@@ -336,81 +336,124 @@ function handleLogout() {
 }
 
 // ==================== RENDER AI RECOMMENDATIONS ====================
+// ==================== RENDER AI RECOMMENDATIONS (CẬP NHẬT GỢI Ý THÔNG MINH) ====================
 function renderAIRecommendations() {
     const container = document.getElementById('aiRecommendations');
     if (!container) return;
     
-    // Cập nhật dữ liệu jobs
     allJobsData = getAllJobsFromStorage();
-    
     if (!allJobsData || allJobsData.length === 0) {
         container.innerHTML = '<div class="loading-ai"><i class="fas fa-spinner fa-pulse"></i> Đang tải dữ liệu...</div>';
         return;
     }
     
-    // Cập nhật thống kê số lượng jobs
+    // Cập nhật thống kê số lượng jobs ở phần Khám phá Đà Nẵng
     const statJobsEl = document.getElementById('statJobs');
     if (statJobsEl) statJobsEl.textContent = allJobsData.length + '+';
     
-    // Lấy jobs đề xuất (6 job mới nhất hoặc phổ biến)
-    const recommendedJobs = allJobsData.slice(0, 6);
-    
-    if (!currentUser || typeof aiEngine === 'undefined') {
-        container.innerHTML = recommendedJobs.map(job => `
-            <div class="job-card ai-card">
-                <div class="match-percent">Phổ biến</div>
-                <div class="job-title">${escapeHtml(job.title)}</div>
-                <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
-                <div class="details">
-                    <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
-                    <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
-                </div>
-                <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
-                <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
-            </div>
-        `).join('');
-        return;
-    }
-    
-    // Dùng AI để gợi ý
-    if (aiEngine && aiEngine.recommendJobsForCandidate) {
-        try {
-            const recommendations = aiEngine.recommendJobsForCandidate(currentUser.id || currentUser.email, 6);
-            if (recommendations && recommendations.length > 0) {
-                container.innerHTML = recommendations.map(job => `
-                    <div class="job-card ai-card">
-                        <div class="match-percent">${Math.min(Math.floor((job.score || 0) / 10), 99)}% phù hợp</div>
-                        <div class="job-title">${escapeHtml(job.title)}</div>
-                        <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
-                        <div class="details">
-                            <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
-                            <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
-                        </div>
-                        <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
-                        <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
-                    </div>
-                `).join('');
-                return;
-            }
-        } catch(e) {
-            console.error('AI recommendation error:', e);
+    // 1. THU THẬP TỪ KHÓA ĐỂ AI ĐỀ XUẤT (TỪ CV, LỊCH SỬ XEM, VÀ PHÂN TÍCH PROFILE)
+    let userKeywords = [];
+    let userField = "";
+
+    // Lấy dữ liệu CV đã lưu
+    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+    if (savedCVs.length > 0) {
+        const latestCV = savedCVs[savedCVs.length - 1]; // Lấy CV mới nhất
+        if (latestCV.position) userKeywords.push(latestCV.position.toLowerCase());
+        if (latestCV.skills) {
+            const skillsArr = typeof latestCV.skills === 'string' ? latestCV.skills.split(/[,\n]+/) : latestCV.skills;
+            skillsArr.forEach(s => userKeywords.push(s.trim().toLowerCase()));
         }
     }
-    
-    // Fallback: hiển thị job phổ biến
-    container.innerHTML = recommendedJobs.map(job => `
-        <div class="job-card ai-card">
-            <div class="match-percent">Đề xuất</div>
-            <div class="job-title">${escapeHtml(job.title)}</div>
-            <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
-            <div class="details">
-                <span><i class="fas fa-map-pin"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
-                <span><i class="fas fa-money-bill-wave"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
+
+    // Lấy dữ liệu lịch sử các công việc đã xem (Được lưu từ trang việc làm / chi tiết việc làm)
+    const viewedJobs = JSON.parse(localStorage.getItem('viewed_jobs')) || [];
+    viewedJobs.forEach(vJob => {
+        if (vJob.title) userKeywords.push(vJob.title.toLowerCase());
+        if (vJob.field) userKeywords.push(vJob.field.toLowerCase());
+        if (vJob.skills && Array.isArray(vJob.skills)) {
+            vJob.skills.forEach(s => userKeywords.push(s.toLowerCase()));
+        }
+    });
+
+    // Lấy dữ liệu phân tích hồ sơ bằng AI trong trang Profile
+    const aiAnalysis = JSON.parse(localStorage.getItem('ai_profile_analysis')) || null;
+    if (aiAnalysis) {
+        if (aiAnalysis.suggestedPositions) { // Các vị trí AI gợi ý trong profile
+            aiAnalysis.suggestedPositions.forEach(p => userKeywords.push(p.toLowerCase()));
+        }
+        if (aiAnalysis.targetField) userField = aiAnalysis.targetField.toLowerCase();
+        if (aiAnalysis.keywords) {
+            aiAnalysis.keywords.forEach(k => userKeywords.push(k.toLowerCase()));
+        }
+    }
+
+    // Làm sạch và lọc trùng lặp từ khóa
+    userKeywords = [...new Set(userKeywords.filter(k => k && k.trim() !== ""))];
+
+    // 2. TIẾN HÀNH TÍNH TOÁN ĐỘ PHÙ HỢP (MATCHING SCORE) CHO TỪNG CÔNG VIỆC
+    let scoredJobs = allJobsData.map(job => {
+        let score = 50; // Điểm nền mặc định cho mọi công việc
+
+        // Cộng điểm nếu trùng ngành nghề được AI phân tích từ profile
+        if (userField && job.field && job.field.toLowerCase().includes(userField)) {
+            score += 25;
+        }
+
+        // Cộng điểm dựa trên các từ khóa thu thập được (Tiêu đề, Công ty, Kỹ năng)
+        userKeywords.forEach(keyword => {
+            if (job.title && job.title.toLowerCase().includes(keyword)) score += 15;
+            if (job.field && job.field.toLowerCase().includes(keyword)) score += 10;
+            if (job.skills && Array.isArray(job.skills)) {
+                job.skills.forEach(skill => {
+                    if (skill.toLowerCase().includes(keyword)) score += 8;
+                });
+            }
+        });
+
+        // Giới hạn điểm tối đa là 98% để hiển thị thực tế
+        score = Math.min(score, 98);
+
+        // Nếu người dùng chưa có tí dữ liệu nào (mới tinh), tạo một số điểm ngẫu nhiên từ 75% - 92% cho hấp dẫn
+        if (userKeywords.length === 0 && !userField) {
+            score = Math.floor(Math.random() * (92 - 75 + 1)) + 75;
+        }
+
+        return { ...job, matchScore: score };
+    });
+
+    // Sắp xếp công việc có điểm phù hợp từ cao xuống thấp
+    scoredJobs.sort((a, b) => b.matchScore - a.matchScore);
+
+    // Lấy tối đa 6 công việc tốt nhất để hiển thị lên màn hình
+    const topRecommended = scoredJobs.slice(0, 6);
+
+    // 3. RENDER GIAO DIỆN KẾT QUẢ ĐỀ XUẤT
+    container.innerHTML = topRecommended.map(job => {
+        // Định nghĩa badge nhãn hiển thị mức độ phù hợp
+        let matchBadge = `<div class="match-percent" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">${job.matchScore}% Phù hợp</div>`;
+        if (userKeywords.length === 0 && !userField) {
+            matchBadge = `<div class="match-percent" style="background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white;">AI Đề xuất</div>`;
+        }
+
+        return `
+            <div class="job-card ai-card">
+                ${matchBadge}
+                <div class="job-title" style="margin-top: 10px; font-weight: 700; font-size: 16px; min-height: 44px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    ${escapeHtml(job.title)}
+                </div>
+                <div class="company" style="color: #64748b; font-size: 14px; margin: 6px 0;"><i class="fas fa-building"></i> ${escapeHtml(job.company)}</div>
+                <div class="details" style="display: flex; gap: 12px; font-size: 13px; color: #475569; margin: 8px 0;">
+                    <span><i class="fas fa-map-pin" style="color: #0ea5e9;"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</span>
+                    <span><i class="fas fa-money-bill-wave" style="color: #22c55e;"></i> ${escapeHtml(job.salary || 'Thỏa thuận')}</span>
+                </div>
+                <div class="tech-stack" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; min-height: 26px;">
+                    ${(job.skills || []).slice(0, 3).map(s => `<span style="background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 12px;">${escapeHtml(s)}</span>`).join('')}
+                </div>
+                <button class="apply-btn" onclick="goToJobDetail(${job.id})" style="width: 100%; padding: 10px; background: #0ea5e9; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Xem chi tiết</button>
             </div>
-            <div class="tech-stack">${(job.skills || []).slice(0, 3).map(s => `<span>${escapeHtml(s)}</span>`).join('')}</div>
-            <button class="apply-btn" onclick="goToJobDetail(${job.id})">Xem chi tiết</button>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ==================== XỬ LÝ ỨNG TUYỂN ====================

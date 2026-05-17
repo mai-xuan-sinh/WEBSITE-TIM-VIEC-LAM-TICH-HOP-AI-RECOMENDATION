@@ -204,7 +204,6 @@
         </div>
     </main>
 
-    <!-- APPLY MODAL -->
     <div class="apply-modal" id="applyModal">
         <div class="apply-box">
             <button class="close-apply" id="closeApply"><i class="fas fa-times"></i></button>
@@ -256,6 +255,47 @@
 
     <script src="jobs-data.js"></script>
     <script>
+        // ==================== CẬP NHẬT UI ĐĂNG NHẬP / PROFILE (MỚI THÊM) ====================
+        function updateAuthUI() {
+            const authDiv = document.getElementById('authButtons');
+            const userDiv = document.getElementById('userBox');
+            if (!authDiv || !userDiv) return;
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+
+            if (user && user.email) {
+                const displayName = user.name || user.fullname || user.username || user.email.split('@')[0];
+                
+                authDiv.style.display = 'none';
+                userDiv.style.display = 'block';
+                
+                userDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar" onclick="goToProfile()">${displayName.charAt(0).toUpperCase()}</div>
+                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600; color: #334155;">${escapeHtml(displayName)}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+                    </div>`;
+            } else {
+                authDiv.style.display = 'flex';
+                userDiv.style.display = 'none';
+                userDiv.innerHTML = '';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('rememberUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function goToProfile() {
+            window.location.href = 'profile.html';
+        }
+
         // ==================== VALIDATION FUNCTIONS ====================
         function validateFullName(name) {
             if (!name || name.trim().length === 0) {
@@ -343,7 +383,7 @@
         let currentJobsList = [];
         let currentAppliedFilter = null;
 
-        // ==================== LẤY JOBS TỪ NHIỀU NGUỒN (CẬP NHẬT) ====================
+        // ==================== LẤY JOBS TỪ NHIỀU NGUỒN ====================
         function getAllJobsFromStorage() {
             let combined = [];
             
@@ -357,11 +397,9 @@
             combined = [...combined, ...storedJobs, ...hrJobs];
             
             const activeJobs = combined.filter(job => {
-                // Không hiển thị job đang chờ xóa
                 if (job.status === 'pending_delete') {
                     return false;
                 }
-                // Chỉ hiển thị job có status active hoặc approved
                 if (job.status && job.status !== 'active' && job.status !== 'approved') {
                     return false;
                 }
@@ -428,7 +466,6 @@
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = 'toast-message';
-            toast.style.cssText = `position:fixed;bottom:30px;right:30px;background:${type === 'success' ? '#10b981' : '#0ea5e9'};color:white;padding:12px 24px;border-radius:12px;z-index:1100;animation:slideIn 0.3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
             toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => {
@@ -612,8 +649,44 @@
             });
         }
 
-        window.goToJobDetail = function(id) { window.location.href = `job-detail.html?id=${id}`; };
-        window.viewDetail = function(event, id) { event.stopPropagation(); window.location.href = `job-detail.html?id=${id}`; };
+        // ---- HÀM LƯU LỊCH SỬ XEM KHI ĐI ĐẾN CHI TIẾT ----
+        function saveJobToHistory(id) {
+            try {
+                const allJobs = getAllJobsFromStorage();
+                const currentJob = allJobs.find(j => j.id == id);
+                
+                if (currentJob) {
+                    let viewedJobs = JSON.parse(localStorage.getItem('viewed_jobs')) || [];
+                    
+                    if (!viewedJobs.some(j => j.id == id)) {
+                        viewedJobs.push({
+                            id: currentJob.id,
+                            title: currentJob.title,
+                            field: currentJob.field || currentJob.category,
+                            skills: currentJob.skills || []
+                        });
+                        
+                        if (viewedJobs.length > 10) viewedJobs.shift();
+                        
+                        localStorage.setItem('viewed_jobs', JSON.stringify(viewedJobs));
+                    }
+                }
+            } catch (e) {
+                console.error("Lỗi khi lưu lịch sử xem công việc cho AI:", e);
+            }
+        }
+
+        window.goToJobDetail = function(id) { 
+            saveJobToHistory(id); 
+            window.location.href = `job-detail.html?id=${id}`; 
+        };
+
+        window.viewDetail = function(event, id) { 
+            event.stopPropagation(); 
+            saveJobToHistory(id); 
+            window.location.href = `job-detail.html?id=${id}`; 
+        };
+
         window.resetSearch = resetSearch;
 
         // ==================== ỨNG TUYỂN CÓ VALIDATION ====================
@@ -727,278 +800,125 @@
             
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) {
-                alert('Vui lòng đăng nhập để ứng tuyển!');
-                window.location.href = 'login.html';
+                if (confirm('Bạn cần đăng nhập để ứng tuyển. Đăng nhập ngay?')) {
+                    window.location.href = 'login.html';
+                }
                 return;
             }
             
-            document.getElementById("applyJobTitle").textContent = job.title;
-            document.getElementById("applyCompany").textContent = job.company;
-            document.getElementById("applyLocation").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location || job.district || 'Đà Nẵng'}`;
-            document.getElementById("applySalary").innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary || 'Thỏa thuận'}`;
-            
-            document.getElementById("applyName").value = currentUser.name || currentUser.fullname || '';
-            document.getElementById("applyEmail").value = currentUser.email || '';
-            document.getElementById("applyPhone").value = currentUser.phone || '';
-            document.getElementById("applyMessage").value = '';
-            
-            const nameInput = document.getElementById("applyName");
-            const phoneInput = document.getElementById("applyPhone");
-            nameInput.classList.remove('error', 'valid');
-            phoneInput.classList.remove('error', 'valid');
-            
-            const nameParent = nameInput.parentElement;
-            const phoneParent = phoneInput.parentElement;
-            const oldNameError = nameParent.querySelector('.field-error');
-            const oldPhoneError = phoneParent.querySelector('.field-error');
-            if (oldNameError) oldNameError.remove();
-            if (oldPhoneError) oldPhoneError.remove();
-            
-            nameInput.removeEventListener('input', validateNameInput);
-            phoneInput.removeEventListener('input', validatePhoneInput);
-            nameInput.addEventListener('input', validateNameInput);
-            phoneInput.addEventListener('input', validatePhoneInput);
-            
-            const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-            const cvSelect = document.getElementById("savedCVSelect");
-            cvSelect.innerHTML = '<option value="">-- Chọn CV đã lưu --</option>';
-            
-            savedCVs.forEach((cv, index) => {
-                cvSelect.innerHTML += `<option value="${index}">${escapeHtml(cv.fullName || 'CV không tên')} - ${escapeHtml(cv.position || 'Chưa có vị trí')}</option>`;
-            });
-            
-            document.getElementById("applyCCCD").value = '';
-            document.getElementById("applyPassport").value = '';
-            document.getElementById("selectedCVInfo").style.display = 'none';
-            
-            window.currentApplyingJob = job;
-            document.getElementById("applyModal").classList.add("active");
-        };
-        
-        document.getElementById("savedCVSelect")?.addEventListener("change", function() {
-            const index = this.value;
-            const infoDiv = document.getElementById("selectedCVInfo");
-            
-            if (index === "") {
-                infoDiv.style.display = "none";
-                return;
-            }
-            
-            const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-            const cv = savedCVs[index];
-            
-            if (cv) {
-                infoDiv.style.display = "block";
-                infoDiv.innerHTML = `
-                    <p><strong>Họ tên:</strong> ${escapeHtml(cv.fullName || '---')}</p>
-                    <p><strong>Vị trí:</strong> ${escapeHtml(cv.position || '---')}</p>
-                    <p><strong>Kỹ năng:</strong> ${escapeHtml(cv.skills || '---')}</p>
-                    <p><strong>Kinh nghiệm:</strong> ${escapeHtml(cv.experience || '---')}</p>
-                `;
+            const modal = document.getElementById("applyModal");
+            if (modal) {
+                document.getElementById("applyJobTitle").textContent = job.title;
+                document.getElementById("applyCompany").textContent = job.company;
+                document.getElementById("applyLocation").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${job.location || job.district || 'Đà Nẵng'}`;
+                document.getElementById("applySalary").innerHTML = `<i class="fas fa-money-bill-wave"></i> ${job.salary || 'Thỏa thuận'}`;
                 
-                if (cv.fullName) document.getElementById("applyName").value = cv.fullName;
-                if (cv.phone) document.getElementById("applyPhone").value = cv.phone;
-                if (cv.intro && !document.getElementById("applyMessage").value) {
-                    document.getElementById("applyMessage").value = cv.intro;
+                document.getElementById("applyName").value = currentUser.name || currentUser.fullname || '';
+                document.getElementById("applyEmail").value = currentUser.email || '';
+                document.getElementById("applyPhone").value = currentUser.phone || '';
+                
+                const savedCVSelect = document.getElementById("savedCVSelect");
+                if (savedCVSelect) {
+                    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                    savedCVSelect.innerHTML = '<option value="">-- Chọn CV --</option>' + 
+                        savedCVs.map((cv, idx) => `<option value="${idx}">${cv.template || 'Mẫu CV'} - ${cv.position || 'Vị trí'}</option>`).join('');
                 }
                 
-                validateNameInput();
-                validatePhoneInput();
-            }
-        });
-        
-        document.getElementById("applyForm")?.addEventListener("submit", function(e) {
-            e.preventDefault();
-            
-            const job = window.currentApplyingJob;
-            if (!job) {
-                alert("Không tìm thấy thông tin công việc!");
-                return;
-            }
-            
-            const name = document.getElementById("applyName").value.trim();
-            const phone = document.getElementById("applyPhone").value.trim();
-            const message = document.getElementById("applyMessage").value.trim();
-            
-            const nameValidation = validateFullName(name);
-            if (!nameValidation.valid) {
-                alert(`❌ ${nameValidation.message}`);
-                document.getElementById("applyName").focus();
-                return;
-            }
-            
-            const phoneValidation = validatePhone(phone);
-            if (!phoneValidation.valid) {
-                alert(`❌ ${phoneValidation.message}`);
-                document.getElementById("applyPhone").focus();
-                return;
-            }
-            
-            const selectedCVIndex = document.getElementById("savedCVSelect").value;
-            const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-            let cvData = {};
-            
-            if (selectedCVIndex !== "") {
-                const selectedCV = savedCVs[selectedCVIndex];
-                cvData = {
-                    fullName: selectedCV.fullName || name,
-                    phone: selectedCV.phone || phone,
-                    skills: selectedCV.skills || '',
-                    experience: selectedCV.experience || '',
-                    education: selectedCV.education || '',
-                    address: selectedCV.address || '',
-                    intro: message || selectedCV.intro || ''
-                };
-            } else {
-                cvData = {
-                    fullName: name,
-                    phone: phone,
-                    skills: '',
-                    experience: '',
-                    education: '',
-                    address: '',
-                    intro: message
+                modal.style.display = "flex";
+                
+                const form = document.getElementById("applyForm");
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    
+                    const savedCVSelect = document.getElementById("savedCVSelect");
+                    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+                    const selectedCV = savedCVSelect.value !== "" ? savedCVs[savedCVSelect.value] : {};
+                    
+                    const cvData = {
+                        fullName: document.getElementById("applyName").value.trim(),
+                        phone: document.getElementById("applyPhone").value.trim(),
+                        skills: selectedCV.skills || '',
+                        experience: selectedCV.experience || '',
+                        education: selectedCV.education || '',
+                        intro: document.getElementById("applyMessage").value.trim(),
+                        address: selectedCV.address || ''
+                    };
+                    
+                    const cccdFile = document.getElementById("applyCCCD").files[0];
+                    const passportFile = document.getElementById("applyPassport").files[0];
+                    
+                    if (!cccdFile && !passportFile) {
+                        alert("⚠️ Vui lòng tải lên CCCD/CMND hoặc Hộ chiếu để xác thực hồ sơ!");
+                        return;
+                    }
+                    
+                    const success = submitApplication(
+                        job.id, job.title, job.company, 
+                        job.location || job.district, job.salary, 
+                        cvData, 
+                        cccdFile ? cccdFile.name : '', 
+                        passportFile ? passportFile.name : ''
+                    );
+                    
+                    if (success) {
+                        showToast("Ứng tuyển công việc thành công!", "success");
+                        modal.style.display = "none";
+                        form.reset();
+                    }
                 };
             }
-            
-            const cccdFile = document.getElementById("applyCCCD").files[0];
-            const passportFile = document.getElementById("applyPassport").files[0];
-            
-            let cccdFileName = '';
-            let passportFileName = '';
-            
-            if (cccdFile) cccdFileName = cccdFile.name;
-            if (passportFile) passportFileName = passportFile.name;
-            
-            if (!cccdFile && !passportFile) {
-                alert("⚠️ Vui lòng tải lên CCCD (Công dân Việt Nam) hoặc Hộ chiếu (Người nước ngoài)!");
-                document.getElementById("applyCCCD").focus();
-                return;
+        };
+
+        // Đóng modal ứng tuyển khi nhấn nút X hoặc ngoài vùng modal
+        document.addEventListener("DOMContentLoaded", function() {
+            const closeApply = document.getElementById("closeApply");
+            const modal = document.getElementById("applyModal");
+            if (closeApply && modal) {
+                closeApply.addEventListener("click", () => { modal.style.display = "none"; });
+                window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
             }
             
-            const success = submitApplication(
-                job.id, job.title, job.company,
-                job.location || job.district, job.salary,
-                cvData, cccdFileName, passportFileName
-            );
-            
-            if (success) {
-                alert(`✅ Ứng tuyển thành công!\n\nCông việc: ${job.title}\nCông ty: ${job.company}\n\nHồ sơ của bạn đã được gửi đến nhà tuyển dụng.`);
-                document.getElementById("applyForm").reset();
-                document.getElementById("selectedCVInfo").style.display = "none";
-                document.getElementById("applyModal").classList.remove("active");
-                window.currentApplyingJob = null;
-            }
-        });
-        
-        document.getElementById("closeApply")?.addEventListener("click", () => {
-            document.getElementById("applyModal").classList.remove("active");
-        });
-        
-        document.getElementById("applyModal")?.addEventListener("click", (e) => {
-            if (e.target === document.getElementById("applyModal")) {
-                document.getElementById("applyModal").classList.remove("active");
-            }
+            const applyName = document.getElementById("applyName");
+            const applyPhone = document.getElementById("applyPhone");
+            if (applyName) applyName.addEventListener("input", validateNameInput);
+            if (applyPhone) applyPhone.addEventListener("input", validatePhoneInput);
         });
 
-        // ==================== KHỞI TẠO ====================
-        function init() {
-            document.getElementById("all-jobs-container").innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i><p>Đang tải việc làm...</p></div>';
+        // ==================== KHỞI TẠO TẢI TRANG ĐỒNG BỘ TẤT CẢ DỮ LIỆU ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chạy hàm kiểm tra hiển thị trạng thái Đăng nhập / Profile cá nhân
+            updateAuthUI();
             
-            const jobs = getAllJobsFromStorage();
-            renderJobs(jobs);
             renderFieldCards();
             updateSearchSuggestions();
             setupAutocomplete();
-            
-            document.getElementById("searchBtn")?.addEventListener("click", searchJobs);
-            document.getElementById("skillInput")?.addEventListener("keyup", (e) => { if (e.key === "Enter") searchJobs(); });
-            document.getElementById("districtSelect")?.addEventListener("change", searchJobs);
-        }
-        
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'industries' || e.key === 'skills' || e.key === 'locations' || e.key === 'jobTypes') {
-                renderFieldCards();
-                updateSearchSuggestions();
-            }
-            if (e.key === 'jobs' || e.key === 'hr_jobs') {
-                const jobs = getAllJobsFromStorage();
-                renderJobs(jobs);
-                renderFieldCards();
-            }
-            if (e.key === 'currentUser' || e.key === 'isLoggedIn') {
-                updateAuthUI();
-            }
-        });
-        
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
 
-    <script>
-        // ==================== AUTH UI ====================
-        window.goToProfile = function() { window.location.href = 'profile.html'; };
-        window.handleLogout = function() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('rememberUser');
-            window.location.reload();
-        };
-        
-        function updateAuthUI() {
-            const authDiv = document.getElementById('authButtons');
-            const userDiv = document.getElementById('userBox');
-            if (!authDiv || !userDiv) return;
-            
-            const currentUser = localStorage.getItem('currentUser');
-            let isLoggedIn = false;
-            let userName = "";
-            
-            if (currentUser) {
-                try {
-                    const user = JSON.parse(currentUser);
-                    isLoggedIn = true;
-                    userName = user.name || user.fullname || user.email?.split('@')[0] || "User";
-                } catch(e) { isLoggedIn = false; }
-            }
-            
-            if (!isLoggedIn && localStorage.getItem('isLoggedIn') === 'true') {
-                isLoggedIn = true;
-                userName = localStorage.getItem('userName') || "User";
-            }
-            
-            if (isLoggedIn) {
-                authDiv.style.display = 'none';
-                userDiv.style.display = 'block';
-                userDiv.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-avatar" onclick="goToProfile()">${userName.charAt(0).toUpperCase()}</div>
-                        <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">${escapeHtml(userName)}</span>
-                        <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-                    </div>
-                `;
+            // Đọc cấu trúc tham số '?search=...' từ trang profile gửi sang
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchParam = urlParams.get('search');
+
+            if (searchParam) {
+                const decodedKeyword = decodeURIComponent(searchParam);
+                document.getElementById('skillInput').value = decodedKeyword;
+                searchJobs();
             } else {
-                authDiv.style.display = 'flex';
-                userDiv.style.display = 'none';
-                userDiv.innerHTML = '';
+                const allJobsList = getAllJobsFromStorage();
+                renderJobs(allJobsList);
             }
-        }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
+            
+            const searchBtn = document.getElementById("searchBtn");
+            if (searchBtn) {
+                searchBtn.addEventListener("click", searchJobs);
+            }
+
+            // Lắng nghe sự thay đổi của LocalStorage ở các tab khác để cập nhật Realtime tên User
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'currentUser') {
+                    updateAuthUI();
+                }
             });
-        }
-        
-        document.addEventListener('DOMContentLoaded', updateAuthUI);
-        window.addEventListener('storage', updateAuthUI);
+        });
     </script>
-    
-    <script src="notify-bridge.js"></script>
-    <script src="floating.js"></script>
 </body>
+
 </html>
