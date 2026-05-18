@@ -66,7 +66,6 @@
 </head>
 <body>
 
-    <!-- ==================== HEADER ==================== -->
     <div class="top-header">
         <div class="container header-flex">
             <div class="logo-area"><h1>DANANG WORK</h1></div>
@@ -89,14 +88,12 @@
         </div>
     </div>
 
-    <!-- ==================== PROFILE CONTENT ==================== -->
     <div class="profile-wrapper">
         <div class="breadcrumb">
             <a href="index.html">Trang chủ</a> / <span>Hồ sơ cá nhân</span>
         </div>
 
         <div class="profile-grid">
-            <!-- ==================== SIDEBAR ==================== -->
             <aside class="profile-sidebar">
                 <div class="avatar-wrapper">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" alt="Avatar" class="avatar-img" id="avatarImg">
@@ -120,9 +117,7 @@
                 </div>
             </aside>
 
-            <!-- ==================== MAIN CONTENT ==================== -->
             <main class="profile-main">
-                <!-- TAB 1: THÔNG TIN CÁ NHÂN -->
                 <div id="tab-profile" class="tab-pane active">
                     <div class="section-title"><i class="fas fa-user-circle"></i><span>Thông tin cá nhân</span></div>
                     <div id="profileAlert" class="alert"></div>
@@ -174,7 +169,6 @@
                     </form>
                 </div>
 
-                <!-- TAB 2: BẢO MẬT -->
                 <div id="tab-security" class="tab-pane">
                     <div class="section-title"><i class="fas fa-lock"></i><span>Đổi mật khẩu</span></div>
                     <div id="securityAlert" class="alert"></div>
@@ -186,7 +180,6 @@
                     </form>
                 </div>
 
-                <!-- TAB 3: PHÂN TÍCH HỒ SƠ AI -->
                 <div id="tab-analysis" class="tab-pane">
                     <div class="section-title"><i class="fas fa-robot"></i><span>Phân tích hồ sơ bằng AI</span></div>
                     <div id="profileAnalysisContainer">
@@ -194,7 +187,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: CV ĐÃ LƯU -->
                 <div id="tab-cv" class="tab-pane">
                     <div class="section-title">
                         <i class="fas fa-file-alt"></i><span>CV đã lưu</span>
@@ -203,13 +195,11 @@
                     <div id="cvListContainer" class="cv-list"></div>
                 </div>
 
-                <!-- TAB 5: LỊCH SỬ ỨNG TUYỂN -->
                 <div id="tab-applications" class="tab-pane">
                     <div class="section-title"><i class="fas fa-briefcase"></i><span>Lịch sử ứng tuyển</span></div>
                     <div id="applicationsList" class="application-list"></div>
                 </div>
 
-                <!-- TAB 6: VIỆC LÀM ĐÃ LƯU -->
                 <div id="tab-saved" class="tab-pane">
                     <div class="section-title"><i class="fas fa-heart"></i><span>Việc làm đã lưu</span></div>
                     <div id="savedJobsList" class="application-list"></div>
@@ -222,116 +212,67 @@
     <script src="ai-recommend.js"></script>
     <script>
     // ==================== VALIDATION FUNCTIONS ====================
-    
     function validateFullName(name) {
-        if (!name || name.trim().length === 0) {
-            return { valid: false, message: "Họ tên không được để trống!" };
-        }
-        if (name.trim().length < 2) {
-            return { valid: false, message: "Họ tên phải có ít nhất 2 ký tự!" };
-        }
-        if (/\d/.test(name)) {
-            return { valid: false, message: "Họ tên không được chứa số!" };
-        }
-        if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) {
-            return { valid: false, message: "Họ tên không được chứa ký tự đặc biệt!" };
-        }
-        if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸửữựỵỷỹ\s]+$/.test(name)) {
+        if (!name || name.trim().length === 0) return { valid: false, message: "Họ tên không được để trống!" };
+        if (name.trim().length < 2) return { valid: false, message: "Họ tên phải có ít nhất 2 ký tự!" };
+        if (/\d/.test(name)) return { valid: false, message: "Họ tên không được chứa số!" };
+        if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?~`]/.test(name)) return { valid: false, message: "Họ tên không được chứa ký tự đặc biệt!" };
+        if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸửữựỵỷỹ\s]+$/.test(name)) {
             return { valid: false, message: "Họ tên chỉ được chứa chữ cái và dấu cách!" };
         }
         return { valid: true };
     }
 
     function validatePhone(phone) {
-        if (!phone || phone.trim().length === 0) {
-            return { valid: false, message: "Số điện thoại không được để trống!" };
-        }
-        if (/[a-zA-Z]/.test(phone)) {
-            return { valid: false, message: "Số điện thoại không được chứa chữ cái!" };
-        }
-        if (/[!@#$%^&*()_=\[\]{};':"\\|,.<>\/?~`]/.test(phone) && !phone.includes('+')) {
-            return { valid: false, message: "Số điện thoại không được chứa ký tự đặc biệt!" };
-        }
+        if (!phone || phone.trim().length === 0) return { valid: false, message: "Số điện thoại không được để trống!" };
+        if (/[a-zA-Z]/.test(phone)) return { valid: false, message: "Số điện thoại không được chứa chữ cái!" };
+        if (/[!@#$%^&*()_=\[\]{};':"\\|,.<>\/?~`]/.test(phone) && !phone.includes('+')) return { valid: false, message: "Số điện thoại không được chứa ký tự đặc biệt!" };
         const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
-        if (!phoneRegex.test(phone)) {
-            return { valid: false, message: "Số điện thoại không hợp lệ! (VD: 0912345678)" };
-        }
+        if (!phoneRegex.test(phone)) return { valid: false, message: "Số điện thoại không hợp lệ! (VD: 0912345678)" };
         return { valid: true };
     }
 
     function validateAddress(address) {
-        if (!address || address.trim().length === 0) {
-            return { valid: false, message: "Địa chỉ không được để trống!" };
-        }
-        if (address.trim().length < 5) {
-            return { valid: false, message: "Địa chỉ phải có ít nhất 5 ký tự!" };
-        }
+        if (!address || address.trim().length === 0) return { valid: false, message: "Địa chỉ không được để trống!" };
+        if (address.trim().length < 5) return { valid: false, message: "Địa chỉ phải có ít nhất 5 ký tự!" };
         return { valid: true };
     }
 
     function validateBio(bio) {
-        if (!bio || bio.trim().length === 0) {
-            return { valid: false, message: "Vui lòng nhập giới thiệu về bản thân!" };
-        }
-        if (bio.trim().length < 10) {
-            return { valid: false, message: "Giới thiệu phải có ít nhất 10 ký tự!" };
-        }
-        if (bio.trim().length > 500) {
-            return { valid: false, message: "Giới thiệu không được vượt quá 500 ký tự!" };
-        }
+        if (!bio || bio.trim().length === 0) return { valid: false, message: "Vui lòng nhập giới thiệu về bản thân!" };
+        if (bio.trim().length < 10) return { valid: false, message: "Giới thiệu phải có ít nhất 10 ký tự!" };
+        if (bio.trim().length > 500) return { valid: false, message: "Giới thiệu không được vượt quá 500 ký tự!" };
         return { valid: true };
     }
 
     function validateSkills(skillsStr) {
-        if (!skillsStr || skillsStr.trim().length === 0) {
-            return { valid: false, message: "Vui lòng nhập ít nhất một kỹ năng!" };
-        }
+        if (!skillsStr || skillsStr.trim().length === 0) return { valid: false, message: "Vui lòng nhập ít nhất một kỹ năng!" };
         const skills = skillsStr.split(',').map(s => s.trim());
-        if (skills.length === 0) {
-            return { valid: false, message: "Vui lòng nhập ít nhất một kỹ năng!" };
-        }
+        if (skills.length === 0) return { valid: false, message: "Vui lòng nhập ít nhất một kỹ năng!" };
         for (let skill of skills) {
-            if (skill.length < 2) {
-                return { valid: false, message: "Mỗi kỹ năng phải có ít nhất 2 ký tự!" };
-            }
+            if (skill.length < 2) return { valid: false, message: "Mỗi kỹ năng phải có ít nhất 2 ký tự!" };
         }
         return { valid: true };
     }
 
     function validateDob(dob) {
-        if (!dob) {
-            return { valid: false, message: "Vui lòng chọn ngày sinh!" };
-        }
+        if (!dob) return { valid: false, message: "Vui lòng chọn ngày sinh!" };
         const birthDate = new Date(dob);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        if (age < 16) {
-            return { valid: false, message: "Bạn phải từ 16 tuổi trở lên để sử dụng dịch vụ!" };
-        }
-        if (age > 100) {
-            return { valid: false, message: "Vui lòng kiểm tra lại ngày sinh!" };
-        }
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+        if (age < 16) return { valid: false, message: "Bạn phải từ 16 tuổi trở lên để sử dụng dịch vụ!" };
+        if (age > 100) return { valid: false, message: "Vui lòng kiểm tra lại ngày sinh!" };
         return { valid: true };
     }
 
     function validateExperience(exp) {
-        if (!exp && exp !== 0) {
-            return { valid: false, message: "Vui lòng nhập số năm kinh nghiệm!" };
-        }
+        if (!exp && exp !== 0) return { valid: false, message: "Vui lòng nhập số năm kinh nghiệm!" };
         const expNum = parseFloat(exp);
-        if (isNaN(expNum)) {
-            return { valid: false, message: "Kinh nghiệm phải là số (VD: 2 hoặc 2.5)!" };
-        }
-        if (expNum < 0) {
-            return { valid: false, message: "Kinh nghiệm không thể là số âm!" };
-        }
-        if (expNum > 50) {
-            return { valid: false, message: "Kinh nghiệm không hợp lệ!" };
-        }
+        if (isNaN(expNum)) return { valid: false, message: "Kinh nghiệm phải là số (VD: 2 hoặc 2.5)!" };
+        if (expNum < 0) return { valid: false, message: "Kinh nghiệm không thể là số âm!" };
+        if (expNum > 50) return { valid: false, message: "Kinh nghiệm không hợp lệ!" };
         return { valid: true };
     }
 
@@ -362,52 +303,31 @@
         
         const fullName = document.getElementById('fullName').value.trim();
         const nameValidation = validateFullName(fullName);
-        if (!nameValidation.valid) {
-            showProfileError('fullName', nameValidation.message);
-            isValid = false;
-        }
+        if (!nameValidation.valid) { showProfileError('fullName', nameValidation.message); isValid = false; }
         
         const phone = document.getElementById('phone').value.trim();
         const phoneValidation = validatePhone(phone);
-        if (!phoneValidation.valid) {
-            showProfileError('phone', phoneValidation.message);
-            isValid = false;
-        }
+        if (!phoneValidation.valid) { showProfileError('phone', phoneValidation.message); isValid = false; }
         
         const address = document.getElementById('address').value.trim();
         const addressValidation = validateAddress(address);
-        if (!addressValidation.valid) {
-            showProfileError('address', addressValidation.message);
-            isValid = false;
-        }
+        if (!addressValidation.valid) { showProfileError('address', addressValidation.message); isValid = false; }
         
         const bio = document.getElementById('bio').value.trim();
         const bioValidation = validateBio(bio);
-        if (!bioValidation.valid) {
-            showProfileError('bio', bioValidation.message);
-            isValid = false;
-        }
+        if (!bioValidation.valid) { showProfileError('bio', bioValidation.message); isValid = false; }
         
         const skills = document.getElementById('skills').value.trim();
         const skillsValidation = validateSkills(skills);
-        if (!skillsValidation.valid) {
-            showProfileError('skills', skillsValidation.message);
-            isValid = false;
-        }
+        if (!skillsValidation.valid) { showProfileError('skills', skillsValidation.message); isValid = false; }
         
         const dob = document.getElementById('dob').value;
         const dobValidation = validateDob(dob);
-        if (!dobValidation.valid) {
-            showProfileError('dob', dobValidation.message);
-            isValid = false;
-        }
+        if (!dobValidation.valid) { showProfileError('dob', dobValidation.message); isValid = false; }
         
         const experience = document.getElementById('experience').value;
         const expValidation = validateExperience(experience);
-        if (!expValidation.valid) {
-            showProfileError('experience', expValidation.message);
-            isValid = false;
-        }
+        if (!expValidation.valid) { showProfileError('experience', expValidation.message); isValid = false; }
         
         return isValid;
     }
@@ -462,6 +382,16 @@
     let applications = [];
     let savedJobs = [];
 
+    // Helper hiện thông báo alert trên trang cá nhân của bạn
+    function showAlert(alertId, msg, type) {
+        const alertEl = document.getElementById(alertId);
+        if (!alertEl) return;
+        alertEl.innerText = msg;
+        alertEl.className = `alert alert-${type}`;
+        alertEl.style.display = 'block';
+        setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+    }
+
     function loadUserData() {
         currentUser = JSON.parse(localStorage.getItem('currentUser'));
         users = JSON.parse(localStorage.getItem('users')) || [];
@@ -479,20 +409,21 @@
         const displayName = fullUser.name || fullUser.fullname || currentUser.name || currentUser.email?.split('@')[0] || 'Người dùng';
         document.getElementById('sidebarName').innerText = displayName;
         document.getElementById('sidebarEmail').innerText = fullUser.email;
-        document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
-        document.getElementById('email').value = fullUser.email || '';
-        document.getElementById('phone').value = fullUser.phone || '';
-        document.getElementById('address').value = fullUser.address || '';
-        document.getElementById('bio').value = fullUser.bio || '';
-        document.getElementById('skills').value = (fullUser.skills || []).join(', ');
-        document.getElementById('dob').value = fullUser.dob || '';
-        document.getElementById('experience').value = fullUser.experience || '';
+        if (document.getElementById('fullName')) document.getElementById('fullName').value = fullUser.name || fullUser.fullname || '';
+        if (document.getElementById('email')) document.getElementById('email').value = fullUser.email || '';
+        if (document.getElementById('phone')) document.getElementById('phone').value = fullUser.phone || '';
+        if (document.getElementById('address')) document.getElementById('address').value = fullUser.address || '';
+        if (document.getElementById('bio')) document.getElementById('bio').value = fullUser.bio || '';
+        if (document.getElementById('skills')) document.getElementById('skills').value = (fullUser.skills || []).join(', ');
+        if (document.getElementById('dob')) document.getElementById('dob').value = fullUser.dob || '';
+        if (document.getElementById('experience')) document.getElementById('experience').value = fullUser.experience || '';
 
         const userApplications = applications.filter(app => app.userEmail === currentUser.email || app.candidateEmail === currentUser.email);
         const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
-        document.getElementById('statsCV').innerText = savedCVs.length;
-        document.getElementById('statsApplied').innerText = userApplications.length;
-        document.getElementById('statsSaved').innerText = userSavedJobs.length;
+        
+        if (document.getElementById('statsCV')) document.getElementById('statsCV').innerText = savedCVs.length;
+        if (document.getElementById('statsApplied')) document.getElementById('statsApplied').innerText = userApplications.length;
+        if (document.getElementById('statsSaved')) document.getElementById('statsSaved').innerText = userSavedJobs.length;
 
         renderCVList();
         renderApplications();
@@ -551,8 +482,10 @@
     }
 
     function scrollToProfile() {
-        document.querySelector('[data-tab="profile"]').click();
-        document.getElementById('fullName').scrollIntoView({ behavior: 'smooth' });
+        const profTab = document.querySelector('[data-tab="profile"]');
+        if (profTab) profTab.click();
+        const fNameInput = document.getElementById('fullName');
+        if (fNameInput) fNameInput.scrollIntoView({ behavior: 'smooth' });
     }
 
     function renderCVList() {
@@ -580,7 +513,7 @@
             savedCVs.splice(index, 1); 
             localStorage.setItem('savedCVs', JSON.stringify(savedCVs)); 
             renderCVList(); 
-            document.getElementById('statsCV').innerText = savedCVs.length; 
+            if (document.getElementById('statsCV')) document.getElementById('statsCV').innerText = savedCVs.length; 
             showAlert('profileAlert', 'Đã xóa CV thành công!', 'success'); 
         } 
     }
@@ -598,15 +531,13 @@
         let hrCandidates = JSON.parse(localStorage.getItem('hr_candidates')) || [];
         
         let userApplications = allApplications.filter(app => 
-            app.userEmail === currentUser.email || 
-            app.candidateEmail === currentUser.email
+            app.userEmail === currentUser.email || app.candidateEmail === currentUser.email
         );
         
         userApplications = userApplications.map(app => {
             const hrMatch = hrCandidates.find(c => 
                 (c.email === currentUser.email || c.candidateEmail === currentUser.email) && 
-                c.jobId === app.jobId &&
-                c.position === app.jobTitle
+                c.jobId === app.jobId && c.position === app.jobTitle
             );
             if (hrMatch && hrMatch.status) {
                 app.status = hrMatch.status;
@@ -616,289 +547,189 @@
         
         if (userApplications.length === 0) {
             container.innerHTML = `<div class="empty-state"><i class="fas fa-briefcase"></i><p>Bạn chưa ứng tuyển công việc nào.</p><a href="trangvieclam.html" class="btn-primary" style="display: inline-block; margin-top: 16px; text-decoration: none;">Tìm việc ngay</a></div>`;
-            document.getElementById('statsApplied').innerText = 0;
+            if (document.getElementById('statsApplied')) document.getElementById('statsApplied').innerText = 0;
             return;
         }
         
-        container.innerHTML = userApplications.map((app, index) => `
-            <div class="application-item">
-                <div>
-                    <h4>${app.jobTitle || '---'}</h4>
-                    <p style="font-size: 13px; color: #64748b;">${app.company || '---'} • ${app.location || 'Đà Nẵng'}</p>
-                    <p style="font-size: 12px; color: #64748b;">💰 ${app.salary || 'Thỏa thuận'}</p>
+        container.innerHTML = userApplications.map((app, index) => {
+            const statusText = app.status === 'pending' ? 'Chờ duyệt' : (app.status === 'approved' ? 'Đã duyệt' : 'Từ chối');
+            return `
+                <div class="application-item" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+                    <div>
+                        <h4 style="margin: 0 0 6px 0; color: #1e293b;">${app.jobTitle || '---'}</h4>
+                        <p style="font-size: 13px; color: #64748b; margin: 4px 0;">${app.company || '---'} • ${app.location || 'Đà Nẵng'}</p>
+                        <p style="font-size: 12px; color: #64748b; margin: 4px 0;">💰 ${app.salary || 'Thỏa thuận'} • Hạn: ${app.date || '---'}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-${app.status || 'pending'}">${statusText}</span>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                    <span class="status-badge status-${app.status || 'pending'}">
-                        ${getStatusText(app.status || 'pending')}
-                    </span>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Ứng tuyển: ${app.date || '---'}</p>
-                    <button onclick="viewApplicationDetail(${index})" class="btn-outline btn-sm" style="margin-top: 8px; padding: 4px 12px; font-size: 12px;"><i class="fas fa-eye"></i> Chi tiết</button>
-                </div>
-            </div>
-        `).join('');
-        
-        document.getElementById('statsApplied').innerText = userApplications.length;
+            `;
+        }).join('');
     }
 
-    function getStatusText(status) { 
-        switch(status) { 
-            case 'pending': return '⏳ Đang xử lý'; 
-            case 'approved': return '✅ Đã duyệt'; 
-            case 'rejected': return '❌ Từ chối'; 
-            default: return '📤 Đã gửi'; 
-        } 
-    }
-    
-    function viewApplicationDetail(index) {
-        let allApplications = JSON.parse(localStorage.getItem('applications')) || [];
-        let userApplications = allApplications.filter(app => 
-            app.userEmail === currentUser?.email || 
-            app.candidateEmail === currentUser?.email
-        );
-        const app = userApplications[index];
-        
-        if (app) {
-            let statusText = getStatusText(app.status);
-            alert(`📋 CHI TIẾT ỨNG TUYỂN\n\n` +
-                  `Công việc: ${app.jobTitle}\n` +
-                  `Công ty: ${app.company}\n` +
-                  `Địa điểm: ${app.location}\n` +
-                  `Mức lương: ${app.salary}\n` +
-                  `Ngày ứng tuyển: ${app.date}\n` +
-                  `Trạng thái: ${statusText}\n\n` +
-                  `💡 Nhà tuyển dụng sẽ liên hệ với bạn trong thời gian sớm nhất!`);
-        }
-    }
-
+    // ==================== ĐÃ FIX: CHÈN HOÀN CHỈNH LOGIC XÓA VIỆC LÀM ĐÃ LƯU ====================
     function renderSavedJobs() {
         const container = document.getElementById('savedJobsList');
         if (!container) return;
-        const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser.email);
+
+        savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+        const userSavedJobs = savedJobs.filter(job => job.userEmail === currentUser?.email);
+
+        if (document.getElementById('statsSaved')) {
+            document.getElementById('statsSaved').innerText = userSavedJobs.length;
+        }
+
         if (userSavedJobs.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Bạn chưa lưu công việc nào.</p></div>`;
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Bạn chưa lưu công việc nào.</p><a href="trangvieclam.html" class="btn-primary" style="display: inline-block; margin-top: 16px; text-decoration: none;">Xem việc làm ngay</a></div>`;
             return;
         }
-        container.innerHTML = userSavedJobs.map((job, index) => `
-            <div class="application-item">
+
+        container.innerHTML = userSavedJobs.map((job) => `
+            <div class="application-item" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
                 <div>
-                    <h4>${job.title}</h4>
-                    <p style="font-size: 13px; color: #64748b;">${job.company} • ${job.location}</p>
-                    <p style="font-size: 12px; color: #64748b;">💰 ${job.salary}</p>
+                    <h4 style="margin: 0 0 6px 0; color: #1e293b;">${job.jobTitle || job.title || '---'}</h4>
+                    <p style="font-size: 13px; color: #64748b; margin: 4px 0;">${job.company || '---'} • ${job.location || 'Đà Nẵng'}</p>
+                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">💰 ${job.salary || 'Thỏa thuận'}</p>
                 </div>
-                <div class="cv-actions">
-                    <button onclick="viewJobDetail(${job.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
-                    <button onclick="removeSavedJob(${index})" class="delete-cv" title="Bỏ lưu"><i class="fas fa-trash"></i></button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="job-detail.html?id=${job.jobId || job.id}" class="btn-primary" style="padding: 6px 14px; font-size: 12px; text-decoration: none; border-radius: 8px;">Ứng tuyển</a>
+                    <button onclick="deleteSavedJob('${job.jobId || job.id}')" style="background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#fca5a5'" onmouseout="this.style.background='#fee2e2'" title="Xóa khỏi danh sách đã lưu">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
         `).join('');
     }
 
-    function viewJobDetail(jobId) { 
-        window.location.href = `job-detail.html?id=${jobId}`; 
-    }
-    
-    function removeSavedJob(index) { 
-        if (confirm('Bỏ lưu công việc này?')) { 
-            savedJobs.splice(index, 1); 
-            localStorage.setItem('savedJobs', JSON.stringify(savedJobs)); 
-            renderSavedJobs(); 
-            document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser.email).length; 
-            showAlert('profileAlert', 'Đã bỏ lưu công việc!', 'success'); 
-        } 
-    }
-
-    function updateProfile(e) {
-        e.preventDefault();
-        
-        if (!validateProfileForm()) {
-            const firstError = document.querySelector('.field-error');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.deleteSavedJob = function(jobId) {
+        if (confirm('Bạn có chắc chắn muốn bỏ lưu công việc này không?')) {
+            savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
+            
+            // Tìm và lọc loại bỏ công việc dựa trên jobId và Email người dùng hiện tại
+            const index = savedJobs.findIndex(job => String(job.jobId || job.id) === String(jobId) && job.userEmail === currentUser?.email);
+            
+            if (index !== -1) {
+                savedJobs.splice(index, 1);
+                localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+                
+                // Render lại giao diện tab và cập nhật số lượng badge
+                renderSavedJobs();
+                showAlert('profileAlert', 'Đã xóa công việc đã lưu thành công!', 'success');
+            } else {
+                alert('Không tìm thấy dữ liệu công việc cần xóa!');
             }
-            showAlert('profileAlert', 'Vui lòng kiểm tra lại thông tin đã nhập!', 'error');
-            return;
         }
-        
-        const fullName = document.getElementById('fullName').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const address = document.getElementById('address').value.trim();
-        const bio = document.getElementById('bio').value.trim();
-        const skillsInput = document.getElementById('skills').value.trim();
-        const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
-        const dob = document.getElementById('dob').value;
-        const experience = document.getElementById('experience').value;
+    };
 
-        const userIndex = users.findIndex(u => u.email === currentUser.email);
-        if (userIndex !== -1) {
-            users[userIndex] = { ...users[userIndex], name: fullName, fullname: fullName, phone: phone, address: address, bio: bio, skills: skills, dob: dob, experience: experience };
-            localStorage.setItem('users', JSON.stringify(users));
-        }
-        currentUser.name = fullName; 
-        currentUser.fullname = fullName; 
-        currentUser.experience = experience;
-        currentUser.phone = phone;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        document.getElementById('sidebarName').innerText = fullName;
-        
-        const updatedUser = users.find(u => u.email === currentUser.email) || currentUser;
-        renderProfileAnalysis(updatedUser);
-        
-        showAlert('profileAlert', 'Cập nhật thông tin thành công!', 'success');
-    }
+    // ==================== KHỞI TẠO TAB VÀ SỰ KIỆN CHUNG ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserData();
+        setupRealtimeValidation();
 
-    function changePassword(e) {
-        e.preventDefault();
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (!currentPassword || !newPassword || !confirmPassword) { 
-            showAlert('securityAlert', 'Vui lòng nhập đầy đủ thông tin!', 'error'); 
-            return; 
-        }
-        if (newPassword.length < 6) { 
-            showAlert('securityAlert', 'Mật khẩu mới phải có ít nhất 6 ký tự!', 'error'); 
-            return; 
-        }
-        if (newPassword !== confirmPassword) { 
-            showAlert('securityAlert', 'Mật khẩu xác nhận không khớp!', 'error'); 
-            return; 
-        }
-        
-        const userIndex = users.findIndex(u => u.email === currentUser.email);
-        if (userIndex !== -1 && users[userIndex].password !== currentPassword) { 
-            showAlert('securityAlert', 'Mật khẩu hiện tại không chính xác!', 'error'); 
-            return; 
-        }
-        
-        if (userIndex !== -1) { 
-            users[userIndex].password = newPassword; 
-            localStorage.setItem('users', JSON.stringify(users)); 
-        }
-        
-        document.getElementById('securityForm').reset();
-        showAlert('securityAlert', 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.', 'success');
-        setTimeout(() => { 
-            localStorage.removeItem('currentUser'); 
-            window.location.href = 'login.html'; 
-        }, 2000);
-    }
-
-    function changeAvatar() { 
-        const seed = prompt('Nhập tên để tạo avatar mới:', currentUser?.name || 'User'); 
-        if (seed) { 
-            document.getElementById('avatarImg').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; 
-            showAlert('profileAlert', 'Avatar đã được cập nhật!', 'success'); 
-        } 
-    }
-    
-    function showAlert(alertId, message, type) { 
-        const alertDiv = document.getElementById(alertId); 
-        if (alertDiv) { 
-            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`; 
-            alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`; 
-            setTimeout(() => { 
-                alertDiv.className = 'alert'; 
-                alertDiv.innerHTML = ''; 
-            }, 3000); 
-        } else { 
-            alert(message); 
-        } 
-    }
-
-    function initTabs() {
-        const menuItems = document.querySelectorAll('.sidebar-menu li');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                menuItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const tabId = item.getAttribute('data-tab');
-                tabPanes.forEach(pane => pane.classList.remove('active'));
-                document.getElementById(`tab-${tabId}`).classList.add('active');
+        // Menu chuyển đổi qua lại giữa các tab
+        document.querySelectorAll('.sidebar-menu li').forEach(li => {
+            li.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+                
+                this.classList.add('active');
+                const tabId = `tab-${this.dataset.tab}`;
+                const targetPane = document.getElementById(tabId);
+                if (targetPane) targetPane.classList.add('active');
+                
+                // Tải lại danh sách tương ứng để dữ liệu cập nhật chính xác nhất
+                if (this.dataset.tab === 'cv') renderCVList();
+                if (this.dataset.tab === 'applications') renderApplications();
+                if (this.dataset.tab === 'saved') renderSavedJobs();
             });
         });
-    }
 
-    function updateAuthUI() {
-        const authDiv = document.getElementById('authButtons');
-        const userDiv = document.getElementById('userBox');
-        if (!authDiv || !userDiv) return;
-        
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        
-        if (user && user.email) {
-            const displayName = user.name || user.fullname || user.email.split('@')[0];
-            authDiv.style.display = 'none';
-            userDiv.style.display = 'block';
-            userDiv.innerHTML = `
-                <div class="user-info">
-                    <div class="user-avatar" onclick="goToProfile()">${displayName.charAt(0).toUpperCase()}</div>
-                    <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600;">${displayName}</span>
-                    <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
-                </div>`;
-        } else {
-            authDiv.style.display = 'flex';
-            userDiv.style.display = 'none';
-            userDiv.innerHTML = '';
-        }
-    }
-    
-    function goToProfile() { window.location.href = 'profile.html'; }
-    
-    function handleLogout() { 
-        localStorage.removeItem('currentUser'); 
-        window.location.href = 'index.html'; 
-    }
+        // Xử lý nộp form cập nhật thông tin cá nhân
+        document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!validateProfileForm()) {
+                showAlert('profileAlert', 'Vui lòng sửa các trường lỗi màu đỏ trước khi lưu!', 'danger');
+                return;
+            }
 
-    function initStorageListener() {
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'applications' || e.key === 'hr_candidates') {
-                applications = JSON.parse(localStorage.getItem('applications')) || [];
-                renderApplications();
-            }
-            if (e.key === 'savedJobs') {
-                savedJobs = JSON.parse(localStorage.getItem('savedJobs')) || [];
-                renderSavedJobs();
-                document.getElementById('statsSaved').innerText = savedJobs.filter(j => j.userEmail === currentUser?.email).length;
-            }
-            if (e.key === 'savedCVs') {
-                savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
-                renderCVList();
-                document.getElementById('statsCV').innerText = savedCVs.length;
-            }
-            if (e.key === 'currentUser') {
-                updateAuthUI();
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const dob = document.getElementById('dob').value;
+            const experience = document.getElementById('experience').value;
+            const skills = document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s !== "");
+
+            users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIdx = users.findIndex(u => u.email === currentUser.email);
+
+            if (userIdx !== -1) {
+                users[userIdx].name = fullName;
+                users[userIdx].fullname = fullName;
+                users[userIdx].phone = phone;
+                users[userIdx].address = address;
+                users[userIdx].bio = bio;
+                users[userIdx].dob = dob;
+                users[userIdx].experience = experience;
+                users[userIdx].skills = skills;
+
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Cập nhật lại Object phiên đăng nhập hiện tại
+                currentUser.name = fullName;
+                currentUser.fullname = fullName;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
                 loadUserData();
+                showAlert('profileAlert', 'Cập nhật hồ sơ cá nhân thành công!', 'success');
             }
         });
-    }
 
-    document.addEventListener('DOMContentLoaded', () => { 
-        loadUserData(); 
-        initTabs(); 
-        initStorageListener();
-        setupRealtimeValidation();
-        
-        const profileForm = document.getElementById('profileForm'); 
-        const securityForm = document.getElementById('securityForm'); 
-        
-        if (profileForm) profileForm.addEventListener('submit', updateProfile); 
-        if (securityForm) securityForm.addEventListener('submit', changePassword); 
-        
-        updateAuthUI(); 
+        // Xử lý nộp form đổi mật khẩu bảo mật
+        document.getElementById('securityForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (!currentPass || !newPass || !confirmPass) {
+                showAlert('securityAlert', 'Vui lòng điền đầy đủ các trường mật khẩu!', 'danger');
+                return;
+            }
+
+            users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIdx = users.findIndex(u => u.email === currentUser.email);
+
+            if (userIdx !== -1) {
+                if (users[userIdx].password !== currentPass) {
+                    showAlert('securityAlert', 'Mật khẩu hiện tại chưa chính xác!', 'danger');
+                    return;
+                }
+                if (newPass.length < 6) {
+                    showAlert('securityAlert', 'Mật khẩu mới phải từ 6 ký tự trở lên!', 'danger');
+                    return;
+                }
+                if (newPass !== confirmPass) {
+                    showAlert('securityAlert', 'Xác nhận mật khẩu mới không trùng khớp!', 'danger');
+                    return;
+                }
+
+                users[userIdx].password = newPass;
+                localStorage.setItem('users', JSON.stringify(users));
+                this.reset();
+                showAlert('securityAlert', 'Đổi mật khẩu tài khoản thành công!', 'success');
+            }
+        });
     });
-    
-    window.viewCV = viewCV; 
-    window.deleteCV = deleteCV; 
-    window.viewJobDetail = viewJobDetail; 
-    window.removeSavedJob = removeSavedJob; 
-    window.changeAvatar = changeAvatar; 
-    window.handleLogout = handleLogout; 
-    window.scrollToProfile = scrollToProfile;
-    window.goToProfile = goToProfile;
-    window.viewApplicationDetail = viewApplicationDetail;
+
+    window.changeAvatar = function() {
+        const newSeed = prompt("Nhập từ khóa bất kỳ để tạo avatar ngẫu nhiên theo ý thích của bạn:", "Developer");
+        if (newSeed && newSeed.trim() !== "") {
+            const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(newSeed)}`;
+            document.getElementById('avatarImg').src = avatarUrl;
+        }
+    };
     </script>
-    <script src="notify-bridge.js"></script>
 </body>
 </html>
