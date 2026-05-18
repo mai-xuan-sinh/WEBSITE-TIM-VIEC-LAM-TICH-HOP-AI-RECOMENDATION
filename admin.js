@@ -307,6 +307,7 @@ function renderDeleteRequests() {
     `).join('');
 }
 
+// Duyệt yêu cầu xóa
 function approveDeleteRequest(notifId, jobId) {
     if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?")) return;
     
@@ -343,6 +344,7 @@ function approveDeleteRequest(notifId, jobId) {
     renderDeleteRequests();
 }
 
+// Từ chối yêu cầu xóa
 function rejectDeleteRequest(notifId) {
     const reason = prompt("Nhập lý do từ chối yêu cầu xóa:", "Tin vẫn còn giá trị sử dụng");
     if (!reason) return;
@@ -755,7 +757,7 @@ function renderUsers() {
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-warning btn-sm" onclick="toggleUserStatus(${user.id})"><i class="fas ${user.status === "banned" ? "fa-unlock" : "fa-lock"}"></i></button>
               </td>
-        </table>
+        </tr>
     `).join("");
     
     const totalPages = Math.ceil(filtered.length / usersPerPage);
@@ -1213,12 +1215,10 @@ function closeJobApproveModal() {
     if (reasonInput) reasonInput.value = "";
 }
 
-// ==================== QUẢN LÝ CÔNG TY (ĐÃ SỬA LỖI XÓA) ====================
+// ==================== QUẢN LÝ CÔNG TY (ĐÃ SỬA LỖI - CẬP NHẬT ĐỒNG BỘ VỚI ỨNG VIÊN) ====================
 function renderCompanies() {
-    // Lấy dữ liệu mới nhất từ localStorage - KHÔNG dùng cache
+    // Lấy dữ liệu mới nhất từ localStorage
     let companies = JSON.parse(localStorage.getItem("companies")) || [];
-    
-    // KHÔNG gọi syncCompaniesFromData() ở đây để tránh đồng bộ lại dữ liệu cũ sau khi xóa
     
     const searchTerm = document.getElementById("searchCompany")?.value.toLowerCase() || "";
     let filtered = searchTerm ? companies.filter(c => c.name?.toLowerCase().includes(searchTerm)) : companies;
@@ -1227,7 +1227,7 @@ function renderCompanies() {
     if (!tbody) return;
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px;">📭 Không có công ty nào</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px;">📭 Không có công ty nào</td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td></tr>`;
         return;
     }
     
@@ -1325,9 +1325,9 @@ function saveCompany() {
 
 function editCompany(id) { openCompanyModal(id); }
 
-// ==================== HÀM XÓA CÔNG TY (ĐÃ SỬA LỖI) ====================
+// ==================== HÀM XÓA CÔNG TY (ĐÃ SỬA LỖI - ĐỒNG BỘ VỚI ỨNG VIÊN) ====================
 function deleteCompany(id) {
-    if (!confirm("Bạn có chắc muốn xóa công ty này?\n\n⚠️ CẢNH BÁO: Việc xóa công ty sẽ:\n- Xóa công ty khỏi danh sách\n- Xóa TẤT CẢ tin tuyển dụng của công ty này\n- Xóa TẤT CẢ ứng tuyển vào các tin đó\n- Không thể khôi phục!")) {
+    if (!confirm("⚠️ CẢNH BÁO: Xóa công ty sẽ xóa TẤT CẢ tin tuyển dụng và ứng tuyển liên quan!\n\nBạn có chắc muốn xóa công ty này?")) {
         return;
     }
     
@@ -1351,7 +1351,7 @@ function deleteCompany(id) {
     const updatedHrJobs = hrJobs.filter(j => j.company !== companyName);
     localStorage.setItem("hr_jobs", JSON.stringify(updatedHrJobs));
     
-    // 3. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi jobs (global)
+    // 3. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi jobs (QUAN TRỌNG - CHO ỨNG VIÊN)
     let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
     const updatedGlobalJobs = globalJobs.filter(j => j.company !== companyName);
     localStorage.setItem("jobs", JSON.stringify(updatedGlobalJobs));
@@ -1372,7 +1372,7 @@ function deleteCompany(id) {
     const updatedApplications = applications.filter(a => a.company !== companyName);
     localStorage.setItem("applications", JSON.stringify(updatedApplications));
     
-    // 6. Xóa TẤT CẢ ứng viên liên quan
+    // 6. Xóa TẤT CẢ ứng viên liên quan trong hr_candidates
     let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
     const updatedHrCandidates = hrCandidates.filter(c => c.company !== companyName);
     localStorage.setItem("hr_candidates", JSON.stringify(updatedHrCandidates));
@@ -1399,7 +1399,49 @@ function deleteCompany(id) {
     });
     localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
     
-    // 10. Render lại giao diện với dữ liệu đã cập nhật
+    // 10. Gửi thông báo đến tất cả ứng viên đã ứng tuyển vào công ty này
+    const affectedApplications = applications.filter(a => a.company === companyName);
+    if (affectedApplications.length > 0) {
+        affectedApplications.forEach(app => {
+            if (app.userEmail) {
+                let candidateNotifs = JSON.parse(localStorage.getItem('candidate_notifications')) || [];
+                candidateNotifs.unshift({
+                    id: Date.now(),
+                    userId: app.userEmail,
+                    title: "🏢 Công ty đã ngừng hoạt động",
+                    content: `Công ty "${companyName}" đã ngừng tuyển dụng. Bài đăng bạn đã ứng tuyển đã bị hủy.`,
+                    type: "company_closed",
+                    read: false,
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('candidate_notifications', JSON.stringify(candidateNotifs));
+            }
+        });
+    }
+    
+    // 11. Kích hoạt sự kiện storage để cập nhật REAL TIME cho tất cả tab đang mở
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'companies',
+        newValue: JSON.stringify(updatedCompanies)
+    }));
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'hr_jobs',
+        newValue: JSON.stringify(updatedHrJobs)
+    }));
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'jobs',
+        newValue: JSON.stringify(updatedGlobalJobs)
+    }));
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'applications',
+        newValue: JSON.stringify(updatedApplications)
+    }));
+    
+    // Gửi sự kiện tùy chỉnh cho trang index (trang chủ)
+    window.dispatchEvent(new CustomEvent('companies-updated', { detail: { companyName, action: 'delete' } }));
+    window.dispatchEvent(new CustomEvent('jobs-updated', { detail: { companyName, action: 'delete' } }));
+    
+    // 12. Render lại giao diện Admin
     renderCompanies();
     
     if (typeof renderJobs === 'function') {
@@ -1416,17 +1458,7 @@ function deleteCompany(id) {
     
     updateStats();
     
-    // Kích hoạt storage event
-    window.dispatchEvent(new StorageEvent('storage', {
-        key: 'companies',
-        newValue: JSON.stringify(updatedCompanies)
-    }));
-    window.dispatchEvent(new StorageEvent('storage', {
-        key: 'hr_jobs',
-        newValue: JSON.stringify(updatedHrJobs)
-    }));
-    
-    alert(`✅ Đã xóa công ty "${companyName}" thành công!\n\n📊 Đã xóa:\n- ${deletedJobs.length} tin tuyển dụng\n- ${deletedAppCount} lượt ứng tuyển`);
+    alert(`✅ Đã xóa công ty "${companyName}" thành công!\n\n📊 Đã xóa:\n- ${deletedJobs.length} tin tuyển dụng\n- ${deletedAppCount} lượt ứng tuyển\n- ${affectedApplications.length} ứng viên đã được thông báo`);
 }
 
 // ==================== QUẢN LÝ CV ====================
@@ -1439,7 +1471,7 @@ function renderCVs() {
     if (!tbody) return;
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có CV nào được lưu<\/td><\/tr>`;
+        tbody.innerHTML = `</table><td colspan="7" style="text-align:center; padding:40px;">📭 Chưa có CV nào được lưu<\/td><\/tr>`;
         return;
     }
     
@@ -1825,8 +1857,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initAdminAccount();
     if (!checkAdminAuth()) return;
     
-    // Chỉ đồng bộ dữ liệu từ file gốc một lần duy nhất khi khởi tạo
-    // KHÔNG gọi lại khi xóa/sửa để tránh dữ liệu cũ "hồi sinh"
+    // Chỉ đồng bộ dữ liệu từ file gốc MỘT LẦN DUY NHẤT khi khởi tạo
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
         syncJobsFromData();
     }

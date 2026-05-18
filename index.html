@@ -205,21 +205,40 @@ let allJobsData = [];
 // ==================== LẤY JOBS TỪ NHIỀU NGUỒN ====================
 function getAllJobsFromStorage() {
     let combined = [];
+    
+    // Lấy từ jobs-data.js (static data)
     if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
         combined = [...allJobs];
     }
-    const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    const hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
     
+    // Lấy từ localStorage jobs (nơi Admin duyệt)
+    const storedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+    
+    // Lấy từ hr_jobs (nơi HR đăng tin)
+    const hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    
+    // Gộp tất cả
     combined = [...combined, ...storedJobs, ...hrJobs];
     
+    // Lấy danh sách công ty đang hoạt động (chưa bị xóa)
+    const activeCompanies = JSON.parse(localStorage.getItem("companies")) || [];
+    const activeCompanyNames = new Set(activeCompanies.map(c => c.name));
+    
+    // Lọc chỉ lấy jobs có status = "active" hoặc "approved" VÀ công ty còn tồn tại
     const activeJobs = combined.filter(job => {
+        // Kiểm tra status
         if (job.status && job.status !== 'active' && job.status !== 'approved') {
+            return false;
+        }
+        // Kiểm tra công ty có còn tồn tại không (QUAN TRỌNG)
+        if (job.company && !activeCompanyNames.has(job.company)) {
+            console.log(`🚫 Ẩn job từ công ty đã bị xóa: ${job.company} - ${job.title}`);
             return false;
         }
         return job.title && job.title.trim() !== '';
     });
     
+    // Loại bỏ trùng lặp theo id
     const uniqueJobs = [];
     const ids = new Set();
     for (const job of activeJobs) {
@@ -229,8 +248,17 @@ function getAllJobsFromStorage() {
         }
     }
     
+    // Sắp xếp theo id mới nhất lên đầu
     uniqueJobs.sort((a, b) => b.id - a.id);
-    console.log(`📊 index.html: Đã tải ${uniqueJobs.length} việc làm`);
+    
+    console.log(`📊 index.html: Đã tải ${uniqueJobs.length} việc làm (đã lọc bỏ công ty đã xóa)`);
+    
+    // Cập nhật số lượng hiển thị
+    const statJobsEl = document.getElementById('statJobs');
+    if (statJobsEl) {
+        statJobsEl.textContent = uniqueJobs.length + '+';
+    }
+    
     return uniqueJobs;
 }
 
@@ -593,7 +621,57 @@ function init() {
             refreshAllData();
         }
     });
+    // Lắng nghe sự kiện cập nhật từ Admin (khi xóa công ty)
+window.addEventListener('storage', function(e) {
+    if (e.key === 'jobs' || e.key === 'hr_jobs') {
+        console.log('🔄 Phát hiện thay đổi dữ liệu việc làm, đang cập nhật...');
+        // Cập nhật lại dữ liệu jobs
+        if (typeof getAllJobsFromStorage === 'function') {
+            allJobsData = getAllJobsFromStorage();
+        }
+        if (typeof renderCategories === 'function') {
+            renderCategories();
+        }
+        if (typeof renderAIRecommendations === 'function') {
+            renderAIRecommendations();
+        }
+        // Cập nhật số lượng việc làm trên giao diện
+        const statJobsEl = document.getElementById('statJobs');
+        if (statJobsEl && allJobsData) {
+            statJobsEl.textContent = allJobsData.length + '+';
+        }
+    }
+    
+    if (e.key === 'companies') {
+        console.log('🔄 Phát hiện thay đổi danh sách công ty, đang cập nhật...');
+        // Reload lại danh sách job để lọc bỏ job từ công ty đã xóa
+        if (typeof getAllJobsFromStorage === 'function') {
+            allJobsData = getAllJobsFromStorage();
+        }
+        if (typeof renderAIRecommendations === 'function') {
+            renderAIRecommendations();
+        }
+    }
+    
+    if (e.key === 'applications') {
+        console.log('🔄 Phát hiện thay đổi ứng tuyển, đang cập nhật...');
+    }
+});
+
+// Sự kiện tùy chỉnh cho realtime
+window.addEventListener('jobs-updated', function() {
+    if (typeof getAllJobsFromStorage === 'function') {
+        allJobsData = getAllJobsFromStorage();
+    }
+    if (typeof renderCategories === 'function') {
+        renderCategories();
+    }
+    if (typeof renderAIRecommendations === 'function') {
+        renderAIRecommendations();
+    }
+});
 }
+
 
 window.goToJobDetail = goToJobDetail;
 window.applyJob = applyJob;

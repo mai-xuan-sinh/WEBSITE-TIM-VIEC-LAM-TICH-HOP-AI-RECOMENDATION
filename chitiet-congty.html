@@ -53,7 +53,7 @@
                 contact: { web: "philong.com.vn", phone: "0236 3888 000", email: "tuyendung@philong.com.vn" },
                 jobs: [{ title: "Fullstack Developer", salary: "18-28 triệu" }, { title: "System Admin", salary: "15-22 triệu" }]
             },
-            enclave: {
+enclave: {
                 name: "Enclave Software", logo: "img/images.png", location: "Sơn Trà, Đà Nẵng", size: "300+ nhân viên",
                 rating: 4.5, industry: "Công nghệ thông tin",
                 desc: "Được thành lập từ năm 2007, Enclave là công ty phần mềm lâu đời tại Đà Nẵng.",
@@ -88,7 +88,7 @@
             trungnam: {
                 name: "Trung Nam Group", logo: "img/logo-trung-nam-group.png", location: "Liên Chiểu", size: "1500+ nhân viên",
                 rating: 4.6, industry: "Xây dựng - Bất động sản",
-                desc: "Tập đoàn Trung Nam tiên phong trong lĩnh vực Năng lượng và Hạ tầng.",
+desc: "Tập đoàn Trung Nam tiên phong trong lĩnh vực Năng lượng và Hạ tầng.",
                 benefits: ["Tham gia siêu dự án", "Thưởng dự án", "Đào tạo chuyên sâu"],
                 contact: { web: "trungnamgroup.com.vn", phone: "0236 381 9182", email: "hr@trungnamgroup.com.vn" },
                 jobs: [{ title: "Kỹ sư điện", salary: "12-20 triệu" }, { title: "Quản lý dự án", salary: "20-35 triệu" }]
@@ -134,7 +134,7 @@
         }
 
         function loadDetail() {
-            const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
             const data = companyData[id];
 
@@ -184,7 +184,7 @@
                                 <div class="stars">${renderStars(4.5)}</div>
                                 <strong>Nguyễn Văn A</strong> - Nhân viên chính thức
                                 <p style="margin-top:8px;color:#475569">"Môi trường làm việc chuyên nghiệp, đồng nghiệp thân thiện, cơ hội thăng tiến rõ ràng."</p>
-                            </div>
+</div>
                             <div class="review-form">
                                 <h4>Gửi đánh giá của bạn</h4>
                                 <textarea rows="3" placeholder="Chia sẻ trải nghiệm làm việc của bạn..."></textarea>
@@ -251,7 +251,7 @@
                 // Thêm onclick và cursor pointer cho Avatar + Tên
                 userDiv.innerHTML = `
                     <div class="user-info" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <div class="user-avatar" onclick="goToProfile()" style="cursor: pointer; width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+<div class="user-avatar" onclick="goToProfile()" style="cursor: pointer; width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                             ${userName.charAt(0).toUpperCase()}
                         </div>
                         <span class="user-name" onclick="goToProfile()" style="cursor: pointer; font-weight: 600; color: #334155;">
