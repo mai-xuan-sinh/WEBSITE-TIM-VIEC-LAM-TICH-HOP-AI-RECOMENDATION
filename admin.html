@@ -7,7 +7,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
-
+    <style>
+        /* Thêm CSS cho phần xác minh thanh toán */
+        .payment-requests-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .payment-request-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            transition: 0.3s;
+        }
+        .payment-request-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .payment-request-card .request-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .payment-request-card .request-header strong {
+            color: #ef4444;
+        }
+        .payment-request-card .request-content p {
+            margin: 8px 0;
+        }
+        .payment-request-card .request-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+        .payment-proof img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 8px;
+        }
+    </style>
 </head>
 <body>
 
@@ -28,6 +71,7 @@
             <li data-tab="reports"><a href="#"><i class="fas fa-chart-bar"></i><span>Báo cáo & Thống kê</span></a></li>
             <li data-tab="support"><a href="#"><i class="fas fa-headset"></i><span>Hỗ trợ người dùng</span></a></li>
             <li data-tab="deleterequests"><a href="#"><i class="fas fa-trash-alt"></i><span>Yêu cầu xóa</span></a></li>
+            <li data-tab="payments"><a href="#"><i class="fas fa-credit-card"></i><span>Xác minh thanh toán</span></a></li>
         </ul>
         <div class="sidebar-footer">
             <div class="admin-info">
@@ -247,6 +291,20 @@
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
                     <p>Đang tải danh sách yêu cầu xóa...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: XÁC MINH THANH TOÁN ==================== -->
+        <div id="tab-payments" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-credit-card"></i> Xác minh thanh toán</h2>
+                <p>Kiểm tra và xác nhận các giao dịch chuyển khoản từ nhà tuyển dụng</p>
+            </div>
+            <div id="paymentVerificationsList" class="payment-requests-container">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                    <p>Đang tải danh sách yêu cầu xác minh...</p>
                 </div>
             </div>
         </div>

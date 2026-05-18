@@ -214,7 +214,7 @@
             <div id="jobPagination" class="pagination-container"></div>
         </section>
 
-        <section id="view-candidates" class="view-section"><h2 class="title">Duyệt hồ sơ ứng viên</h2><div class="panel"><div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;"><select id="candidateFilter" class="form-control" style="width: 150px;"><option value="all">Tất cả</option><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Từ chối</option></select><select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select></div><div class="table-responsive"><table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="candidate-list"></tbody></table></div></div></section>
+        <section id="view-candidates" class="view-section"><h2 class="title">Duyệt hồ sơ ứng viên</h2><div class="panel"><div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;"><select id="candidateFilter" class="form-control" style="width: 150px;"><option value="all">Tất cả</option><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Từ chối</option></select><select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select></div><div class="table-responsive"><table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th><tr></thead><tbody id="candidate-list"></tbody></table></div></div></section>
 
         <div id="cvModal" class="modal"><div class="modal-box cv-modal"><div class="flex-between"><h3><i class="fa-solid fa-file-pdf"></i> Chi tiết hồ sơ</h3><button class="btn-close" id="closeCvModal"><i class="fa-solid fa-xmark"></i></button></div><div id="cvContent" class="cv-content"></div><div class="cv-actions" id="cvActions"></div></div></div>
 
@@ -265,9 +265,63 @@
             <div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep1"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary next-step" id="nextToStep3">Tiếp theo <i class="fa-solid fa-arrow-right"></i></button></div></form>
         </div>
         <div id="step3" class="step-content">
-            <div class="payment-container"><div class="payment-info"><h4><i class="fa-regular fa-rectangle-list"></i> Thông tin tin đăng</h4><div id="jobSummary" class="price-breakdown"><div class="price-item"><span>Tiêu đề:</span><span id="summaryTitle">---</span></div><div class="price-item"><span>Lĩnh vực:</span><span id="summaryCategory">---</span></div><div class="price-item"><span>Mức lương:</span><span id="summarySalary">---</span></div><div class="price-item"><span>Địa điểm:</span><span id="summaryLocation">---</span></div><div class="price-item"><span>Ngày đăng:</span><span id="summaryStartDate">---</span></div><div class="price-item"><span>Ngày hết hạn:</span><span id="summaryEndDate">---</span></div><div class="price-item"><span>Thời gian đăng:</span><span id="summaryDuration">--- ngày</span></div><div class="price-item total"><span>Tổng phí đăng tin:</span><span id="totalPriceDisplay" class="price-highlight">0đ</span></div></div></div><div class="qr-payment"><div class="qr-code"><i class="fa-solid fa-qrcode" style="font-size: 80px; color: var(--primary);"></i></div><p class="qr-note">Quét mã QR để thanh toán</p><div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;"><p><strong>Ngân hàng:</strong> Vietcombank</p><p><strong>Số TK:</strong> 1234567890</p><p><strong>Chủ TK:</strong> DANANG WORK</p><p><strong>Nội dung:</strong> <span id="transactionCode" style="font-weight: bold; color: #ef4444;"></span></p></div></div></div>
-            <div class="date-range" id="dateRangeInfo"><i class="fa-regular fa-calendar-check"></i> Tin sẽ được đăng từ <span id="displayStartDate">---</span> đến hết <span id="displayEndDate">---</span></div>
-            <div class="form-actions"><button type="button" class="btn-outline prev-step" id="backToStep2"><i class="fa-solid fa-arrow-left"></i> Quay lại</button><button type="button" class="btn-primary" id="submitJobPost"><i class="fa-solid fa-check-circle"></i> Xác nhận đăng tin</button></div>
+            <div class="payment-container">
+                <div class="payment-info">
+                    <h4><i class="fa-regular fa-rectangle-list"></i> Thông tin tin đăng</h4>
+                    <div id="jobSummary" class="price-breakdown">
+                        <div class="price-item"><span>Tiêu đề:</span><span id="summaryTitle">---</span></div>
+                        <div class="price-item"><span>Lĩnh vực:</span><span id="summaryCategory">---</span></div>
+                        <div class="price-item"><span>Mức lương:</span><span id="summarySalary">---</span></div>
+                        <div class="price-item"><span>Địa điểm:</span><span id="summaryLocation">---</span></div>
+                        <div class="price-item"><span>Ngày đăng:</span><span id="summaryStartDate">---</span></div>
+                        <div class="price-item"><span>Ngày hết hạn:</span><span id="summaryEndDate">---</span></div>
+                        <div class="price-item"><span>Thời gian đăng:</span><span id="summaryDuration">--- ngày</span></div>
+                        <div class="price-item total"><span>Tổng phí đăng tin:</span><span id="totalPriceDisplay" class="price-highlight">0đ</span></div>
+                    </div>
+                </div>
+                <div class="qr-payment">
+                    <div class="qr-code">
+                        <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" alt="QR Code" style="width:180px;height:180px;">
+                    </div>
+                    <p class="qr-note">Quét mã QR để thanh toán</p>
+                    <div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;">
+                        <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                        <p><strong>Số TK:</strong> 1234567890</p>
+                        <p><strong>Chủ TK:</strong> DANANG WORK</p>
+                        <p><strong>Nội dung:</strong> <span id="transactionCode" style="font-weight: bold; color: #ef4444;"></span></p>
+                        <p><strong>Số tiền:</strong> <span id="expectedAmount" style="font-weight: bold; color: #10b981;"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-proof-section" style="margin-top: 24px; padding: 20px; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
+                <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-upload" style="color: #16a34a;"></i> 
+                    Xác nhận thanh toán
+                </h4>
+                <p style="font-size: 13px; color: #166534; margin-bottom: 16px;">
+                    Vui lòng chuyển khoản đúng số tiền và nội dung bên trên. 
+                    Sau khi chuyển khoản, hãy tải lên ảnh chụp màn hình (screenshot) hoặc biên lai chuyển khoản để xác minh.
+                </p>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-image"></i> Ảnh chụp chuyển khoản <span style="color:#ef4444">*</span></label>
+                    <input type="file" id="paymentProofImage" accept="image/*" capture="environment" style="padding: 10px; border: 1px dashed #16a34a; background: #f8fafc;">
+                    <small class="form-hint" style="color: #166534;">Chấp nhận file .jpg, .png (dung lượng tối đa 5MB)</small>
+                </div>
+                <div id="imagePreview" style="display: none; margin-top: 12px;">
+                    <img id="paymentPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 150px; border-radius: 8px;">
+                    <button type="button" id="removeImageBtn" class="btn-sm" style="margin-top: 8px; background: #ef4444; color: white;">Xóa ảnh</button>
+                </div>
+            </div>
+            
+            <div class="date-range" id="dateRangeInfo">
+                <i class="fa-regular fa-calendar-check"></i> Tin sẽ được đăng từ <span id="displayStartDate">---</span> đến hết <span id="displayEndDate">---</span>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-outline prev-step" id="backToStep2"><i class="fa-solid fa-arrow-left"></i> Quay lại</button>
+                <button type="button" class="btn-primary" id="submitJobPost"><i class="fa-solid fa-check-circle"></i> Xác nhận & Gửi xác minh</button>
+            </div>
         </div>
     </div>
 </div>
@@ -430,53 +484,45 @@
         if (startDateInput) { startDateInput.min = today; startDateInput.value = today; }
     }
     
-    // ==================== YÊU CẦU XÓA TIN (GỬI ĐẾN ADMIN) ====================
-    // ================= GỬI YÊU CẦU XÓA =================
+    window.requestDeleteJob = function(jobId) {
+        let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+        const jobIndex = hrJobs.findIndex(j => String(j.id) === String(jobId));
 
-// Đổi tên từ requestDelete thành requestDeleteJob để khớp với lệnh gọi trong HTML
-window.requestDeleteJob = function(jobId) {
-    // 1. Lấy danh sách jobs từ hr_jobs (đây là key bạn đang dùng cho HR)
-    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
-    const jobIndex = hrJobs.findIndex(j => String(j.id) === String(jobId));
+        if (jobIndex === -1) {
+            alert('Không tìm thấy tin tuyển dụng!');
+            return;
+        }
 
-    if (jobIndex === -1) {
-        alert('Không tìm thấy tin tuyển dụng!');
-        return;
-    }
+        const reason = prompt('Nhập lý do xóa tin tuyển dụng:');
+        if (!reason || reason.trim() === '') {
+            alert('Vui lòng nhập lý do!');
+            return;
+        }
 
-    const reason = prompt('Nhập lý do xóa tin tuyển dụng:');
-    if (!reason || reason.trim() === '') {
-        alert('Vui lòng nhập lý do!');
-        return;
-    }
+        hrJobs[jobIndex].status = 'pending_delete';
+        localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
+        jobs = hrJobs;
 
-    // 2. Cập nhật trạng thái tin tuyển dụng thành 'pending_delete'
-    hrJobs[jobIndex].status = 'pending_delete';
-    localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
-    jobs = hrJobs; // Cập nhật biến cục bộ
+        let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+        const alreadySent = requests.some(r => String(r.jobId) === String(jobId));
 
-    // 3. Lưu yêu cầu vào danh sách gửi Admin
-    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
-    const alreadySent = requests.some(r => String(r.jobId) === String(jobId));
+        if (!alreadySent) {
+            const newRequest = {
+                jobId: jobId,
+                jobTitle: hrJobs[jobIndex].title,
+                companyName: hrJobs[jobIndex].company,
+                reason: reason,
+                requestDate: new Date().toLocaleString('vi-VN'),
+                status: 'pending'
+            };
+            requests.push(newRequest);
+            localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
+        }
 
-    if (!alreadySent) {
-        const newRequest = {
-            jobId: jobId,
-            jobTitle: hrJobs[jobIndex].title,
-            companyName: hrJobs[jobIndex].company,
-            reason: reason,
-            requestDate: new Date().toLocaleString('vi-VN'),
-            status: 'pending'
-        };
-        requests.push(newRequest);
-        localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
-    }
-
-    // 4. Render lại giao diện và thông báo
-    renderJobsWithPagination();
-    addActivity(`🗑️ Đã gửi yêu cầu xóa tin: ${hrJobs[jobIndex].title}`);
-    alert('Đã gửi yêu cầu xóa đến Admin! Trạng thái tin đã chuyển sang "Chờ xóa".');
-};
+        renderJobsWithPagination();
+        addActivity(`🗑️ Đã gửi yêu cầu xóa tin: ${hrJobs[jobIndex].title}`);
+        alert('Đã gửi yêu cầu xóa đến Admin! Trạng thái tin đã chuyển sang "Chờ xóa".');
+    };
     
     function renderJobsWithPagination() {
         const container = document.getElementById("job-cards-container");
@@ -554,24 +600,23 @@ window.requestDeleteJob = function(jobId) {
                 statusClass = 'tag-warning';
             }
             
-           // Tìm đoạn này trong renderJobsWithPagination và thay thế:
-return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
-    <div class="job-card-header">
-        <div class="job-card-title">${escapeHtml(job.title)}</div>
-        <div class="job-card-salary">${escapeHtml(job.salary)}</div>
-    </div>
-    <div class="job-card-details">
-        <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
-        <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
-    </div>
-    <div class="job-card-footer">
-        <span class="tag ${statusClass}">${statusText}</span>
-        ${job.status === 'pending_delete' 
-            ? '<span class="tag tag-warning" style="background:#fef3c7; color:#92400e;">⏳ Đang chờ Admin xóa</span>' 
-            : `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>`
-        }
-    </div>
-</div>`;
+            return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
+                <div class="job-card-header">
+                    <div class="job-card-title">${escapeHtml(job.title)}</div>
+                    <div class="job-card-salary">${escapeHtml(job.salary)}</div>
+                </div>
+                <div class="job-card-details">
+                    <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
+                    <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
+                </div>
+                <div class="job-card-footer">
+                    <span class="tag ${statusClass}">${statusText}</span>
+                    ${job.status === 'pending_delete' 
+                        ? '<span class="tag tag-warning" style="background:#fef3c7; color:#92400e;">⏳ Đang chờ Admin xóa</span>' 
+                        : `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>`
+                    }
+                </div>
+            </div>`;
         }).join('');
         
         if (totalPages > 1) {
@@ -643,7 +688,7 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
         localStorage.setItem("hr_candidates", JSON.stringify(data));
         sendNotificationToCandidate(candidate.email, "✅ Hồ sơ được duyệt", `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt.`, "approved");
         renderCandidates();
-        addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
+        addActivity('✅ Đã duyệt hồ sơ de ' + candidate.name);
         if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) {
             openCreateInterviewModal(candidate.id, candidate.name, candidate.position);
         }
@@ -726,75 +771,6 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
     }
     window.removeSkill = function(index) { skillsList.splice(index, 1); renderSkillsTags(); };
     
-    function submitJobPost() {
-        if (!validateStep1()) { showStep(1); return; }
-        if (!validateStep2()) { showStep(2); return; }
-        
-        const title = document.getElementById('jobTitle').value.trim();
-        const category = document.getElementById('jobCategory').value;
-        const salary = document.getElementById('jobSalary').value.trim();
-        const location = document.getElementById('jobLocation').value;
-        const startDate = document.getElementById('jobStartDate').value;
-        const duration = parseInt(document.getElementById('jobDuration').value);
-        const shortDesc = document.getElementById('jobShortDesc').value;
-        const fullDesc = document.getElementById('jobFullDesc').value;
-        const requirement = document.getElementById('jobRequirement').value;
-        const benefits = document.getElementById('jobBenefits').value;
-        
-        const expiryDate = getEndDate(startDate, duration);
-        const totalPrice = calculateTotalPrice(duration);
-        const transactionCode = 'DT' + Date.now();
-        
-        document.getElementById('transactionCode').innerText = transactionCode;
-        updatePriceAndDate();
-        
-        const confirmMessage = `📋 XÁC NHẬN ĐĂNG TIN\n\nThông tin tin đăng:\n• Tiêu đề: ${title}\n• Lĩnh vực: ${category}\n• Mức lương: ${salary}\n• Địa điểm: ${location}\n• Thời gian đăng: ${duration} ngày\n• Tổng phí: ${formatCurrency(totalPrice)}\n\n💰 MÃ GIAO DỊCH: ${transactionCode}\n\n🔔 VUI LÒNG CHUYỂN KHOẢN THEO MÃ TRÊN\nNgân hàng: Vietcombank\nSố TK: 1234567890\nChủ TK: DANANG WORK\nNội dung: ${transactionCode}\n\n✅ Sau khi chuyển khoản, nhấn "OK" để gửi tin đến Admin duyệt.`;
-        
-        if (!confirm(confirmMessage)) return;
-        
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        
-        const newJob = { 
-            id: Date.now(), 
-            title: title, 
-            field: category, 
-            salary: salary, 
-            location: location, 
-            district: location, 
-            startDate: startDate, 
-            expiryDate: expiryDate.toISOString(), 
-            duration: duration, 
-            totalPrice: totalPrice,
-            transactionCode: transactionCode,
-            desc: fullDesc, 
-            shortDesc: shortDesc, 
-            requirement: requirement, 
-            benefits: benefits, 
-            skills: [...skillsList], 
-            company: currentUser?.company?.name || 'Công ty của bạn', 
-            status: 'pending',
-            hrId: currentUser?.id,
-            hrEmail: currentUser?.email,
-            createdAt: new Date().toISOString(), 
-            postDate: new Date().toLocaleDateString('vi-VN') 
-        };
-        
-        jobs.unshift(newJob);
-        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
-        
-        document.getElementById('jobPostModal').classList.remove('show');
-        currentJobPage = 1;
-        renderJobsWithPagination();
-        
-        addActivity(`⏳ Đã gửi tin "${title}" - Mã GD: ${transactionCode} (Chờ duyệt)`);
-        showStep(1);
-        skillsList = [];
-        renderSkillsTags();
-        document.getElementById('skillInput').value = '';
-        
-        alert(`✅ GỬI TIN THÀNH CÔNG!\n\n📌 Mã giao dịch: ${transactionCode}\n📌 Tiêu đề: ${title}\n📌 Thời gian: ${duration} ngày\n📌 Tổng phí: ${formatCurrency(totalPrice)}\n\n⏳ Tin của bạn đang chờ Admin duyệt.`);
-    }
-    
     function renderCandidates() {
         const container = document.getElementById("candidate-list"); if (!container) return;
         let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
@@ -817,39 +793,37 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
     
     function showCVModal(candidate) { if (!candidate) return; const modal = document.getElementById("cvModal"); document.getElementById("cvContent").innerHTML = `<div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div><div class="cv-info"><h2>${escapeHtml(candidate.name)}</h2><p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p><p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p><p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p></div>`; modal.classList.add("show"); }
     
-   function renderNotifications() {
-    const container = document.getElementById("notification-list");
-    if (!container) return;
-    
-    // Luôn lấy dữ liệu mới nhất từ Storage
-    notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-    
-    if (notifications.length === 0) {
-        container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>';
-        return;
-    }
-    
-    container.innerHTML = notifications.map(n => `
-        <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
-            <div class="notification-icon ${n.type || 'system'}">
-                <i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-bell'}"></i>
+    function renderNotifications() {
+        const container = document.getElementById("notification-list");
+        if (!container) return;
+        
+        notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+        
+        if (notifications.length === 0) {
+            container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>';
+            return;
+        }
+        
+        container.innerHTML = notifications.map(n => `
+            <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
+                <div class="notification-icon ${n.type || 'system'}">
+                    <i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-bell'}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${escapeHtml(n.title)}</div>
+                    <div class="notification-desc">${escapeHtml(n.content)}</div>
+                    <div class="notification-time">${n.time}</div>
+                </div>
             </div>
-            <div class="notification-content">
-                <div class="notification-title">${escapeHtml(n.title)}</div>
-                <div class="notification-desc">${escapeHtml(n.content)}</div>
-                <div class="notification-time">${n.time}</div>
-            </div>
-        </div>
-    `).join('');
-    
-    // Cập nhật con số đỏ trên quả chuông
-    const unreadCount = notifications.filter(n => !n.read).length;
-    const badge = document.getElementById("notifBadge");
-    if (badge) {
-        badge.innerText = unreadCount;
-        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        `).join('');
+        
+        const unreadCount = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById("notifBadge");
+        if (badge) {
+            badge.innerText = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
     }
-}
     function markNotificationRead(id) { const n = notifications.find(n => n.id === id); if (n) n.read = true; localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
     function markAllNotificationsRead() { notifications.forEach(n => n.read = true); localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
     function toggleNotificationPanel() { document.getElementById("notificationPanel")?.classList.toggle("show"); }
@@ -868,7 +842,6 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
         document.getElementById("backToStep1")?.addEventListener("click", () => showStep(1));
         document.getElementById("nextToStep3")?.addEventListener("click", () => { if (validateStep2()) { updatePriceAndDate(); showStep(3); } });
         document.getElementById("backToStep2")?.addEventListener("click", () => showStep(2));
-        document.getElementById("submitJobPost")?.addEventListener("click", submitJobPost);
         document.getElementById("jobDuration")?.addEventListener("change", updatePriceAndDate);
         document.getElementById("jobStartDate")?.addEventListener("change", updatePriceAndDate);
         document.getElementById("skillInput")?.addEventListener("keypress", function(e) { if (e.key === 'Enter') { e.preventDefault(); const skill = this.value.trim(); if (skill && !skillsList.includes(skill)) { skillsList.push(skill); renderSkillsTags(); this.value = ''; } } });
@@ -884,6 +857,187 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
         document.getElementById("hrLogoutBtn")?.addEventListener("click", () => { localStorage.removeItem("currentUser"); window.location.href = "login.html"; });
         window.onclick = (e) => { if (e.target.classList?.contains("modal")) e.target.classList.remove("show"); };
         const positions = [...new Set(candidates.map(c => c.position))]; const select = document.getElementById("positionFilter"); if (select) positions.forEach(p => { const opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
+    }
+
+    // ==================== XỬ LÝ UPLOAD ẢNH CHUYỂN KHOẢN ====================
+    let currentPaymentProofBase64 = null;
+    let currentExpectedAmount = 0;
+    let currentTransactionCode = '';
+
+    function updatePaymentInfo() {
+        const duration = parseInt(document.getElementById('jobDuration').value);
+        const totalPrice = duration * 50000;
+        currentExpectedAmount = totalPrice;
+        currentTransactionCode = 'DT' + Date.now();
+        
+        const transactionSpan = document.getElementById('transactionCode');
+        const expectedSpan = document.getElementById('expectedAmount');
+        if (transactionSpan) transactionSpan.innerText = currentTransactionCode;
+        if (expectedSpan) expectedSpan.innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
+        
+        const totalDisplay = document.getElementById('totalPriceDisplay');
+        if (totalDisplay) totalDisplay.innerHTML = totalPrice.toLocaleString('vi-VN') + 'đ';
+        
+        const qrImg = document.getElementById('qrCodeImg');
+        if (qrImg) {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Chuyen%20khoan%20${totalPrice}%20VND%20den%20TK%201234567890%20ND%20${currentTransactionCode}`;
+        }
+    }
+
+    const paymentProofInput = document.getElementById('paymentProofImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const paymentPreviewImg = document.getElementById('paymentPreviewImg');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+
+    if (paymentProofInput) {
+        paymentProofInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('❌ Ảnh quá lớn! Vui lòng chọn ảnh dung lượng dưới 5MB.');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    currentPaymentProofBase64 = evt.target.result;
+                    if (paymentPreviewImg) paymentPreviewImg.src = currentPaymentProofBase64;
+                    if (imagePreview) imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('❌ Vui lòng chọn file ảnh (.jpg, .png)');
+                this.value = '';
+            }
+        });
+    }
+
+    if (removeImageBtn) {
+        removeImageBtn.addEventListener('click', function() {
+            if (paymentProofInput) paymentProofInput.value = '';
+            if (imagePreview) imagePreview.style.display = 'none';
+            currentPaymentProofBase64 = null;
+            if (paymentPreviewImg) paymentPreviewImg.src = '';
+        });
+    }
+
+    const originalShowStep = showStep;
+    window.showStep = function(step) {
+        originalShowStep(step);
+        if (step === 3) {
+            updatePriceAndDate();
+            updatePaymentInfo();
+        }
+    };
+
+    function submitJobPostWithVerification() {
+        if (!validateStep1()) { showStep(1); return; }
+        if (!validateStep2()) { showStep(2); return; }
+        
+        if (!currentPaymentProofBase64) {
+            alert("❌ Vui lòng tải lên ảnh chụp chuyển khoản để xác minh thanh toán!");
+            return;
+        }
+        
+        const title = document.getElementById('jobTitle').value.trim();
+        const category = document.getElementById('jobCategory').value;
+        const salary = document.getElementById('jobSalary').value.trim();
+        const location = document.getElementById('jobLocation').value;
+        const startDate = document.getElementById('jobStartDate').value;
+        const duration = parseInt(document.getElementById('jobDuration').value);
+        const shortDesc = document.getElementById('jobShortDesc').value;
+        const fullDesc = document.getElementById('jobFullDesc').value;
+        const requirement = document.getElementById('jobRequirement').value;
+        const benefits = document.getElementById('jobBenefits').value;
+        
+        const expiryDate = getEndDate(startDate, duration);
+        const totalPrice = calculateTotalPrice(duration);
+        const transactionCode = currentTransactionCode;
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        const newJob = { 
+            id: Date.now(), 
+            title: title, 
+            field: category, 
+            salary: salary, 
+            location: location, 
+            district: location, 
+            startDate: startDate, 
+            expiryDate: expiryDate.toISOString(), 
+            duration: duration, 
+            totalPrice: totalPrice,
+            transactionCode: transactionCode,
+            desc: fullDesc, 
+            shortDesc: shortDesc, 
+            requirement: requirement, 
+            benefits: benefits, 
+            skills: [...skillsList], 
+            company: currentUser?.company?.name || 'Công ty của bạn', 
+            status: 'pending_payment',
+            hrId: currentUser?.id,
+            hrEmail: currentUser?.email,
+            createdAt: new Date().toISOString(), 
+            postDate: new Date().toLocaleDateString('vi-VN'),
+            paymentProof: currentPaymentProofBase64,
+            expectedAmount: totalPrice,
+            paymentStatus: 'pending_verification'
+        };
+        
+        let pendingPayments = JSON.parse(localStorage.getItem('pending_payments')) || [];
+        pendingPayments.push({
+            id: newJob.id,
+            jobTitle: title,
+            company: currentUser?.company?.name || 'Công ty của bạn',
+            amount: totalPrice,
+            transactionCode: transactionCode,
+            paymentProof: currentPaymentProofBase64,
+            submittedAt: new Date().toISOString(),
+            hrId: currentUser?.id,
+            hrName: currentUser?.name || currentUser?.fullname,
+            duration: duration,
+            status: 'pending'
+        });
+        localStorage.setItem('pending_payments', JSON.stringify(pendingPayments));
+        
+        jobs.unshift(newJob);
+        localStorage.setItem("hr_jobs", JSON.stringify(jobs));
+        
+        let adminNotifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
+        adminNotifications.unshift({
+            id: Date.now(),
+            type: 'payment_verification',
+            title: `💰 Yêu cầu xác minh thanh toán`,
+            content: `Công ty ${currentUser?.company?.name || 'Công ty của bạn'} đã gửi yêu cầu đăng tin "${title}" với số tiền ${totalPrice.toLocaleString('vi-VN')}đ. Vui lòng kiểm tra và xác nhận.`,
+            jobId: newJob.id,
+            transactionCode: transactionCode,
+            amount: totalPrice,
+            createdAt: new Date().toISOString(),
+            read: false
+        });
+        localStorage.setItem("admin_notifications", JSON.stringify(adminNotifications));
+        
+        document.getElementById('jobPostModal').classList.remove('show');
+        currentJobPage = 1;
+        renderJobsWithPagination();
+        
+        addActivity(`💰 Đã gửi yêu cầu xác minh thanh toán cho tin "${title}" - Mã GD: ${transactionCode}`);
+        showStep(1);
+        skillsList = [];
+        renderSkillsTags();
+        document.getElementById('skillInput').value = '';
+        if (paymentProofInput) paymentProofInput.value = '';
+        if (imagePreview) imagePreview.style.display = 'none';
+        currentPaymentProofBase64 = null;
+        
+        alert(`✅ ĐÃ GỬI YÊU CẦU XÁC MINH!\n\n📌 Mã giao dịch: ${transactionCode}\n📌 Tiêu đề: ${title}\n📌 Số tiền: ${totalPrice.toLocaleString('vi-VN')}đ\n\n⏳ Tin của bạn đang chờ Admin xác minh thanh toán.`);
+    }
+
+    // Gắn lại sự kiện submit an toàn
+    const submitBtn = document.getElementById("submitJobPost");
+    if (submitBtn) {
+        const newSubmitBtn = submitBtn.cloneNode(true);
+        submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
+        newSubmitBtn.addEventListener("click", submitJobPostWithVerification);
     }
     
     function init() {
@@ -913,96 +1067,61 @@ return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: 
     window.resetJobSearch = resetJobSearch;
     window.viewJobDetail = viewJobDetail;
 
-
-
-
-
-
-// Bổ sung thêm vào hàm initAdminStorageListener hiện có hoặc chèn mới
-function initHRNotificationListener() {
-    window.addEventListener("storage", (e) => {
-        if (e.key === "hr_notifications") {
-            // Lấy dữ liệu mới nhất từ local
-            notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-            // Render lại danh sách thông báo và cập nhật con số trên chuông
-            renderNotifications();
-            updateStats();
-            
-            // Hiện một thông báo nhanh (Toast) để HR biết có tin mới
-            const latest = notifications[0];
-            if (latest && !latest.read) {
-                showToast(`Thông báo mới: ${latest.title}`, "info");
+    function initHRNotificationListener() {
+        window.addEventListener("storage", (e) => {
+            if (e.key === "hr_notifications") {
+                notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+                renderNotifications();
+                updateStats();
+                const latest = notifications[0];
+                if (latest && !latest.read) {
+                    showToast(`Thông báo mới: ${latest.title}`, "info");
+                }
             }
-        }
-    });
-}
+        });
+    }
+    initHRNotificationListener();
 
-// Gọi hàm này khi khởi tạo trang
-initHRNotificationListener();
+    function initAdminActionListeners() {
+        window.addEventListener("storage", (e) => {
+            if (e.key === "hr_jobs") {
+                console.log("⚡ Admin vừa cập nhật danh sách tin!");
+                const freshJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+                jobs = freshJobs; 
+                renderJobsWithPagination(); 
+                updateStats();
+            }
+            if (e.key === "hr_notifications") {
+                console.log("🔔 Có thông báo mới từ Admin!");
+                notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+                renderNotifications();
+                updateStats();
+                const latest = notifications[0];
+                if (latest && !latest.read) {
+                    showToast(latest.title, "success");
+                }
+            }
+        });
+    }
 
-
-
-
-
-
-
-
-// Thay thế toàn bộ đoạn code từ "initHRNotificationListener" đến hết file bằng đoạn này:
-
-function initAdminActionListeners() {
-    window.addEventListener("storage", (e) => {
-        // 1. Khi Admin xóa tin
-        if (e.key === "hr_jobs") {
-            console.log("⚡ Admin vừa cập nhật danh sách tin!");
-            // Cập nhật lại dữ liệu mới từ máy vào biến jobs đang chạy
-            const freshJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-            jobs = freshJobs; 
-            
-            // Vẽ lại giao diện ngay lập tức
-            renderJobsWithPagination(); 
-            updateStats();
-        }
+    const startApp = () => {
+        initHRAccount();
+        if (!checkHRAuth()) return;
         
-        // 2. Khi Admin gửi thông báo mới
-        if (e.key === "hr_notifications") {
-            console.log("🔔 Có thông báo mới từ Admin!");
-            notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-            renderNotifications();
-            updateStats();
-            
-            // Hiện Toast báo hiệu
-            const latest = notifications[0];
-            if (latest && !latest.read) {
-                showToast(latest.title, "success");
-            }
-        }
-    });
-}
+        jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+        notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+        
+        renderJobsWithPagination();
+        renderCandidates();
+        renderInterviews();
+        renderActivityFeed();
+        renderNotifications();
+        updateStats();
+        initEventListeners();
+        initAdminActionListeners();
+    };
 
-// Ghi đè lại hàm khởi tạo duy nhất một lần để tránh xung đột
-const startApp = () => {
-    initHRAccount();
-    if (!checkHRAuth()) return;
-    
-    // Load dữ liệu ban đầu
-    jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-    notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-    
-    renderJobsWithPagination();
-    renderCandidates();
-    renderInterviews();
-    renderActivityFeed();
-    renderNotifications();
-    updateStats();
-    initEventListeners();
-    
-    // Kích hoạt bộ lắng nghe Realtime
-    initAdminActionListeners();
-};
-
-// Chạy ứng dụng
-startApp();
-
+    startApp();
 </script>
 </body>
 </html>

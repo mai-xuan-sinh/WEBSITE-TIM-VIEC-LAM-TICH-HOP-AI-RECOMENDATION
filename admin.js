@@ -60,7 +60,7 @@ function checkAdminAuth() {
     return true;
 }
 
-// ==================== VALIDATE FULLNAME (KHÔNG SỐ) ====================
+// ==================== VALIDATION FUNCTIONS ====================
 function validateFullName(name) {
     if (!name || name.trim().length === 0) {
         return { valid: false, message: "Họ tên không được để trống!" };
@@ -108,7 +108,6 @@ function validateFullNameRealtime() {
     }
 }
 
-// ==================== VALIDATE PHONE NUMBER ====================
 function validatePhoneNumber(phone) {
     if (!phone || phone.trim().length === 0) {
         return { valid: false, message: "Số điện thoại không được để trống!" };
@@ -154,7 +153,6 @@ function validatePhoneRealtime() {
     }
 }
 
-// ==================== VALIDATE EDIT JOB FORM ====================
 function validateEditJobForm() {
     const title = document.getElementById("editJobTitle").value.trim();
     const company = document.getElementById("editJobCompany").value.trim();
@@ -313,18 +311,15 @@ function renderDeleteRequests() {
 function approveDeleteRequest(notifId, jobId) {
     if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?")) return;
     
-    // 1. Xóa khỏi hr_jobs (Dữ liệu gốc của HR)
     let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     const deletedJob = hrJobs.find(j => String(j.id) === String(jobId));
     hrJobs = hrJobs.filter(j => String(j.id) !== String(jobId));
     localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
     
-    // 2. Xóa yêu cầu trong danh sách jobDeleteRequests (Để Admin không thấy nữa)
     let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
     requests = requests.filter(r => String(r.jobId) !== String(jobId));
     localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
     
-    // 3. Gửi thông báo VỀ cho HR
     let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     hrNotifications.unshift({
         id: Date.now(),
@@ -336,7 +331,6 @@ function approveDeleteRequest(notifId, jobId) {
     });
     localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
     
-    // 4. Kích hoạt sự kiện để tab HR cập nhật ngay lập tức
     window.dispatchEvent(new StorageEvent('storage', {
         key: 'hr_jobs',
         newValue: JSON.stringify(hrJobs)
@@ -347,7 +341,7 @@ function approveDeleteRequest(notifId, jobId) {
     }));
     
     alert("✅ Đã xóa tin và gửi thông báo cho HR!");
-    renderDeleteRequests(); // Cập nhật lại giao diện Admin
+    renderDeleteRequests();
 }
 
 // Từ chối yêu cầu xóa
@@ -359,7 +353,6 @@ function rejectDeleteRequest(notifId) {
     const notifIndex = notifications.findIndex(n => n.id == notifId);
     const jobId = notifications[notifIndex]?.jobId;
     
-    // 1. Cập nhật trạng thái tin trở lại active
     let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
     const jobIndex = hrJobs.findIndex(j => j.id == jobId);
     if (jobIndex !== -1) {
@@ -368,7 +361,6 @@ function rejectDeleteRequest(notifId) {
         localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
     }
     
-    // 2. Cập nhật thông báo Admin
     if (notifIndex !== -1) {
         notifications[notifIndex].resolved = true;
         notifications[notifIndex].status = "rejected";
@@ -377,7 +369,6 @@ function rejectDeleteRequest(notifId) {
     }
     localStorage.setItem("admin_notifications", JSON.stringify(notifications));
     
-    // 3. Gửi thông báo cho HR
     let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
     hrNotifications.unshift({
         id: Date.now(),
@@ -389,12 +380,128 @@ function rejectDeleteRequest(notifId) {
     });
     localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
     
-    // 4. Refresh
     renderDeleteRequests();
     renderJobs();
     
     alert("❌ Đã từ chối yêu cầu xóa!");
 }
+
+// ==================== XÁC MINH THANH TOÁN ====================
+function renderPaymentVerifications() {
+    const pendingPayments = JSON.parse(localStorage.getItem('pending_payments')) || [];
+    const container = document.getElementById('paymentVerificationsList');
+    
+    if (!container) return;
+    
+    if (pendingPayments.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;"><i class="fas fa-check-circle" style="font-size:48px;color:#10b981;"></i><p style="margin-top:12px;">Không có yêu cầu xác minh thanh toán nào</p></div>';
+        return;
+    }
+    
+    container.innerHTML = pendingPayments.map(payment => `
+        <div class="payment-request-card" style="background:white;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #e2e8f0;">
+            <div class="request-header" style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                <strong style="color:#ef4444;">💰 Yêu cầu xác minh thanh toán</strong>
+                <span style="font-size:12px;color:#64748b;">${new Date(payment.submittedAt).toLocaleString('vi-VN')}</span>
+            </div>
+            <div class="request-content">
+                <p><strong>Tin tuyển dụng:</strong> ${escapeHtml(payment.jobTitle)}</p>
+                <p><strong>Công ty:</strong> ${escapeHtml(payment.company)}</p>
+                <p><strong>Mã giao dịch:</strong> <span style="color:#ef4444;font-weight:bold;">${payment.transactionCode}</span></p>
+                <p><strong>Số tiền cần xác minh:</strong> <span style="color:#10b981;font-weight:bold;">${payment.amount.toLocaleString('vi-VN')}đ</span></p>
+                <div class="payment-proof" style="margin-top:12px;">
+                    <strong>Ảnh chụp chuyển khoản:</strong>
+                    <div style="margin-top:8px;">
+                        <img src="${payment.paymentProof}" alt="Proof" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #e2e8f0;">
+                    </div>
+                </div>
+            </div>
+            <div class="request-actions" style="display:flex;gap:12px;margin-top:16px;justify-content:flex-end;">
+                <button class="btn-success btn-sm" onclick="verifyPayment('${payment.id}', true, ${payment.amount})" style="background:#10b981;color:white;border:none;padding:8px16px;border-radius:8px;cursor:pointer;">
+                    <i class="fas fa-check-circle"></i> Xác nhận đã nhận tiền
+                </button>
+                <button class="btn-danger btn-sm" onclick="verifyPayment('${payment.id}', false, ${payment.amount})" style="background:#ef4444;color:white;border:none;padding:8px16px;border-radius:8px;cursor:pointer;">
+                    <i class="fas fa-times-circle"></i> Từ chối (sai số tiền)
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.verifyPayment = function(paymentId, isVerified, expectedAmount) {
+    if (!confirm(isVerified ? 'Xác nhận đã nhận đủ tiền và duyệt tin đăng?' : 'Từ chối yêu cầu này?')) return;
+    
+    let pendingPayments = JSON.parse(localStorage.getItem('pending_payments')) || [];
+    const paymentIndex = pendingPayments.findIndex(p => String(p.id) === String(paymentId));
+    
+    if (paymentIndex === -1) return;
+    
+    const payment = pendingPayments[paymentIndex];
+    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    const jobIndex = hrJobs.findIndex(j => String(j.id) === String(payment.id));
+    
+    if (isVerified) {
+        if (jobIndex !== -1) {
+            hrJobs[jobIndex].status = 'active';
+            hrJobs[jobIndex].paymentStatus = 'verified';
+            hrJobs[jobIndex].verifiedAt = new Date().toISOString();
+            localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
+        }
+        
+        pendingPayments.splice(paymentIndex, 1);
+        localStorage.setItem('pending_payments', JSON.stringify(pendingPayments));
+        
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        transactions.unshift({
+            id: payment.transactionCode,
+            companyName: payment.company,
+            package: "Đăng tin",
+            days: payment.duration || 7,
+            amount: payment.amount,
+            date: new Date().toISOString().split('T')[0],
+            status: "completed"
+        });
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        
+        let hrNotifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+        hrNotifications.unshift({
+            id: Date.now(),
+            title: "✅ Thanh toán thành công! Tin đã được duyệt",
+            content: `Thanh toán ${expectedAmount.toLocaleString('vi-VN')}đ cho tin "${payment.jobTitle}" đã được xác nhận. Tin của bạn đã được đăng tải.`,
+            type: "payment_success",
+            time: "Vừa xong",
+            read: false
+        });
+        localStorage.setItem('hr_notifications', JSON.stringify(hrNotifications));
+        
+        alert(`✅ Đã xác nhận thanh toán ${expectedAmount.toLocaleString('vi-VN')}đ và duyệt tin!`);
+    } else {
+        if (jobIndex !== -1) {
+            hrJobs.splice(jobIndex, 1);
+            localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
+        }
+        
+        pendingPayments.splice(paymentIndex, 1);
+        localStorage.setItem('pending_payments', JSON.stringify(pendingPayments));
+        
+        let hrNotifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+        hrNotifications.unshift({
+            id: Date.now(),
+            title: "❌ Thanh toán không thành công",
+            content: `Yêu cầu đăng tin "${payment.jobTitle}" bị từ chối do số tiền chuyển khoản không chính xác. Vui lòng thử lại.`,
+            type: "payment_failed",
+            time: "Vừa xong",
+            read: false
+        });
+        localStorage.setItem('hr_notifications', JSON.stringify(hrNotifications));
+        
+        alert(`❌ Đã từ chối yêu cầu! HR sẽ nhận được thông báo.`);
+    }
+    
+    renderPaymentVerifications();
+    if (typeof renderJobs === 'function') renderJobs();
+    updateStats();
+};
 
 // ==================== ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC ====================
 function syncJobsFromData() {
@@ -611,7 +718,7 @@ function renderTransactions(data) {
                 <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
                     ${t.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
                 </span>
-              </td>
+            </td>
         </tr>
     `).join("");
 }
@@ -939,17 +1046,14 @@ function updateJob() {
 
 function deleteJob(id) {
     if (confirm("Xóa tin tuyển dụng này?\n\nLưu ý: Hành động này sẽ xóa vĩnh viễn tin khỏi hệ thống!")) {
-        // 1. Xóa khỏi hr_jobs
         let jobs = syncJobsFromData();
         jobs = jobs.filter(j => j.id != id);
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
-        // 2. Xóa khỏi jobs (global)
         let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
         globalJobs = globalJobs.filter(j => j.id != id);
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
-        // 3. Xóa khỏi allJobs
         if (typeof allJobs !== 'undefined') {
             const index = allJobs.findIndex(j => j.id == id);
             if (index !== -1) allJobs.splice(index, 1);
@@ -958,7 +1062,6 @@ function deleteJob(id) {
         renderJobs();
         updateStats();
         
-        // 4. Kích hoạt storage event
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'hr_jobs',
             newValue: JSON.stringify(jobs)
@@ -1040,7 +1143,6 @@ function approveJob() {
         }
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
-        // Gửi thông báo đến HR
         let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
         hrNotifications.unshift({
             id: Date.now(),
@@ -1086,7 +1188,6 @@ function rejectJob() {
             if (originalIndex !== -1) allJobs[originalIndex].status = "rejected";
         }
         
-        // Gửi thông báo đến HR
         let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
         hrNotifications.unshift({
             id: Date.now(),
@@ -1224,29 +1325,24 @@ function deleteCompany(id) {
         let companies = syncCompaniesFromData();
         const company = companies.find(c => c.id === id);
         const companyName = company?.name;
-        const companyId = company?.id;
         
         if (!companyName) {
             alert("Không tìm thấy công ty!");
             return;
         }
         
-        // 1. Xóa công ty khỏi danh sách companies
         companies = companies.filter(c => c.id !== id);
         localStorage.setItem("companies", JSON.stringify(companies));
         
-        // 2. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi hr_jobs
         let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
         const deletedJobs = hrJobs.filter(j => j.company === companyName);
         hrJobs = hrJobs.filter(j => j.company !== companyName);
         localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
         
-        // 3. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi jobs (global)
         let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
         globalJobs = globalJobs.filter(j => j.company !== companyName);
         localStorage.setItem("jobs", JSON.stringify(globalJobs));
         
-        // 4. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi allJobs (nếu có)
         if (typeof allJobs !== 'undefined') {
             for (let i = 0; i < allJobs.length; i++) {
                 if (allJobs[i].company === companyName) {
@@ -1256,28 +1352,23 @@ function deleteCompany(id) {
             }
         }
         
-        // 5. Xóa TẤT CẢ ứng tuyển liên quan đến công ty này
         let applications = JSON.parse(localStorage.getItem("applications")) || [];
         const deletedAppCount = applications.filter(a => a.company === companyName).length;
         applications = applications.filter(a => a.company !== companyName);
         localStorage.setItem("applications", JSON.stringify(applications));
         
-        // 6. Xóa TẤT CẢ ứng viên (candidates) liên quan đến công ty này
         let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
         hrCandidates = hrCandidates.filter(c => c.company !== companyName);
         localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
         
-        // 7. Xóa TẤT CẢ giao dịch liên quan đến công ty này
         let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
         transactions = transactions.filter(t => t.companyName !== companyName && t.jobTitle !== companyName);
         localStorage.setItem("transactions", JSON.stringify(transactions));
         
-        // 8. Xóa TẤT CẢ lịch phỏng vấn liên quan đến công ty này
         let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
         interviews = interviews.filter(i => i.company !== companyName);
         localStorage.setItem("hr_interviews", JSON.stringify(interviews));
         
-        // 9. Gửi thông báo đến HR về việc công ty bị xóa
         let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
         hrNotifications.unshift({
             id: Date.now(),
@@ -1289,14 +1380,12 @@ function deleteCompany(id) {
         });
         localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
         
-        // 10. Cập nhật lại giao diện
         renderCompanies();
         if (typeof renderJobs === 'function') renderJobs();
         if (typeof renderCandidates === 'function') renderCandidates();
         if (typeof renderInterviews === 'function') renderInterviews();
         updateStats();
         
-        // 11. Kích hoạt storage event để các tab khác cập nhật
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'companies',
             newValue: JSON.stringify(companies)
@@ -1490,6 +1579,10 @@ function initAdminStorageListener() {
             console.log(`🔄 Phát hiện thay đổi danh mục: ${e.key}, đang cập nhật...`);
             renderCategories();
         }
+        if (e.key === "pending_payments") {
+            console.log("🔄 Phát hiện thay đổi pending_payments, đang cập nhật...");
+            renderPaymentVerifications();
+        }
     });
 }
 
@@ -1527,7 +1620,8 @@ function initTabs() {
         categories: "Danh mục hệ thống",
         reports: "Báo cáo & Thống kê",
         support: "Hỗ trợ người dùng",
-        deleterequests: "Yêu cầu xóa"
+        deleterequests: "Yêu cầu xóa",
+        payments: "Xác minh thanh toán"
     };
     
     menuItems.forEach(item => {
@@ -1547,6 +1641,7 @@ function initTabs() {
             if (tabId === "categories") renderCategories();
             if (tabId === "support") renderSupport();
             if (tabId === "deleterequests") renderDeleteRequests();
+            if (tabId === "payments") renderPaymentVerifications();
         });
     });
 }
@@ -1596,6 +1691,105 @@ function handleAdminLogout() {
     }
 }
 
+// ==================== RENDER YÊU CẦU XÓA (PHẦN 2) ====================
+function renderDeleteRequestsAlt() {
+    const container = document.getElementById('deleteRequestsList');
+    if (!container) return;
+
+    let requests = [];
+    try {
+        requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+    } catch (error) {
+        console.error('Lỗi đọc yêu cầu xóa:', error);
+        requests = [];
+    }
+
+    if (requests.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align:center;padding:50px;color:#666;">
+                <i class="fas fa-inbox" style="font-size:48px;margin-bottom:12px;"></i>
+                <p>Hiện chưa có yêu cầu xóa nào.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <table class="data-table">
+            <thead>
+                <tr><th>ID</th><th>Tin tuyển dụng</th><th>Công ty</th><th>Lý do</th><th>Ngày gửi</th><th>Thao tác</th></tr></thead>
+            <tbody>
+    `;
+
+    requests.forEach((req, index) => {
+        html += `
+            <tr>
+                <td>#${req.jobId || '---'}</td>
+                <td><strong>${req.jobTitle || 'Không có tiêu đề'}</strong></td>
+                <td>${req.companyName || 'Không rõ công ty'}</td>
+                <td><span style="color:#e74c3c;">${req.reason || 'Không có lý do'}</span></td>
+                <td>${req.requestDate || '---'}</td>
+                <td style="white-space:nowrap;">
+                    <button class="btn-primary" onclick="confirmDeleteJob('${req.jobId}', ${index})" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:#e74c3c;color:white;font-size:12px;">
+                        <i class="fas fa-check"></i> Duyệt xóa
+                    </button>
+                    <button class="btn-outline" onclick="rejectDeleteRequestAlt(${index})" style="padding:6px 10px;border:1px solid #ccc;border-radius:6px;cursor:pointer;margin-left:6px;font-size:12px;">
+                        Từ chối
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function confirmDeleteJob(jobId, requestIndex) {
+    const confirmDelete = confirm('Xác nhận xóa vĩnh viễn tin tuyển dụng này?');
+    if (!confirmDelete) return;
+
+    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+    requests.splice(requestIndex, 1);
+    localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
+
+    let allJobsList = JSON.parse(localStorage.getItem('jobs')) || [];
+    allJobsList = allJobsList.filter(job => String(job.id) !== String(jobId));
+    localStorage.setItem('jobs', JSON.stringify(allJobsList));
+
+    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
+    const jobInfo = hrJobs.find(j => String(j.id) === String(jobId));
+    hrJobs = hrJobs.filter(job => String(job.id) !== String(jobId));
+    localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
+
+    let hrNotifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
+    hrNotifications.unshift({
+        id: Date.now(),
+        title: "✅ Tin đã được xóa",
+        content: `Tin tuyển dụng "${jobInfo?.title || 'của bạn'}" đã được Admin phê duyệt xóa thành công.`,
+        type: "system",
+        time: new Date().toLocaleTimeString('vi-VN'),
+        read: false
+    });
+    localStorage.setItem('hr_notifications', JSON.stringify(hrNotifications));
+
+    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_jobs' }));
+    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_notifications' }));
+
+    alert('Đã duyệt xóa và thông báo cho HR!');
+    renderDeleteRequestsAlt();
+}
+
+function rejectDeleteRequestAlt(index) {
+    const confirmReject = confirm('Bạn muốn từ chối yêu cầu này?');
+    if (!confirmReject) return;
+
+    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
+    requests.splice(index, 1);
+    localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
+    renderDeleteRequestsAlt();
+}
+
 // ==================== KHỞI TẠO ====================
 document.addEventListener("DOMContentLoaded", () => {
     initAdminAccount();
@@ -1616,7 +1810,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategories();
     renderSupport();
     renderTransactions();
-    renderDeleteRequests();
+    renderDeleteRequestsAlt();
+    renderPaymentVerifications();
 });
 
 // Export global functions
@@ -1650,312 +1845,6 @@ window.updateSupportStatus = updateSupportStatus;
 window.handleAdminLogout = handleAdminLogout;
 window.approveDeleteRequest = approveDeleteRequest;
 window.rejectDeleteRequest = rejectDeleteRequest;
-window.renderDeleteRequests = renderDeleteRequests;
-
-
-
-
-
-
-
-
-
-
-// ====================== ADMIN DASHBOARD ======================
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    // KHÔNG dùng dữ liệu fake nữa
-    // initSampleData();
-
-    // ================= TAB =================
-    const menuItems = document.querySelectorAll('.sidebar-menu li');
-    const tabs = document.querySelectorAll('.tab-content');
-
-    menuItems.forEach(item => {
-
-        item.addEventListener('click', function (e) {
-
-            e.preventDefault();
-
-            const tabId = this.getAttribute('data-tab');
-
-            // Active menu
-            menuItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-
-            // Show tab
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-
-                if (tab.id === `tab-${tabId}`) {
-                    tab.classList.add('active');
-                }
-            });
-
-            // Title
-            const title = this.querySelector('span').innerText;
-            document.getElementById('pageTitle').innerText = title;
-
-            // Render yêu cầu xóa
-            if (tabId === 'deleterequests') {
-                renderDeleteRequests();
-            }
-
-        });
-
-    });
-
-    // ================= DATE =================
-    const now = new Date();
-
-    document.getElementById('currentDate').innerText =
-        now.toLocaleDateString('vi-VN', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-    // ================= LOAD LẦN ĐẦU =================
-    renderDeleteRequests();
-
-    // ================= REALTIME UPDATE =================
-    window.addEventListener('storage', function (event) {
-
-        if (event.key === 'jobDeleteRequests') {
-            renderDeleteRequests();
-        }
-
-    });
-
-});
-
-
-// ====================== RENDER YÊU CẦU XÓA ======================
-
-function renderDeleteRequests() {
-
-    const container = document.getElementById('deleteRequestsList');
-
-    if (!container) return;
-
-    let requests = [];
-
-    try {
-
-        requests = JSON.parse(
-            localStorage.getItem('jobDeleteRequests')
-        ) || [];
-
-    } catch (error) {
-
-        console.error('Lỗi đọc yêu cầu xóa:', error);
-
-        requests = [];
-
-    }
-
-    // Không có dữ liệu
-    if (requests.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty-state" style="text-align:center;padding:50px;color:#666;">
-                <i class="fas fa-inbox" style="font-size:48px;margin-bottom:12px;"></i>
-                <p>Hiện chưa có yêu cầu xóa nào.</p>
-            </div>
-        `;
-
-        return;
-    }
-
-    let html = `
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tin tuyển dụng</th>
-                    <th>Công ty</th>
-                    <th>Lý do</th>
-                    <th>Ngày gửi</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    requests.forEach((req, index) => {
-
-        html += `
-            <tr>
-                <td>#${req.jobId || '---'}</td>
-
-                <td>
-                    <strong>${req.jobTitle || 'Không có tiêu đề'}</strong>
-                </td>
-
-                <td>
-                    ${req.companyName || 'Không rõ công ty'}
-                </td>
-
-                <td>
-                    <span style="color:#e74c3c;">
-                        ${req.reason || 'Không có lý do'}
-                    </span>
-                </td>
-
-                <td>
-                    ${req.requestDate || '---'}
-                </td>
-
-                <td style="white-space:nowrap;">
-
-                    <button
-                        class="btn-primary"
-                        onclick="confirmDeleteJob('${req.jobId}', ${index})"
-                        style="
-                            padding:6px 10px;
-                            border:none;
-                            border-radius:6px;
-                            cursor:pointer;
-                            background:#e74c3c;
-                            color:white;
-                            font-size:12px;
-                        "
-                    >
-                        <i class="fas fa-check"></i>
-                        Duyệt xóa
-                    </button>
-
-                    <button
-                        class="btn-outline"
-                        onclick="rejectDeleteRequest(${index})"
-                        style="
-                            padding:6px 10px;
-                            border:1px solid #ccc;
-                            border-radius:6px;
-                            cursor:pointer;
-                            margin-left:6px;
-                            font-size:12px;
-                        "
-                    >
-                        Từ chối
-                    </button>
-
-                </td>
-            </tr>
-        `;
-
-    });
-
-    html += `
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-
-}
-
-
-
-// ====================== DUYỆT XÓA ======================
-
-function confirmDeleteJob(jobId, requestIndex) {
-    const confirmDelete = confirm('Xác nhận xóa vĩnh viễn tin tuyển dụng này?');
-    if (!confirmDelete) return;
-
-    // 1. Xóa yêu cầu xóa (Requests)
-    let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
-    requests.splice(requestIndex, 1);
-    localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
-
-    // 2. Xóa tin trong danh sách jobs chung (Dùng cho trang chủ)
-    let allJobs = JSON.parse(localStorage.getItem('jobs')) || [];
-    allJobs = allJobs.filter(job => String(job.id) !== String(jobId));
-    localStorage.setItem('jobs', JSON.stringify(allJobs));
-
-    // 3. Xóa tin trong danh sách hr_jobs (Dùng cho HR Dashboard) - QUAN TRỌNG
-    let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
-    const jobInfo = hrJobs.find(j => String(j.id) === String(jobId));
-    hrJobs = hrJobs.filter(job => String(job.id) !== String(jobId));
-    localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
-
-    // 4. Gửi thông báo cho HR
-    let hrNotifications = JSON.parse(localStorage.getItem('hr_notifications')) || [];
-    hrNotifications.unshift({
-        id: Date.now(),
-        title: "✅ Tin đã được xóa",
-        content: `Tin tuyển dụng "${jobInfo?.title || 'của bạn'}" đã được Admin phê duyệt xóa thành công.`,
-        type: "system",
-        time: new Date().toLocaleTimeString('vi-VN'),
-        read: false
-    });
-    localStorage.setItem('hr_notifications', JSON.stringify(hrNotifications));
-
-    // 5. KÍCH HOẠT REALTIME
-    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_jobs' }));
-    window.dispatchEvent(new StorageEvent('storage', { key: 'hr_notifications' }));
-
-    alert('Đã duyệt xóa và thông báo cho HR!');
-    renderDeleteRequests();
-}
-
-
-// ====================== TỪ CHỐI ======================
-
-function rejectDeleteRequest(index) {
-
-    const confirmReject = confirm(
-        'Bạn muốn từ chối yêu cầu này?'
-    );
-
-    if (!confirmReject) return;
-
-    let requests = JSON.parse(
-        localStorage.getItem('jobDeleteRequests')
-    ) || [];
-
-    requests.splice(index, 1);
-
-    localStorage.setItem(
-        'jobDeleteRequests',
-        JSON.stringify(requests)
-    );
-
-    renderDeleteRequests();
-
-}
-
-
-
-// ====================== LOGOUT ======================
-
-function handleAdminLogout() {
-
-    if (confirm('Bạn muốn đăng xuất?')) {
-
-        window.location.href = 'login.html';
-
-    }
-
-}
-// ... (đoạn code xóa job giữ nguyên)
-
-// 5. Gửi thông báo cho HR (Cập nhật lại để khớp format của HR)
-let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-hrNotifications.unshift({
-    id: Date.now(),
-    title: "✅ Tin tuyển dụng đã bị xóa",
-    content: `Yêu cầu xóa tin "${deletedJob?.title || 'Tin tuyển dụng'}" đã được Admin phê duyệt và gỡ bỏ khỏi hệ thống.`,
-    type: "system", // Dùng 'system' để hiện icon chuông mặc định của HR
-    time: new Date().toLocaleTimeString('vi-VN'),
-    read: false
-});
-localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
-
-// 6. Quan trọng: Tạo một sự kiện để tab HR biết mà cập nhật ngay lập tức
-window.dispatchEvent(new StorageEvent('storage', {
-    key: 'hr_notifications',
-    newValue: JSON.stringify(hrNotifications)
-}));
+window.renderDeleteRequests = renderDeleteRequestsAlt;
+window.verifyPayment = verifyPayment;
+window.renderPaymentVerifications = renderPaymentVerifications;
