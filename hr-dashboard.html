@@ -826,7 +826,108 @@
         updateStats();
     }
     
-    function showCVModal(candidate) { if (!candidate) return; const modal = document.getElementById("cvModal"); document.getElementById("cvContent").innerHTML = `<div class="cv-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb"></div><div class="cv-info"><h2>${escapeHtml(candidate.name)}</h2><p><i class="fa-solid fa-briefcase"></i> <strong>Vị trí:</strong> ${escapeHtml(candidate.position)}</p><p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> ${escapeHtml(candidate.email)}</p><p><i class="fa-solid fa-phone"></i> <strong>SĐT:</strong> ${escapeHtml(candidate.phone)}</p></div>`; modal.classList.add("show"); }
+    function showCVModal(candidate) {
+    if (!candidate) return;
+    
+    const modal = document.getElementById("cvModal");
+    if (!modal) return;
+    
+    // Lấy thông tin CV từ localStorage nếu có (từ savedCVs)
+    let cvInfo = null;
+    const savedCVs = JSON.parse(localStorage.getItem('savedCVs')) || [];
+    
+    // Tìm CV theo email hoặc tên ứng viên
+    cvInfo = savedCVs.find(cv => 
+        cv.email === candidate.email || 
+        cv.fullName === candidate.name ||
+        cv.email?.toLowerCase() === candidate.email?.toLowerCase()
+    );
+    
+    // Nếu không tìm thấy CV, tạo thông tin từ candidate
+    if (!cvInfo) {
+        cvInfo = {
+            fullName: candidate.name || 'Chưa cập nhật',
+            position: candidate.position || 'Chưa cập nhật',
+            email: candidate.email || 'Chưa cập nhật',
+            phone: candidate.phone || 'Chưa cập nhật',
+            skills: candidate.skills || [],
+            experience: candidate.experience || 'Chưa cập nhật',
+            education: candidate.education || 'Chưa cập nhật',
+            intro: candidate.intro || 'Chưa có giới thiệu',
+            address: candidate.address || 'Chưa cập nhật',
+            avatar: candidate.avatar || null
+        };
+    }
+    
+    const skillsHtml = (cvInfo.skills || []).map(skill => 
+        `<span class="skill-tag">${escapeHtml(skill)}</span>`
+    ).join('');
+    
+    const modalContent = document.getElementById("cvContent");
+    if (modalContent) {
+        modalContent.innerHTML = `
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div class="cv-avatar">
+                        <img src="${cvInfo.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(candidate.name)}&backgroundColor=2563eb`}" 
+                             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #2563eb;">
+                    </div>
+                    <button onclick="downloadCVPDF(${candidate.id})" class="btn-sm" style="margin-top: 12px; background: #2563eb; color: white;">
+                        <i class="fa-solid fa-download"></i> Tải CV
+                    </button>
+                </div>
+                <div class="cv-info" style="flex: 1;">
+                    <h2 style="margin-bottom: 16px; color: #0f172a;">${escapeHtml(cvInfo.fullName)}</h2>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="color: #2563eb; margin-bottom: 8px;"><i class="fa-solid fa-briefcase"></i> Thông tin cơ bản</h4>
+                        <p><strong>Vị trí ứng tuyển:</strong> ${escapeHtml(candidate.position)}</p>
+                        <p><strong>Email:</strong> ${escapeHtml(candidate.email)}</p>
+                        <p><strong>Số điện thoại:</strong> ${escapeHtml(candidate.phone || 'Chưa cập nhật')}</p>
+                        <p><strong>Địa chỉ:</strong> ${escapeHtml(cvInfo.address)}</p>
+                        <p><strong>Ngày ứng tuyển:</strong> ${candidate.date || '---'}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="color: #2563eb; margin-bottom: 8px;"><i class="fa-solid fa-code"></i> Kỹ năng</h4>
+                        <div class="skills-tags" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${skillsHtml || '<span>Chưa cập nhật kỹ năng</span>'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="color: #2563eb; margin-bottom: 8px;"><i class="fa-solid fa-graduation-cap"></i> Học vấn</h4>
+                        <p>${escapeHtml(cvInfo.education || 'Chưa cập nhật')}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="color: #2563eb; margin-bottom: 8px;"><i class="fa-solid fa-clock"></i> Kinh nghiệm</h4>
+                        <p>${escapeHtml(cvInfo.experience || 'Chưa cập nhật')}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #2563eb; margin-bottom: 8px;"><i class="fa-solid fa-user"></i> Giới thiệu bản thân</h4>
+                        <p style="white-space: pre-line;">${escapeHtml(cvInfo.intro || 'Chưa có giới thiệu')}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    modal.classList.add("show");
+}
+
+// Hàm tải CV dạng PDF (tùy chọn)
+window.downloadCVPDF = function(candidateId) {
+    let candidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+    const candidate = candidates.find(c => c.id === candidateId);
+    if (!candidate) {
+        alert("Không tìm thấy thông tin ứng viên!");
+        return;
+    }
+    
+    alert(`📄 Chức năng tải CV đang phát triển.\n\nThông tin CV của ${candidate.name}:\n- Email: ${candidate.email}\n- Vị trí: ${candidate.position}\n- Kỹ năng: ${(candidate.skills || []).join(', ')}`);
+};
     
     function renderNotifications() {
         const container = document.getElementById("notification-list");
@@ -844,7 +945,197 @@
     
     function searchCandidates() { const keyword = document.getElementById("searchKeyword")?.value.toLowerCase() || "", skill = document.getElementById("searchSkill")?.value.toLowerCase() || "", exp = document.getElementById("searchExperience")?.value || ""; let filtered = candidates.filter(c => c.status === "approved"); if (keyword) filtered = filtered.filter(c => c.name.toLowerCase().includes(keyword) || c.position.toLowerCase().includes(keyword)); if (skill) filtered = filtered.filter(c => (c.skills || []).some(s => s.toLowerCase().includes(skill))); if (exp) filtered = filtered.filter(c => c.experience === exp); const container = document.getElementById("searchResults"); if (!container) return; if (filtered.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><h3>Không tìm thấy ứng viên</h3></div>'; return; } container.innerHTML = filtered.map(c => { const matchScore = Math.min((c.skills?.length || 0) * 20, 100); return `<div class="candidate-result-card"><div class="candidate-info"><h4>${escapeHtml(c.name)}</h4><p>${escapeHtml(c.position)}</p><div class="candidate-skills">${(c.skills || []).slice(0,3).map(s => `<span class="skill-badge">${escapeHtml(s)}</span>`).join('')}</div></div><div class="candidate-actions"><div class="match-score">${matchScore}%</div><button class="btn-sm" style="background:var(--primary);color:white" onclick="openCreateInterviewModal(${c.id}, '${escapeHtml(c.name)}', '${escapeHtml(c.position)}')"><i class="fa-regular fa-calendar-plus"></i> Mời PV</button></div></div>`; }).join(''); }
     
-    function renderInterviews() { const container = document.getElementById("interviews-container"); if (!container) return; if (interviews.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fa-regular fa-calendar-xmark"></i><h3>Chưa có lịch phỏng vấn</h3></div>'; return; } container.innerHTML = interviews.map(i => { const date = new Date(i.date); return `<div class="interview-card"><div class="interview-card-header"><h4>${escapeHtml(i.position)}</h4><div class="interview-position">${escapeHtml(i.candidateName || i.candidate)}</div><span class="interview-status status-${i.status}">${i.status === 'upcoming' ? 'Sắp diễn ra' : 'Đã hoàn thành'}</span></div><div class="interview-card-body"><div class="interview-datetime"><div class="interview-date"><div class="day">${date.getDate()}</div><div class="month">Th${date.getMonth()+1}</div></div><div class="interview-time">${i.time}</div></div><div class="interview-info"><p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(i.location)}</p></div>${i.note ? `<div class="interview-note">${escapeHtml(i.note)}</div>` : ''}</div><div class="interview-card-footer"><button class="btn-sm" onclick="deleteInterview(${i.id})"><i class="fa-solid fa-trash"></i> Xóa</button></div></div>`; }).join(''); updateStats(); }
+    function renderInterviews() {
+    const container = document.getElementById("interviews-container");
+    const emptyState = document.getElementById("interview-empty-state");
+    
+    if (!container) return;
+    
+    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+    const filterStatus = document.querySelector("#view-interviews .filter-tab.active")?.dataset.filter || "all";
+    const searchTerm = document.getElementById("interviewSearch")?.value.toLowerCase() || "";
+    
+    let filtered = allInterviews;
+    if (filterStatus !== "all") filtered = filtered.filter(i => i.status === filterStatus);
+    if (searchTerm) filtered = filtered.filter(i => i.candidateName?.toLowerCase().includes(searchTerm) || i.candidate?.toLowerCase().includes(searchTerm));
+    
+    if (filtered.length === 0) {
+        if (container) container.innerHTML = "";
+        if (emptyState) emptyState.style.display = "block";
+        updateStats();
+        return;
+    }
+    
+    if (emptyState) emptyState.style.display = "none";
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    container.innerHTML = filtered.map((interview, idx) => {
+        const interviewDate = new Date(interview.date);
+        interviewDate.setHours(0, 0, 0, 0);
+        
+        // Tự động cập nhật trạng thái nếu ngày phỏng vấn đã qua
+        let currentStatus = interview.status;
+        if (currentStatus === 'upcoming' && interviewDate < today) {
+            currentStatus = 'completed';
+            interview.status = 'completed';
+            // Cập nhật lại trong localStorage
+            let all = JSON.parse(localStorage.getItem("hr_interviews")) || [];
+            const updateIndex = all.findIndex(i => i.id === interview.id);
+            if (updateIndex !== -1) {
+                all[updateIndex].status = 'completed';
+                localStorage.setItem("hr_interviews", JSON.stringify(all));
+                interviews = all;
+            }
+        }
+        
+        const date = new Date(interview.date);
+        const statusClass = currentStatus === 'upcoming' ? 'status-upcoming' : (currentStatus === 'completed' ? 'status-completed' : 'status-cancelled');
+        const statusText = currentStatus === 'upcoming' ? 'Sắp diễn ra' : (currentStatus === 'completed' ? '✅ Đã hoàn thành' : '❌ Đã hủy');
+        const typeIcon = interview.type === 'online' ? 'fa-video' : (interview.type === 'phone' ? 'fa-phone' : 'fa-building');
+        const typeText = interview.type === 'online' ? 'Online' : (interview.type === 'phone' ? 'Phone' : 'Offline');
+        
+        return `
+            <div class="interview-card" data-id="${interview.id}">
+                <div class="interview-card-header">
+                    <h4>${escapeHtml(interview.position)}</h4>
+                    <div class="interview-position">${escapeHtml(interview.candidateName || interview.candidate)}</div>
+                    <span class="interview-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="interview-card-body">
+                    <div class="interview-datetime">
+                        <div class="interview-date">
+                            <div class="day">${date.getDate()}</div>
+                            <div class="month">Th${date.getMonth() + 1}</div>
+                        </div>
+                        <div class="interview-time">
+                            <i class="fa-regular fa-clock"></i> ${interview.time || '08:00'} (${interview.duration || 45} phút)
+                        </div>
+                    </div>
+                    <div class="interview-info">
+                        <p><i class="fa-solid ${typeIcon}"></i> Hình thức: ${typeText}</p>
+                        <p><i class="fa-solid fa-location-dot"></i> ${interview.location || 'Chưa cập nhật'}</p>
+                        ${interview.interviewer ? `<p><i class="fa-solid fa-users"></i> Người PV: ${escapeHtml(interview.interviewer)}</p>` : ''}
+                    </div>
+                    ${interview.note ? `<div class="interview-note"><i class="fa-regular fa-note-sticky"></i> ${escapeHtml(interview.note)}</div>` : ''}
+                </div>
+                <div class="interview-card-footer">
+                    <button class="btn-sm" onclick="editInterview(${idx})"><i class="fa-solid fa-pen"></i> Sửa</button>
+                    <button class="btn-sm" style="color:var(--danger)" onclick="deleteInterview(${interview.id})"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    ${currentStatus === 'upcoming' ? `
+                        <button class="btn-sm" style="background:#10b981;color:white" onclick="completeInterview(${interview.id})">
+                            <i class="fa-solid fa-check-circle"></i> Hoàn thành
+                        </button>
+                        <button class="btn-sm" style="background:#f59e0b;color:white" onclick="cancelInterview(${interview.id})">
+                            <i class="fa-solid fa-ban"></i> Hủy
+                        </button>
+                    ` : ''}
+                    ${currentStatus === 'completed' ? `
+                        <button class="btn-sm" style="background:#2563eb;color:white" onclick="viewInterviewFeedback(${interview.id})">
+                            <i class="fa-regular fa-comment"></i> Xem đánh giá
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    updateStats();
+}
+
+// Hàm hoàn thành phỏng vấn (có thể thêm đánh giá)
+window.completeInterview = function(interviewId) {
+    const rating = prompt("Nhập đánh giá ứng viên (1-5 sao):", "5");
+    const feedback = prompt("Nhận xét về ứng viên (tùy chọn):", "Ứng viên phù hợp với vị trí");
+    
+    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+    const index = allInterviews.findIndex(i => i.id === interviewId);
+    
+    if (index !== -1) {
+        allInterviews[index].status = 'completed';
+        allInterviews[index].rating = rating || '5';
+        allInterviews[index].feedback = feedback || 'Không có nhận xét';
+        allInterviews[index].completedAt = new Date().toISOString();
+        
+        localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
+        interviews = allInterviews;
+        
+        // Gửi thông báo cho ứng viên
+        const candidateEmail = allInterviews[index].candidateEmail;
+        if (candidateEmail) {
+            sendNotificationToCandidate(
+                candidateEmail,
+                "📋 Kết quả phỏng vấn",
+                `Phỏng vấn vị trí "${allInterviews[index].position}" đã hoàn thành. Đánh giá: ${rating || 5}/5 sao.\nNhận xét: ${feedback || 'Chưa có nhận xét'}`,
+                "interview_result"
+            );
+        }
+        
+        renderInterviews();
+        addActivity(`✅ Đã hoàn thành phỏng vấn với ${allInterviews[index].candidateName || allInterviews[index].candidate}`);
+        alert(`✅ Đã đánh dấu hoàn thành phỏng vấn!\n\nĐánh giá: ${rating}/5 sao`);
+    }
+};
+
+// Hàm hủy phỏng vấn
+window.cancelInterview = function(interviewId) {
+    const reason = prompt("Nhập lý do hủy phỏng vấn:", "Thay đổi lịch trình");
+    if (!reason) return;
+    
+    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+    const index = allInterviews.findIndex(i => i.id === interviewId);
+    
+    if (index !== -1) {
+        allInterviews[index].status = 'cancelled';
+        allInterviews[index].cancelReason = reason;
+        allInterviews[index].cancelledAt = new Date().toISOString();
+        
+        localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
+        interviews = allInterviews;
+        
+        // Gửi thông báo cho ứng viên
+        const candidateEmail = allInterviews[index].candidateEmail;
+        if (candidateEmail) {
+            sendNotificationToCandidate(
+                candidateEmail,
+                "❌ Lịch phỏng vấn bị hủy",
+                `Lịch phỏng vấn vị trí "${allInterviews[index].position}" đã bị hủy. Lý do: ${reason}`,
+                "interview_cancelled"
+            );
+        }
+        
+        renderInterviews();
+        addActivity(`❌ Đã hủy lịch phỏng vấn với ${allInterviews[index].candidateName || allInterviews[index].candidate} - Lý do: ${reason}`);
+        alert(`❌ Đã hủy lịch phỏng vấn!`);
+    }
+};
+
+// Hàm xem đánh giá phỏng vấn
+window.viewInterviewFeedback = function(interviewId) {
+    let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+    const interview = allInterviews.find(i => i.id === interviewId);
+    
+    if (interview) {
+        alert(`📋 KẾT QUẢ PHỎNG VẤN\n\nỨng viên: ${interview.candidateName || interview.candidate}\nVị trí: ${interview.position}\nNgày: ${new Date(interview.date).toLocaleDateString('vi-VN')}\n\n⭐ Đánh giá: ${interview.rating || 'Chưa có'}/5 sao\n📝 Nhận xét: ${interview.feedback || 'Chưa có nhận xét'}`);
+    }
+};
+
+// Cập nhật hàm deleteInterview để xóa theo id
+window.deleteInterview = function(interviewId) {
+    if (confirm("Xóa lịch phỏng vấn này?")) {
+        let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
+        const deleted = allInterviews.find(i => i.id === interviewId);
+        allInterviews = allInterviews.filter(i => i.id !== interviewId);
+        
+        localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
+        interviews = allInterviews;
+        
+        renderInterviews();
+        addActivity('🗑️ Xóa lịch phỏng vấn: ' + (deleted ? (deleted.candidateName || deleted.candidate) : 'không xác định'));
+        alert("Đã xóa lịch phỏng vấn!");
+    }
+};
     function deleteInterview(id) { if (confirm("Xóa lịch phỏng vấn?")) { interviews = interviews.filter(i => i.id !== id); localStorage.setItem("hr_interviews", JSON.stringify(interviews)); renderInterviews(); addActivity("🗑️ Đã xóa lịch phỏng vấn"); } }
     
     function initEventListeners() {

@@ -307,7 +307,6 @@ function renderDeleteRequests() {
     `).join('');
 }
 
-// Duyệt yêu cầu xóa
 function approveDeleteRequest(notifId, jobId) {
     if (!confirm("Xác nhận duyệt xóa tin tuyển dụng này?")) return;
     
@@ -344,7 +343,6 @@ function approveDeleteRequest(notifId, jobId) {
     renderDeleteRequests();
 }
 
-// Từ chối yêu cầu xóa
 function rejectDeleteRequest(notifId) {
     const reason = prompt("Nhập lý do từ chối yêu cầu xóa:", "Tin vẫn còn giá trị sử dụng");
     if (!reason) return;
@@ -417,10 +415,10 @@ function renderPaymentVerifications() {
                 </div>
             </div>
             <div class="request-actions" style="display:flex;gap:12px;margin-top:16px;justify-content:flex-end;">
-                <button class="btn-success btn-sm" onclick="verifyPayment('${payment.id}', true, ${payment.amount})" style="background:#10b981;color:white;border:none;padding:8px16px;border-radius:8px;cursor:pointer;">
+                <button class="btn-success btn-sm" onclick="verifyPayment('${payment.id}', true, ${payment.amount})" style="background:#10b981;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">
                     <i class="fas fa-check-circle"></i> Xác nhận đã nhận tiền
                 </button>
-                <button class="btn-danger btn-sm" onclick="verifyPayment('${payment.id}', false, ${payment.amount})" style="background:#ef4444;color:white;border:none;padding:8px16px;border-radius:8px;cursor:pointer;">
+                <button class="btn-danger btn-sm" onclick="verifyPayment('${payment.id}', false, ${payment.amount})" style="background:#ef4444;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">
                     <i class="fas fa-times-circle"></i> Từ chối (sai số tiền)
                 </button>
             </div>
@@ -718,7 +716,7 @@ function renderTransactions(data) {
                 <span class="status-badge ${t.status === 'completed' ? 'status-active' : 'status-pending'}">
                     ${t.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
                 </span>
-            </td>
+               </td>
         </tr>
     `).join("");
 }
@@ -757,7 +755,7 @@ function renderUsers() {
                 <button class="btn-danger btn-sm" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                 <button class="btn-warning btn-sm" onclick="toggleUserStatus(${user.id})"><i class="fas ${user.status === "banned" ? "fa-unlock" : "fa-lock"}"></i></button>
               </td>
-        </tr>
+        </table>
     `).join("");
     
     const totalPages = Math.ceil(filtered.length / usersPerPage);
@@ -1215,15 +1213,23 @@ function closeJobApproveModal() {
     if (reasonInput) reasonInput.value = "";
 }
 
-// ==================== QUẢN LÝ CÔNG TY ====================
+// ==================== QUẢN LÝ CÔNG TY (ĐÃ SỬA LỖI XÓA) ====================
 function renderCompanies() {
-    let companies = syncCompaniesFromData();
+    // Lấy dữ liệu mới nhất từ localStorage - KHÔNG dùng cache
+    let companies = JSON.parse(localStorage.getItem("companies")) || [];
+    
+    // KHÔNG gọi syncCompaniesFromData() ở đây để tránh đồng bộ lại dữ liệu cũ sau khi xóa
     
     const searchTerm = document.getElementById("searchCompany")?.value.toLowerCase() || "";
     let filtered = searchTerm ? companies.filter(c => c.name?.toLowerCase().includes(searchTerm)) : companies;
     
     const tbody = document.getElementById("companyList");
     if (!tbody) return;
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px;">📭 Không có công ty nào</td></tr>`;
+        return;
+    }
     
     tbody.innerHTML = filtered.map(company => `
         <tr>
@@ -1257,7 +1263,7 @@ function openCompanyModal(companyId = null) {
     
     if (companyId) {
         document.getElementById("companyModalTitle").innerText = "Sửa công ty";
-        const companies = syncCompaniesFromData();
+        const companies = JSON.parse(localStorage.getItem("companies")) || [];
         const company = companies.find(c => c.id === companyId);
         if (company) {
             document.getElementById("companyId").value = company.id;
@@ -1294,7 +1300,7 @@ function saveCompany() {
         return;
     }
     
-    let companies = syncCompaniesFromData();
+    let companies = JSON.parse(localStorage.getItem("companies")) || [];
     
     if (id) {
         const index = companies.findIndex(c => c.id == id);
@@ -1319,84 +1325,108 @@ function saveCompany() {
 
 function editCompany(id) { openCompanyModal(id); }
 
+// ==================== HÀM XÓA CÔNG TY (ĐÃ SỬA LỖI) ====================
 function deleteCompany(id) {
-    if (confirm("Bạn có chắc muốn xóa công ty này?\n\n⚠️ CẢNH BÁO: Việc xóa công ty sẽ:\n- Xóa công ty khỏi danh sách\n- Xóa TẤT CẢ tin tuyển dụng của công ty này\n- Xóa TẤT CẢ ứng tuyển vào các tin đó\n- Không thể khôi phục!")) {
-        
-        let companies = syncCompaniesFromData();
-        const company = companies.find(c => c.id === id);
-        const companyName = company?.name;
-        
-        if (!companyName) {
-            alert("Không tìm thấy công ty!");
-            return;
-        }
-        
-        companies = companies.filter(c => c.id !== id);
-        localStorage.setItem("companies", JSON.stringify(companies));
-        
-        let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-        const deletedJobs = hrJobs.filter(j => j.company === companyName);
-        hrJobs = hrJobs.filter(j => j.company !== companyName);
-        localStorage.setItem("hr_jobs", JSON.stringify(hrJobs));
-        
-        let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-        globalJobs = globalJobs.filter(j => j.company !== companyName);
-        localStorage.setItem("jobs", JSON.stringify(globalJobs));
-        
-        if (typeof allJobs !== 'undefined') {
-            for (let i = 0; i < allJobs.length; i++) {
-                if (allJobs[i].company === companyName) {
-                    allJobs.splice(i, 1);
-                    i--;
-                }
+    if (!confirm("Bạn có chắc muốn xóa công ty này?\n\n⚠️ CẢNH BÁO: Việc xóa công ty sẽ:\n- Xóa công ty khỏi danh sách\n- Xóa TẤT CẢ tin tuyển dụng của công ty này\n- Xóa TẤT CẢ ứng tuyển vào các tin đó\n- Không thể khôi phục!")) {
+        return;
+    }
+    
+    // Lấy dữ liệu mới nhất
+    let companies = JSON.parse(localStorage.getItem("companies")) || [];
+    const company = companies.find(c => c.id === id);
+    const companyName = company?.name;
+    
+    if (!companyName) {
+        alert("Không tìm thấy công ty!");
+        return;
+    }
+    
+    // 1. Xóa công ty khỏi danh sách companies
+    const updatedCompanies = companies.filter(c => c.id !== id);
+    localStorage.setItem("companies", JSON.stringify(updatedCompanies));
+    
+    // 2. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi hr_jobs
+    let hrJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
+    const deletedJobs = hrJobs.filter(j => j.company === companyName);
+    const updatedHrJobs = hrJobs.filter(j => j.company !== companyName);
+    localStorage.setItem("hr_jobs", JSON.stringify(updatedHrJobs));
+    
+    // 3. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi jobs (global)
+    let globalJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+    const updatedGlobalJobs = globalJobs.filter(j => j.company !== companyName);
+    localStorage.setItem("jobs", JSON.stringify(updatedGlobalJobs));
+    
+    // 4. Xóa TẤT CẢ tin tuyển dụng của công ty này khỏi allJobs (nếu có)
+    if (typeof allJobs !== 'undefined') {
+        for (let i = 0; i < allJobs.length; i++) {
+            if (allJobs[i].company === companyName) {
+                allJobs.splice(i, 1);
+                i--;
             }
         }
-        
-        let applications = JSON.parse(localStorage.getItem("applications")) || [];
-        const deletedAppCount = applications.filter(a => a.company === companyName).length;
-        applications = applications.filter(a => a.company !== companyName);
-        localStorage.setItem("applications", JSON.stringify(applications));
-        
-        let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
-        hrCandidates = hrCandidates.filter(c => c.company !== companyName);
-        localStorage.setItem("hr_candidates", JSON.stringify(hrCandidates));
-        
-        let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-        transactions = transactions.filter(t => t.companyName !== companyName && t.jobTitle !== companyName);
-        localStorage.setItem("transactions", JSON.stringify(transactions));
-        
-        let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
-        interviews = interviews.filter(i => i.company !== companyName);
-        localStorage.setItem("hr_interviews", JSON.stringify(interviews));
-        
-        let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-        hrNotifications.unshift({
-            id: Date.now(),
-            title: "🏢 Công ty đã bị xóa khỏi hệ thống",
-            content: `Công ty "${companyName}" đã bị Admin xóa khỏi hệ thống. Tất cả tin tuyển dụng và dữ liệu liên quan đã được xóa.`,
-            type: "company_deleted",
-            time: "Vừa xong",
-            read: false
-        });
-        localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
-        
-        renderCompanies();
-        if (typeof renderJobs === 'function') renderJobs();
-        if (typeof renderCandidates === 'function') renderCandidates();
-        if (typeof renderInterviews === 'function') renderInterviews();
-        updateStats();
-        
-        window.dispatchEvent(new StorageEvent('storage', {
-            key: 'companies',
-            newValue: JSON.stringify(companies)
-        }));
-        window.dispatchEvent(new StorageEvent('storage', {
-            key: 'hr_jobs',
-            newValue: JSON.stringify(hrJobs)
-        }));
-        
-        alert(`✅ Đã xóa công ty "${companyName}" thành công!\n\n📊 Đã xóa:\n- ${deletedJobs.length} tin tuyển dụng\n- ${deletedAppCount} lượt ứng tuyển`);
     }
+    
+    // 5. Xóa TẤT CẢ ứng tuyển liên quan
+    let applications = JSON.parse(localStorage.getItem("applications")) || [];
+    const deletedAppCount = applications.filter(a => a.company === companyName).length;
+    const updatedApplications = applications.filter(a => a.company !== companyName);
+    localStorage.setItem("applications", JSON.stringify(updatedApplications));
+    
+    // 6. Xóa TẤT CẢ ứng viên liên quan
+    let hrCandidates = JSON.parse(localStorage.getItem("hr_candidates")) || [];
+    const updatedHrCandidates = hrCandidates.filter(c => c.company !== companyName);
+    localStorage.setItem("hr_candidates", JSON.stringify(updatedHrCandidates));
+    
+    // 7. Xóa TẤT CẢ giao dịch liên quan
+    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    const updatedTransactions = transactions.filter(t => t.companyName !== companyName && t.jobTitle !== companyName);
+    localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
+    
+    // 8. Xóa TẤT CẢ lịch phỏng vấn liên quan
+    let interviews = JSON.parse(localStorage.getItem("hr_interviews")) || [];
+    const updatedInterviews = interviews.filter(i => i.company !== companyName);
+    localStorage.setItem("hr_interviews", JSON.stringify(updatedInterviews));
+    
+    // 9. Gửi thông báo đến HR
+    let hrNotifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
+    hrNotifications.unshift({
+        id: Date.now(),
+        title: "🏢 Công ty đã bị xóa khỏi hệ thống",
+        content: `Công ty "${companyName}" đã bị Admin xóa khỏi hệ thống. Tất cả tin tuyển dụng và dữ liệu liên quan đã được xóa.`,
+        type: "company_deleted",
+        time: "Vừa xong",
+        read: false
+    });
+    localStorage.setItem("hr_notifications", JSON.stringify(hrNotifications));
+    
+    // 10. Render lại giao diện với dữ liệu đã cập nhật
+    renderCompanies();
+    
+    if (typeof renderJobs === 'function') {
+        renderJobs();
+    }
+    
+    if (typeof renderCandidates === 'function') {
+        renderCandidates();
+    }
+    
+    if (typeof renderInterviews === 'function') {
+        renderInterviews();
+    }
+    
+    updateStats();
+    
+    // Kích hoạt storage event
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'companies',
+        newValue: JSON.stringify(updatedCompanies)
+    }));
+    window.dispatchEvent(new StorageEvent('storage', {
+        key: 'hr_jobs',
+        newValue: JSON.stringify(updatedHrJobs)
+    }));
+    
+    alert(`✅ Đã xóa công ty "${companyName}" thành công!\n\n📊 Đã xóa:\n- ${deletedJobs.length} tin tuyển dụng\n- ${deletedAppCount} lượt ứng tuyển`);
 }
 
 // ==================== QUẢN LÝ CV ====================
@@ -1795,7 +1825,16 @@ document.addEventListener("DOMContentLoaded", () => {
     initAdminAccount();
     if (!checkAdminAuth()) return;
     
-    initSyncData();
+    // Chỉ đồng bộ dữ liệu từ file gốc một lần duy nhất khi khởi tạo
+    // KHÔNG gọi lại khi xóa/sửa để tránh dữ liệu cũ "hồi sinh"
+    if (typeof allJobs !== 'undefined' && allJobs.length > 0) {
+        syncJobsFromData();
+    }
+    
+    if (typeof companyData !== 'undefined') {
+        syncCompaniesFromData();
+    }
+    
     initSampleData();
     setCurrentDate();
     updateStats();
