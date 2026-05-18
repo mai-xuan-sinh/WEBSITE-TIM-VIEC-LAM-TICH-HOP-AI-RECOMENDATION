@@ -23,7 +23,8 @@
         .price-item.total { font-weight: 700; font-size: 18px; border-bottom: none; padding-top: 15px; color: var(--primary); }
         .price-highlight { color: var(--primary); font-weight: 700; font-size: 20px; }
         .qr-payment { text-align: center; }
-        .qr-code { width: 180px; height: 180px; margin: 0 auto 16px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--gray-200); font-size: 48px; }
+        .qr-code { width: 200px; height: 200px; margin: 0 auto 16px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--gray-200); }
+        .qr-code img { width: 100%; height: 100%; object-fit: contain; }
         .date-range { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-top: 10px; }
         .date-range span { color: var(--secondary); font-weight: 600; }
         .form-hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
@@ -139,6 +140,61 @@
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
+        
+        /* Style cho phần upload ảnh chuyển khoản */
+        .payment-proof-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f0fdf4;
+            border-radius: 16px;
+            border: 1px solid #bbf7d0;
+        }
+        .payment-proof-section h4 {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #16a34a;
+        }
+        .payment-proof-section p {
+            font-size: 13px;
+            color: #166534;
+            margin-bottom: 16px;
+        }
+        .payment-proof-section .form-group {
+            margin-bottom: 0;
+        }
+        .payment-proof-section .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .payment-proof-section input[type="file"] {
+            padding: 10px;
+            border: 1px dashed #16a34a;
+            background: #f8fafc;
+            border-radius: 8px;
+            width: 100%;
+        }
+        #imagePreview {
+            margin-top: 12px;
+            text-align: center;
+        }
+        #paymentPreviewImg {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        #removeImageBtn {
+            margin-top: 8px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -214,7 +270,7 @@
             <div id="jobPagination" class="pagination-container"></div>
         </section>
 
-        <section id="view-candidates" class="view-section"><h2 class="title">Duyệt hồ sơ ứng viên</h2><div class="panel"><div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;"><select id="candidateFilter" class="form-control" style="width: 150px;"><option value="all">Tất cả</option><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Từ chối</option></select><select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select></div><div class="table-responsive"><table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th><tr></thead><tbody id="candidate-list"></tbody></table></div></div></section>
+        <section id="view-candidates" class="view-section"><h2 class="title">Duyệt hồ sơ ứng viên</h2><div class="panel"><div class="filter-bar" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;"><select id="candidateFilter" class="form-control" style="width: 150px;"><option value="all">Tất cả</option><option value="pending">Chờ duyệt</option><option value="approved">Đã duyệt</option><option value="rejected">Từ chối</option></select><select id="positionFilter" class="form-control" style="width: 200px;"><option value="all">Tất cả vị trí</option></select></div><div class="table-responsive"><table class="table"><thead><tr><th>Ứng viên</th><th>Vị trí</th><th>Ngày nộp</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="candidate-list"></tbody></table></div></div></section>
 
         <div id="cvModal" class="modal"><div class="modal-box cv-modal"><div class="flex-between"><h3><i class="fa-solid fa-file-pdf"></i> Chi tiết hồ sơ</h3><button class="btn-close" id="closeCvModal"><i class="fa-solid fa-xmark"></i></button></div><div id="cvContent" class="cv-content"></div><div class="cv-actions" id="cvActions"></div></div></div>
 
@@ -281,36 +337,27 @@
                 </div>
                 <div class="qr-payment">
                     <div class="qr-code">
-                        <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" alt="QR Code" style="width:180px;height:180px;">
+                        <img id="qrCodeImg" src="" alt="QR Code" style="width:180px;height:180px;">
                     </div>
-                    <p class="qr-note">Quét mã QR để thanh toán</p>
-                    <div class="bank-info" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;">
-                        <p><strong>Ngân hàng:</strong> Vietcombank</p>
-                        <p><strong>Số TK:</strong> 1234567890</p>
-                        <p><strong>Chủ TK:</strong> DANANG WORK</p>
-                        <p><strong>Nội dung:</strong> <span id="transactionCode" style="font-weight: bold; color: #ef4444;"></span></p>
-                        <p><strong>Số tiền:</strong> <span id="expectedAmount" style="font-weight: bold; color: #10b981;"></span></p>
+                    <p class="qr-note">Quét mã QR để thanh toán qua MB Bank</p>
+                    <div class="bank-info" id="bankInfo" style="background: var(--gray-100); padding: 12px; border-radius: 12px; margin-top: 12px;">
+                        <!-- Thông tin sẽ được cập nhật bằng JavaScript -->
                     </div>
                 </div>
             </div>
             
-            <div class="payment-proof-section" style="margin-top: 24px; padding: 20px; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
-                <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-upload" style="color: #16a34a;"></i> 
-                    Xác nhận thanh toán
-                </h4>
-                <p style="font-size: 13px; color: #166534; margin-bottom: 16px;">
-                    Vui lòng chuyển khoản đúng số tiền và nội dung bên trên. 
-                    Sau khi chuyển khoản, hãy tải lên ảnh chụp màn hình (screenshot) hoặc biên lai chuyển khoản để xác minh.
-                </p>
+            <!-- PHẦN UPLOAD ẢNH CHUYỂN KHOẢN -->
+            <div class="payment-proof-section">
+                <h4><i class="fa-solid fa-upload"></i> Xác nhận thanh toán</h4>
+                <p>Vui lòng chuyển khoản đúng số tiền và nội dung bên trên. Sau khi chuyển khoản, hãy tải lên ảnh chụp màn hình (screenshot) hoặc biên lai chuyển khoản để xác minh.</p>
                 <div class="form-group">
                     <label><i class="fa-solid fa-image"></i> Ảnh chụp chuyển khoản <span style="color:#ef4444">*</span></label>
-                    <input type="file" id="paymentProofImage" accept="image/*" capture="environment" style="padding: 10px; border: 1px dashed #16a34a; background: #f8fafc;">
+                    <input type="file" id="paymentProofImage" accept="image/*" capture="environment">
                     <small class="form-hint" style="color: #166534;">Chấp nhận file .jpg, .png (dung lượng tối đa 5MB)</small>
                 </div>
-                <div id="imagePreview" style="display: none; margin-top: 12px;">
-                    <img id="paymentPreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 150px; border-radius: 8px;">
-                    <button type="button" id="removeImageBtn" class="btn-sm" style="margin-top: 8px; background: #ef4444; color: white;">Xóa ảnh</button>
+                <div id="imagePreview" style="display: none;">
+                    <img id="paymentPreviewImg" src="" alt="Preview">
+                    <button type="button" id="removeImageBtn">Xóa ảnh</button>
                 </div>
             </div>
             
@@ -327,6 +374,15 @@
 </div>
 
 <script>
+    // ==================== THÔNG TIN TÀI KHOẢN MB BANK (THAY ĐỔI THEO BẠN) ====================
+    const BANK_INFO = {
+        code: 'MB',           // Mã ngân hàng MB Bank
+        name: 'MB Bank',
+        accountNo: '0799326273',  // 🔴 THAY SỐ TÀI KHOẢN CỦA BẠN VÀO ĐÂY
+        accountName: 'DANANG WORK', // 🔴 THAY TÊN CHỦ TÀI KHOẢN CỦA BẠN
+        bankCode: 'MB'
+    };
+    
     // ==================== VALIDATION FUNCTIONS ====================
     function validateSalary(salary) {
         if (!salary || salary.trim().length === 0) return { valid: false, message: "Vui lòng nhập mức lương!" };
@@ -487,38 +543,19 @@
     window.requestDeleteJob = function(jobId) {
         let hrJobs = JSON.parse(localStorage.getItem('hr_jobs')) || [];
         const jobIndex = hrJobs.findIndex(j => String(j.id) === String(jobId));
-
-        if (jobIndex === -1) {
-            alert('Không tìm thấy tin tuyển dụng!');
-            return;
-        }
-
+        if (jobIndex === -1) { alert('Không tìm thấy tin tuyển dụng!'); return; }
         const reason = prompt('Nhập lý do xóa tin tuyển dụng:');
-        if (!reason || reason.trim() === '') {
-            alert('Vui lòng nhập lý do!');
-            return;
-        }
-
+        if (!reason || reason.trim() === '') { alert('Vui lòng nhập lý do!'); return; }
         hrJobs[jobIndex].status = 'pending_delete';
         localStorage.setItem('hr_jobs', JSON.stringify(hrJobs));
         jobs = hrJobs;
-
         let requests = JSON.parse(localStorage.getItem('jobDeleteRequests')) || [];
         const alreadySent = requests.some(r => String(r.jobId) === String(jobId));
-
         if (!alreadySent) {
-            const newRequest = {
-                jobId: jobId,
-                jobTitle: hrJobs[jobIndex].title,
-                companyName: hrJobs[jobIndex].company,
-                reason: reason,
-                requestDate: new Date().toLocaleString('vi-VN'),
-                status: 'pending'
-            };
+            const newRequest = { jobId: jobId, jobTitle: hrJobs[jobIndex].title, companyName: hrJobs[jobIndex].company, reason: reason, requestDate: new Date().toLocaleString('vi-VN'), status: 'pending' };
             requests.push(newRequest);
             localStorage.setItem('jobDeleteRequests', JSON.stringify(requests));
         }
-
         renderJobsWithPagination();
         addActivity(`🗑️ Đã gửi yêu cầu xóa tin: ${hrJobs[jobIndex].title}`);
         alert('Đã gửi yêu cầu xóa đến Admin! Trạng thái tin đã chuyển sang "Chờ xóa".');
@@ -528,19 +565,12 @@
         const container = document.getElementById("job-cards-container");
         const paginationContainer = document.getElementById("jobPagination");
         if (!container) return;
-        
         const searchKeyword = document.getElementById("searchJobInput")?.value.toLowerCase().trim() || "";
         const statusFilter = document.getElementById("filterJobStatus")?.value || "all";
-        
         let filtered = [...jobs];
         if (searchKeyword) {
-            filtered = filtered.filter(job => 
-                job.title?.toLowerCase().includes(searchKeyword) || 
-                job.company?.toLowerCase().includes(searchKeyword) ||
-                (job.location || job.district || "").toLowerCase().includes(searchKeyword)
-            );
+            filtered = filtered.filter(job => job.title?.toLowerCase().includes(searchKeyword) || job.company?.toLowerCase().includes(searchKeyword) || (job.location || job.district || "").toLowerCase().includes(searchKeyword));
         }
-        
         if (statusFilter !== "all") {
             filtered = filtered.filter(job => {
                 if (statusFilter === "active") return job.status === "active" && new Date(job.expiryDate) >= new Date();
@@ -550,108 +580,51 @@
                 return true;
             });
         }
-        
         filtered.sort((a, b) => new Date(b.createdAt || b.postDate) - new Date(a.createdAt || a.postDate));
         filteredJobsList = filtered;
-        
         const totalJobs = filtered.length;
         const totalPages = Math.ceil(totalJobs / jobsPerPage);
-        
         if (currentJobPage > totalPages) currentJobPage = totalPages || 1;
         if (currentJobPage < 1) currentJobPage = 1;
-        
         const startIndex = (currentJobPage - 1) * jobsPerPage;
         const endIndex = startIndex + jobsPerPage;
         const paginatedJobs = filtered.slice(startIndex, endIndex);
-        
         if (paginatedJobs.length === 0) {
-            container.innerHTML = `
-                <div class="no-job-found">
-                    <i class="fa-solid fa-briefcase"></i>
-                    <h3>Không tìm thấy tin tuyển dụng</h3>
-                    <p>Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng nào phù hợp với tiêu chí của bạn.</p>
-                    <p style="font-size: 13px;">💡 Gợi ý: Hãy thử tìm kiếm với từ khóa khác hoặc bỏ bớt bộ lọc.</p>
-                    <button onclick="resetJobSearch()" class="reset-search-btn" style="margin-top: 16px;"><i class="fa-solid fa-undo-alt"></i> Đặt lại tìm kiếm</button>
-                </div>
-            `;
+            container.innerHTML = `<div class="no-job-found"><i class="fa-solid fa-briefcase"></i><h3>Không tìm thấy tin tuyển dụng</h3><p>Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng nào phù hợp với tiêu chí của bạn.</p><p style="font-size: 13px;">💡 Gợi ý: Hãy thử tìm kiếm với từ khóa khác hoặc bỏ bớt bộ lọc.</p><button onclick="resetJobSearch()" class="reset-search-btn" style="margin-top: 16px;"><i class="fa-solid fa-undo-alt"></i> Đặt lại tìm kiếm</button></div>`;
             paginationContainer.innerHTML = '';
             return;
         }
-        
-        container.innerHTML = paginatedJobs.map((job, index) => {
+        container.innerHTML = paginatedJobs.map((job) => {
             const isExpired = job.expiryDate && new Date(job.expiryDate) < new Date();
-            let statusText = '';
-            let statusClass = '';
-            
-            if (isExpired) {
-                statusText = 'Hết hạn';
-                statusClass = 'tag-danger';
-            } else if (job.status === 'active') {
-                statusText = 'Đang đăng';
-                statusClass = 'tag-success';
-            } else if (job.status === 'pending') {
-                statusText = '⏳ Chờ duyệt';
-                statusClass = 'tag-warning';
-            } else if (job.status === 'pending_delete') {
-                statusText = '🗑️ Chờ xóa';
-                statusClass = 'tag-warning';
-            } else {
-                statusText = 'Đã đóng';
-                statusClass = 'tag-warning';
-            }
-            
+            let statusText = '', statusClass = '';
+            if (isExpired) { statusText = 'Hết hạn'; statusClass = 'tag-danger'; }
+            else if (job.status === 'active') { statusText = 'Đang đăng'; statusClass = 'tag-success'; }
+            else if (job.status === 'pending') { statusText = '⏳ Chờ duyệt'; statusClass = 'tag-warning'; }
+            else if (job.status === 'pending_delete') { statusText = '🗑️ Chờ xóa'; statusClass = 'tag-warning'; }
+            else { statusText = 'Đã đóng'; statusClass = 'tag-warning'; }
             return `<div class="job-card" onclick="viewJobDetail(${job.id})" style="cursor: pointer;">
-                <div class="job-card-header">
-                    <div class="job-card-title">${escapeHtml(job.title)}</div>
-                    <div class="job-card-salary">${escapeHtml(job.salary)}</div>
-                </div>
-                <div class="job-card-details">
-                    <div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div>
-                    <div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div>
-                </div>
-                <div class="job-card-footer">
-                    <span class="tag ${statusClass}">${statusText}</span>
-                    ${job.status === 'pending_delete' 
-                        ? '<span class="tag tag-warning" style="background:#fef3c7; color:#92400e;">⏳ Đang chờ Admin xóa</span>' 
-                        : `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>`
-                    }
+                <div class="job-card-header"><div class="job-card-title">${escapeHtml(job.title)}</div><div class="job-card-salary">${escapeHtml(job.salary)}</div></div>
+                <div class="job-card-details"><div><i class="fa-solid fa-location-dot"></i> ${escapeHtml(job.location || job.district || 'Đà Nẵng')}</div><div><i class="fa-regular fa-calendar"></i> Hết hạn: ${job.expiryDate ? formatDate(job.expiryDate) : '---'}</div></div>
+                <div class="job-card-footer"><span class="tag ${statusClass}">${statusText}</span>
+                ${job.status === 'pending_delete' ? '<span class="tag tag-warning" style="background:#fef3c7; color:#92400e;">⏳ Đang chờ Admin xóa</span>' : `<button class="btn-sm" style="color:var(--danger)" onclick="event.stopPropagation(); requestDeleteJob(${job.id})"><i class="fa-solid fa-trash"></i> Yêu cầu xóa</button>`}
                 </div>
             </div>`;
         }).join('');
-        
         if (totalPages > 1) {
             let paginationHtml = '';
             paginationHtml += `<button class="pagination-btn ${currentJobPage === 1 ? 'disabled' : ''}" onclick="${currentJobPage > 1 ? `goToJobPage(${currentJobPage - 1})` : ''}"><i class="fa-solid fa-chevron-left"></i></button>`;
-            
             let startPage = Math.max(1, currentJobPage - 2);
             let endPage = Math.min(totalPages, currentJobPage + 2);
-            
             if (startPage > 1) paginationHtml += `<button class="pagination-btn" onclick="goToJobPage(1)">1</button>${startPage > 2 ? '<span class="pagination-dots">...</span>' : ''}`;
-            
-            for (let i = startPage; i <= endPage; i++) {
-                paginationHtml += `<button class="pagination-btn ${i === currentJobPage ? 'active' : ''}" onclick="goToJobPage(${i})">${i}</button>`;
-            }
-            
+            for (let i = startPage; i <= endPage; i++) { paginationHtml += `<button class="pagination-btn ${i === currentJobPage ? 'active' : ''}" onclick="goToJobPage(${i})">${i}</button>`; }
             if (endPage < totalPages) paginationHtml += `${endPage < totalPages - 1 ? '<span class="pagination-dots">...</span>' : ''}<button class="pagination-btn" onclick="goToJobPage(${totalPages})">${totalPages}</button>`;
-            
             paginationHtml += `<button class="pagination-btn ${currentJobPage === totalPages ? 'disabled' : ''}" onclick="${currentJobPage < totalPages ? `goToJobPage(${currentJobPage + 1})` : ''}"><i class="fa-solid fa-chevron-right"></i></button>`;
-            
             paginationContainer.innerHTML = paginationHtml;
-        } else {
-            paginationContainer.innerHTML = '';
-        }
+        } else { paginationContainer.innerHTML = ''; }
     }
     
     function goToJobPage(page) { currentJobPage = page; renderJobsWithPagination(); }
-    
-    function resetJobSearch() {
-        document.getElementById("searchJobInput").value = "";
-        document.getElementById("filterJobStatus").value = "all";
-        currentJobPage = 1;
-        renderJobsWithPagination();
-        showToast("Đã đặt lại tìm kiếm", "success");
-    }
-    
+    function resetJobSearch() { document.getElementById("searchJobInput").value = ""; document.getElementById("filterJobStatus").value = "all"; currentJobPage = 1; renderJobsWithPagination(); showToast("Đã đặt lại tìm kiếm", "success"); }
     function viewJobDetail(jobId) { window.location.href = `job-detail.html?id=${jobId}`; }
     
     function showToast(message, type) {
@@ -660,10 +633,7 @@
         toast.style.cssText = `position: fixed; bottom: 30px; right: 30px; background: ${type === 'success' ? '#10b981' : '#0ea5e9'}; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1100; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px;`;
         toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
         document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300);
-        }, 3000);
+        setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease'; setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300); }, 3000);
     }
     
     function sendNotificationToCandidate(candidateEmail, title, content, type, interviewDetails) {
@@ -688,10 +658,8 @@
         localStorage.setItem("hr_candidates", JSON.stringify(data));
         sendNotificationToCandidate(candidate.email, "✅ Hồ sơ được duyệt", `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt.`, "approved");
         renderCandidates();
-        addActivity('✅ Đã duyệt hồ sơ de ' + candidate.name);
-        if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) {
-            openCreateInterviewModal(candidate.id, candidate.name, candidate.position);
-        }
+        addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
+        if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) { openCreateInterviewModal(candidate.id, candidate.name, candidate.position); }
     }
     
     function rejectCandidate(id) {
@@ -782,7 +750,7 @@
         let filtered = [...hrCandidates];
         if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
         if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
-        if (filtered.length === 0) { container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></tr>'; updateStats(); return; }
+        if (filtered.length === 0) { container.innerHTML = '<td><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></td>'; updateStats(); return; }
         container.innerHTML = filtered.map(c => { const statusText = c.status === 'pending' ? '⏳ Chờ duyệt' : (c.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối'); const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger'); return `<tr><td><strong>${escapeHtml(c.name)}</strong><br><small>${escapeHtml(c.email)}</small><br><small>📞 ${escapeHtml(c.phone) || 'Chưa cập nhật'}</small></td><td><strong>${escapeHtml(c.position)}</strong><br><small>🏢 ${escapeHtml(c.company)}</small></td><td>${c.date || '---'}</td><td><span class="tag ${statusClass}">${statusText}</span></td><td><button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>${c.status === 'pending' ? `<button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button><button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>` : ''}${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> Phỏng vấn</button>` : ''}</td></tr>`; }).join('');
         document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(hrCandidates.find(c => c.id === parseInt(btn.dataset.id))));
         document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
@@ -796,33 +764,12 @@
     function renderNotifications() {
         const container = document.getElementById("notification-list");
         if (!container) return;
-        
         notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-        
-        if (notifications.length === 0) {
-            container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>';
-            return;
-        }
-        
-        container.innerHTML = notifications.map(n => `
-            <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
-                <div class="notification-icon ${n.type || 'system'}">
-                    <i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-bell'}"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">${escapeHtml(n.title)}</div>
-                    <div class="notification-desc">${escapeHtml(n.content)}</div>
-                    <div class="notification-time">${n.time}</div>
-                </div>
-            </div>
-        `).join('');
-        
+        if (notifications.length === 0) { container.innerHTML = '<div class="notification-empty"><i class="fa-regular fa-bell-slash"></i><p>Không có thông báo</p></div>'; return; }
+        container.innerHTML = notifications.map(n => `<div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})"><div class="notification-icon ${n.type || 'system'}"><i class="fas ${n.type === 'application' ? 'fa-file-signature' : 'fa-bell'}"></i></div><div class="notification-content"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-desc">${escapeHtml(n.content)}</div><div class="notification-time">${n.time}</div></div></div>`).join('');
         const unreadCount = notifications.filter(n => !n.read).length;
         const badge = document.getElementById("notifBadge");
-        if (badge) {
-            badge.innerText = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        }
+        if (badge) { badge.innerText = unreadCount; badge.style.display = unreadCount > 0 ? 'flex' : 'none'; }
     }
     function markNotificationRead(id) { const n = notifications.find(n => n.id === id); if (n) n.read = true; localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
     function markAllNotificationsRead() { notifications.forEach(n => n.read = true); localStorage.setItem("hr_notifications", JSON.stringify(notifications)); renderNotifications(); }
@@ -848,7 +795,6 @@
         document.getElementById("searchJobInput")?.addEventListener("input", () => { currentJobPage = 1; renderJobsWithPagination(); });
         document.getElementById("filterJobStatus")?.addEventListener("change", () => { currentJobPage = 1; renderJobsWithPagination(); });
         document.getElementById("resetJobSearchBtn")?.addEventListener("click", resetJobSearch);
-        
         document.querySelectorAll(".menu-item").forEach(item => { item.addEventListener("click", function(e) { e.preventDefault(); document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active")); document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active")); this.classList.add("active"); document.getElementById(this.dataset.target).classList.add("active"); if (this.dataset.target === "view-candidates") renderCandidates(); if (this.dataset.target === "view-jobs") renderJobsWithPagination(); if (this.dataset.target === "view-interviews") renderInterviews(); }); });
         document.getElementById("candidateFilter")?.addEventListener("change", () => renderCandidates());
         document.getElementById("positionFilter")?.addEventListener("change", () => renderCandidates());
@@ -859,7 +805,7 @@
         const positions = [...new Set(candidates.map(c => c.position))]; const select = document.getElementById("positionFilter"); if (select) positions.forEach(p => { const opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
     }
 
-    // ==================== XỬ LÝ UPLOAD ẢNH CHUYỂN KHOẢN ====================
+    // ==================== XỬ LÝ UPLOAD ẢNH CHUYỂN KHOẢN & QR MB BANK ====================
     let currentPaymentProofBase64 = null;
     let currentExpectedAmount = 0;
     let currentTransactionCode = '';
@@ -870,17 +816,33 @@
         currentExpectedAmount = totalPrice;
         currentTransactionCode = 'DT' + Date.now();
         
-        const transactionSpan = document.getElementById('transactionCode');
-        const expectedSpan = document.getElementById('expectedAmount');
-        if (transactionSpan) transactionSpan.innerText = currentTransactionCode;
-        if (expectedSpan) expectedSpan.innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
+        // Cập nhật text
+        document.getElementById('transactionCode').innerText = currentTransactionCode;
+        document.getElementById('expectedAmount').innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('totalPriceDisplay').innerHTML = totalPrice.toLocaleString('vi-VN') + 'đ';
         
-        const totalDisplay = document.getElementById('totalPriceDisplay');
-        if (totalDisplay) totalDisplay.innerHTML = totalPrice.toLocaleString('vi-VN') + 'đ';
+        // Cập nhật thông tin ngân hàng
+        const bankInfoDiv = document.getElementById('bankInfo');
+        bankInfoDiv.innerHTML = `
+            <p><strong>Ngân hàng:</strong> ${BANK_INFO.name}</p>
+            <p><strong>Số TK:</strong> ${BANK_INFO.accountNo}</p>
+            <p><strong>Chủ TK:</strong> ${BANK_INFO.accountName}</p>
+            <p><strong>Nội dung:</strong> <span style="font-weight: bold; color: #ef4444;">${currentTransactionCode}</span></p>
+            <p><strong>Số tiền:</strong> <span style="font-weight: bold; color: #10b981;">${totalPrice.toLocaleString('vi-VN')}đ</span></p>
+        `;
+        
+        // Tạo QR code MB Bank động
+        // Format: https://mbank.com.vn/qr/{accountNo}/{amount}/{description}
+        // Hoặc dùng API của MB Bank
+        const qrUrl = `https://img.vietqr.net/img/qr-only-2.png?amount=${totalPrice}&addInfo=${encodeURIComponent(currentTransactionCode)}&accountName=${encodeURIComponent(BANK_INFO.accountName)}&accountNo=${BANK_INFO.accountNo}&bankCode=MB&template=compact`;
         
         const qrImg = document.getElementById('qrCodeImg');
         if (qrImg) {
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Chuyen%20khoan%20${totalPrice}%20VND%20den%20TK%201234567890%20ND%20${currentTransactionCode}`;
+            qrImg.src = qrUrl;
+            qrImg.onerror = function() {
+                // Fallback nếu không tải được QR từ VietQR
+                this.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Chuyen%20khoan%20${totalPrice}%20VND%20den%20TK%20${BANK_INFO.accountNo}%20ND%20${currentTransactionCode}`;
+            };
         }
     }
 
@@ -901,8 +863,8 @@
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     currentPaymentProofBase64 = evt.target.result;
-                    if (paymentPreviewImg) paymentPreviewImg.src = currentPaymentProofBase64;
-                    if (imagePreview) imagePreview.style.display = 'block';
+                    paymentPreviewImg.src = currentPaymentProofBase64;
+                    imagePreview.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -914,10 +876,10 @@
 
     if (removeImageBtn) {
         removeImageBtn.addEventListener('click', function() {
-            if (paymentProofInput) paymentProofInput.value = '';
-            if (imagePreview) imagePreview.style.display = 'none';
+            paymentProofInput.value = '';
+            imagePreview.style.display = 'none';
             currentPaymentProofBase64 = null;
-            if (paymentPreviewImg) paymentPreviewImg.src = '';
+            paymentPreviewImg.src = '';
         });
     }
 
@@ -933,11 +895,7 @@
     function submitJobPostWithVerification() {
         if (!validateStep1()) { showStep(1); return; }
         if (!validateStep2()) { showStep(2); return; }
-        
-        if (!currentPaymentProofBase64) {
-            alert("❌ Vui lòng tải lên ảnh chụp chuyển khoản để xác minh thanh toán!");
-            return;
-        }
+        if (!currentPaymentProofBase64) { alert("❌ Vui lòng tải lên ảnh chụp chuyển khoản để xác minh thanh toán!"); return; }
         
         const title = document.getElementById('jobTitle').value.trim();
         const category = document.getElementById('jobCategory').value;
@@ -949,77 +907,29 @@
         const fullDesc = document.getElementById('jobFullDesc').value;
         const requirement = document.getElementById('jobRequirement').value;
         const benefits = document.getElementById('jobBenefits').value;
-        
         const expiryDate = getEndDate(startDate, duration);
         const totalPrice = calculateTotalPrice(duration);
         const transactionCode = currentTransactionCode;
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         
         const newJob = { 
-            id: Date.now(), 
-            title: title, 
-            field: category, 
-            salary: salary, 
-            location: location, 
-            district: location, 
-            startDate: startDate, 
-            expiryDate: expiryDate.toISOString(), 
-            duration: duration, 
-            totalPrice: totalPrice,
-            transactionCode: transactionCode,
-            desc: fullDesc, 
-            shortDesc: shortDesc, 
-            requirement: requirement, 
-            benefits: benefits, 
-            skills: [...skillsList], 
-            company: currentUser?.company?.name || 'Công ty của bạn', 
-            status: 'pending_payment',
-            hrId: currentUser?.id,
-            hrEmail: currentUser?.email,
-            createdAt: new Date().toISOString(), 
-            postDate: new Date().toLocaleDateString('vi-VN'),
-            paymentProof: currentPaymentProofBase64,
-            expectedAmount: totalPrice,
-            paymentStatus: 'pending_verification'
+            id: Date.now(), title: title, field: category, salary: salary, location: location, district: location, startDate: startDate, expiryDate: expiryDate.toISOString(), duration: duration, totalPrice: totalPrice, transactionCode: transactionCode, desc: fullDesc, shortDesc: shortDesc, requirement: requirement, benefits: benefits, skills: [...skillsList], company: currentUser?.company?.name || 'Công ty của bạn', status: 'pending_payment', hrId: currentUser?.id, hrEmail: currentUser?.email, createdAt: new Date().toISOString(), postDate: new Date().toLocaleDateString('vi-VN'), paymentProof: currentPaymentProofBase64, expectedAmount: totalPrice, paymentStatus: 'pending_verification'
         };
         
         let pendingPayments = JSON.parse(localStorage.getItem('pending_payments')) || [];
-        pendingPayments.push({
-            id: newJob.id,
-            jobTitle: title,
-            company: currentUser?.company?.name || 'Công ty của bạn',
-            amount: totalPrice,
-            transactionCode: transactionCode,
-            paymentProof: currentPaymentProofBase64,
-            submittedAt: new Date().toISOString(),
-            hrId: currentUser?.id,
-            hrName: currentUser?.name || currentUser?.fullname,
-            duration: duration,
-            status: 'pending'
-        });
+        pendingPayments.push({ id: newJob.id, jobTitle: title, company: currentUser?.company?.name || 'Công ty của bạn', amount: totalPrice, transactionCode: transactionCode, paymentProof: currentPaymentProofBase64, submittedAt: new Date().toISOString(), hrId: currentUser?.id, hrName: currentUser?.name || currentUser?.fullname, duration: duration, status: 'pending' });
         localStorage.setItem('pending_payments', JSON.stringify(pendingPayments));
         
         jobs.unshift(newJob);
         localStorage.setItem("hr_jobs", JSON.stringify(jobs));
         
         let adminNotifications = JSON.parse(localStorage.getItem("admin_notifications")) || [];
-        adminNotifications.unshift({
-            id: Date.now(),
-            type: 'payment_verification',
-            title: `💰 Yêu cầu xác minh thanh toán`,
-            content: `Công ty ${currentUser?.company?.name || 'Công ty của bạn'} đã gửi yêu cầu đăng tin "${title}" với số tiền ${totalPrice.toLocaleString('vi-VN')}đ. Vui lòng kiểm tra và xác nhận.`,
-            jobId: newJob.id,
-            transactionCode: transactionCode,
-            amount: totalPrice,
-            createdAt: new Date().toISOString(),
-            read: false
-        });
+        adminNotifications.unshift({ id: Date.now(), type: 'payment_verification', title: `💰 Yêu cầu xác minh thanh toán`, content: `Công ty ${currentUser?.company?.name || 'Công ty của bạn'} đã gửi yêu cầu đăng tin "${title}" với số tiền ${totalPrice.toLocaleString('vi-VN')}đ. Vui lòng kiểm tra và xác nhận.`, jobId: newJob.id, transactionCode: transactionCode, amount: totalPrice, createdAt: new Date().toISOString(), read: false });
         localStorage.setItem("admin_notifications", JSON.stringify(adminNotifications));
         
         document.getElementById('jobPostModal').classList.remove('show');
         currentJobPage = 1;
         renderJobsWithPagination();
-        
         addActivity(`💰 Đã gửi yêu cầu xác minh thanh toán cho tin "${title}" - Mã GD: ${transactionCode}`);
         showStep(1);
         skillsList = [];
@@ -1028,11 +938,9 @@
         if (paymentProofInput) paymentProofInput.value = '';
         if (imagePreview) imagePreview.style.display = 'none';
         currentPaymentProofBase64 = null;
-        
         alert(`✅ ĐÃ GỬI YÊU CẦU XÁC MINH!\n\n📌 Mã giao dịch: ${transactionCode}\n📌 Tiêu đề: ${title}\n📌 Số tiền: ${totalPrice.toLocaleString('vi-VN')}đ\n\n⏳ Tin của bạn đang chờ Admin xác minh thanh toán.`);
     }
 
-    // Gắn lại sự kiện submit an toàn
     const submitBtn = document.getElementById("submitJobPost");
     if (submitBtn) {
         const newSubmitBtn = submitBtn.cloneNode(true);
@@ -1074,9 +982,7 @@
                 renderNotifications();
                 updateStats();
                 const latest = notifications[0];
-                if (latest && !latest.read) {
-                    showToast(`Thông báo mới: ${latest.title}`, "info");
-                }
+                if (latest && !latest.read) { showToast(`Thông báo mới: ${latest.title}`, "info"); }
             }
         });
     }
@@ -1085,21 +991,14 @@
     function initAdminActionListeners() {
         window.addEventListener("storage", (e) => {
             if (e.key === "hr_jobs") {
-                console.log("⚡ Admin vừa cập nhật danh sách tin!");
                 const freshJobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
-                jobs = freshJobs; 
-                renderJobsWithPagination(); 
-                updateStats();
+                jobs = freshJobs; renderJobsWithPagination(); updateStats();
             }
             if (e.key === "hr_notifications") {
-                console.log("🔔 Có thông báo mới từ Admin!");
                 notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-                renderNotifications();
-                updateStats();
+                renderNotifications(); updateStats();
                 const latest = notifications[0];
-                if (latest && !latest.read) {
-                    showToast(latest.title, "success");
-                }
+                if (latest && !latest.read) { showToast(latest.title, "success"); }
             }
         });
     }
@@ -1107,10 +1006,8 @@
     const startApp = () => {
         initHRAccount();
         if (!checkHRAuth()) return;
-        
         jobs = JSON.parse(localStorage.getItem("hr_jobs")) || [];
         notifications = JSON.parse(localStorage.getItem("hr_notifications")) || [];
-        
         renderJobsWithPagination();
         renderCandidates();
         renderInterviews();
@@ -1120,7 +1017,6 @@
         initEventListeners();
         initAdminActionListeners();
     };
-
     startApp();
 </script>
 </body>
