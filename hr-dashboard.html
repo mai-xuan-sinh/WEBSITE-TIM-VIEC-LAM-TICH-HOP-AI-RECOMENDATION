@@ -376,10 +376,10 @@
 <script>
     // ==================== THÔNG TIN TÀI KHOẢN MB BANK (THAY ĐỔI THEO BẠN) ====================
     const BANK_INFO = {
-        code: 'MB',           // Mã ngân hàng MB Bank
+        code: 'MB',
         name: 'MB Bank',
-        accountNo: '0799326273',  // 🔴 THAY SỐ TÀI KHOẢN CỦA BẠN VÀO ĐÂY
-        accountName: 'DANANG WORK', // 🔴 THAY TÊN CHỦ TÀI KHOẢN CỦA BẠN
+        accountNo: '0799326273',
+        accountName: 'DANANG WORK',
         bankCode: 'MB'
     };
     
@@ -649,67 +649,134 @@
         return newNotif;
     }
     
+    // ==================== HÀM DUYỆT/TỪ CHỐI HỒ SƠ (ĐÃ SỬA LỖI) ====================
     function approveCandidate(id) {
+        if (!confirm("✅ Xác nhận duyệt hồ sơ này?\n\nSau khi duyệt, ứng viên sẽ nhận được thông báo.")) return;
+        
         let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
         const candidate = data.find(c => c.id === id);
         if (!candidate) { alert("❌ Không tìm thấy ứng viên!"); return; }
         if (candidate.status !== 'pending') { alert(`⚠️ Hồ sơ này đã được xử lý!`); return; }
+        
         candidate.status = "approved";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
         sendNotificationToCandidate(candidate.email, "✅ Hồ sơ được duyệt", `Hồ sơ ứng tuyển vị trí "${candidate.position}" tại ${candidate.company} đã được duyệt.`, "approved");
         renderCandidates();
         addActivity('✅ Đã duyệt hồ sơ của ' + candidate.name);
-        if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) { openCreateInterviewModal(candidate.id, candidate.name, candidate.position); }
+        
+        if (confirm(`✅ Đã duyệt hồ sơ!\n\nBạn có muốn tạo lịch phỏng vấn ngay không?`)) {
+            openCreateInterviewModal(candidate.id, candidate.name, candidate.position);
+        }
     }
-    
+
     function rejectCandidate(id) {
-        if (!confirm("❌ Từ chối hồ sơ này?")) return;
+        if (!confirm("❌ Xác nhận từ chối hồ sơ này?\n\nHành động này không thể hoàn tác!")) return;
+        
         let data = JSON.parse(localStorage.getItem("hr_candidates")) || candidates;
         const candidate = data.find(c => c.id === id);
         if (!candidate) { alert("❌ Không tìm thấy ứng viên!"); return; }
+        
+        const rejectReason = prompt("Nhập lý do từ chối (tùy chọn):", "Hồ sơ không phù hợp với yêu cầu");
+        
         candidate.status = "rejected";
+        candidate.rejectReason = rejectReason || "Không có lý do cụ thể";
         localStorage.setItem("hr_candidates", JSON.stringify(data));
-        sendNotificationToCandidate(candidate.email, "❌ Hồ sơ không được duyệt", `Rất tiếc, hồ sơ của bạn không phù hợp.`, "rejected");
+        
+        sendNotificationToCandidate(candidate.email, "❌ Hồ sơ không được duyệt", `Rất tiếc, hồ sơ của bạn không phù hợp. Lý do: ${rejectReason || "Không có lý do cụ thể"}`, "rejected");
         renderCandidates();
         addActivity('❌ Đã từ chối hồ sơ của ' + candidate.name);
-        alert(`❌ Đã từ chối hồ sơ!`);
+        alert(`❌ Đã từ chối hồ sơ của ${candidate.name}!`);
     }
     
+    // ==================== TẠO LỊCH PHỎNG VẤN (ĐÃ SỬA LỖI NGÀY) ====================
     function openCreateInterviewModal(id, name, position) {
         const modal = document.getElementById("createInterviewModal");
         if (!modal) return;
+        
         document.getElementById("createInterviewCandidateId").value = id;
         document.getElementById("createInterviewCandidate").value = name;
         document.getElementById("createInterviewPosition").value = position;
+        
         let candidate = (JSON.parse(localStorage.getItem("hr_candidates")) || []).find(c => c.id === id);
         let candidateEmail = candidate?.email || '';
         document.getElementById("createInterviewCandidateEmail").value = candidateEmail;
         if (!candidateEmail) alert(`⚠️ Không tìm thấy email!`);
-        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById("createInterviewDate").value = tomorrow.toISOString().split('T')[0];
+        
+        // Ràng buộc ngày: không được chọn quá khứ
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        
+        const dateInput = document.getElementById("createInterviewDate");
+        dateInput.min = todayStr;
+        dateInput.value = todayStr;
+        
         document.getElementById("createInterviewTime").value = "09:00";
         modal.classList.add("show");
     }
     
     document.getElementById("createInterviewForm")?.addEventListener("submit", function(e) {
         e.preventDefault();
+        
+        const interviewDate = document.getElementById("createInterviewDate").value;
+        const interviewTime = document.getElementById("createInterviewTime").value;
+        
+        // Kiểm tra ngày không được nhỏ hơn hôm nay
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(interviewDate);
+        selectedDate.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            alert("❌ Không thể chọn ngày phỏng vấn trong quá khứ! Vui lòng chọn ngày hôm nay hoặc tương lai.");
+            return;
+        }
+        
         const candidateId = document.getElementById("createInterviewCandidateId").value;
         const candidateName = document.getElementById("createInterviewCandidate").value;
         const candidateEmail = document.getElementById("createInterviewCandidateEmail")?.value || '';
         const position = document.getElementById("createInterviewPosition").value;
-        const interviewDate = document.getElementById("createInterviewDate").value;
-        const interviewTime = document.getElementById("createInterviewTime").value;
         const interviewType = document.getElementById("createInterviewType").value;
         const interviewLocation = document.getElementById("createInterviewLocation").value;
         const note = document.getElementById("createInterviewNote").value;
-        if (!candidateName || !position || !interviewDate || !interviewTime) { alert("❌ Vui lòng điền đầy đủ!"); return; }
-        const newInterview = { id: Date.now(), candidateId: candidateId, candidateName: candidateName, candidateEmail: candidateEmail, position: position, date: interviewDate, time: interviewTime, type: interviewType, location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'), note: note || '', status: "upcoming", createdAt: new Date().toISOString() };
+        
+        if (!candidateName || !position || !interviewDate || !interviewTime) { 
+            alert("❌ Vui lòng điền đầy đủ thông tin!"); 
+            return; 
+        }
+        
+        const newInterview = { 
+            id: Date.now(), 
+            candidateId: candidateId, 
+            candidateName: candidateName, 
+            candidateEmail: candidateEmail, 
+            position: position, 
+            date: interviewDate, 
+            time: interviewTime, 
+            type: interviewType, 
+            location: interviewLocation || (interviewType === 'online' ? 'Link sẽ gửi sau' : 'Văn phòng công ty'), 
+            note: note || '', 
+            status: "upcoming", 
+            createdAt: new Date().toISOString() 
+        };
+        
         let allInterviews = JSON.parse(localStorage.getItem("hr_interviews")) || interviews;
         allInterviews.push(newInterview);
         localStorage.setItem("hr_interviews", JSON.stringify(allInterviews));
         interviews = allInterviews;
+        
         const formattedDate = new Date(interviewDate).toLocaleDateString('vi-VN');
-        sendNotificationToCandidate(candidateEmail, "📅 Lịch phỏng vấn", `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}.`, "interview", { date: interviewDate, time: interviewTime, type: interviewType, location: newInterview.location, position: position, note: note });
+        sendNotificationToCandidate(candidateEmail, "📅 Lịch phỏng vấn", `Bạn có lịch phỏng vấn vị trí "${position}" vào lúc ${interviewTime} ngày ${formattedDate}.`, "interview", { 
+            date: interviewDate, 
+            time: interviewTime, 
+            type: interviewType, 
+            location: newInterview.location, 
+            position: position, 
+            note: note 
+        });
+        
         renderInterviews();
         addActivity(`📅 Đã tạo lịch phỏng vấn cho ${candidateName}`);
         document.getElementById("createInterviewModal").classList.remove("show");
@@ -750,7 +817,7 @@
         let filtered = [...hrCandidates];
         if (filterValue !== "all") filtered = filtered.filter(c => c.status === filterValue);
         if (positionValue !== "all") filtered = filtered.filter(c => c.position === positionValue);
-        if (filtered.length === 0) { container.innerHTML = '<td><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></td>'; updateStats(); return; }
+        if (filtered.length === 0) { container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:60px;">📭 Chưa có ứng viên nào ứng tuyển</td></tr>'; updateStats(); return; }
         container.innerHTML = filtered.map(c => { const statusText = c.status === 'pending' ? '⏳ Chờ duyệt' : (c.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối'); const statusClass = c.status === 'pending' ? 'tag-warning' : (c.status === 'approved' ? 'tag-success' : 'tag-danger'); return `<tr><td><strong>${escapeHtml(c.name)}</strong><br><small>${escapeHtml(c.email)}</small><br><small>📞 ${escapeHtml(c.phone) || 'Chưa cập nhật'}</small></td><td><strong>${escapeHtml(c.position)}</strong><br><small>🏢 ${escapeHtml(c.company)}</small></td><td>${c.date || '---'}</td><td><span class="tag ${statusClass}">${statusText}</span></td><td><button class="btn-sm view-cv-btn" data-id="${c.id}"><i class="fa-solid fa-eye"></i> Xem</button>${c.status === 'pending' ? `<button class="btn-sm approve-cv-btn" data-id="${c.id}" style="background:#10b981;color:white"><i class="fa-solid fa-check"></i> Duyệt</button><button class="btn-sm reject-cv-btn" data-id="${c.id}" style="background:#ef4444;color:white"><i class="fa-solid fa-times"></i> Từ chối</button>` : ''}${c.status === 'approved' ? `<button class="btn-sm create-interview-btn" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-position="${escapeHtml(c.position)}" style="background:var(--primary);color:white"><i class="fa-regular fa-calendar-plus"></i> Phỏng vấn</button>` : ''}</td></tr>`; }).join('');
         document.querySelectorAll(".view-cv-btn").forEach(btn => btn.onclick = () => showCVModal(hrCandidates.find(c => c.id === parseInt(btn.dataset.id))));
         document.querySelectorAll(".approve-cv-btn").forEach(btn => btn.onclick = () => approveCandidate(parseInt(btn.dataset.id)));
@@ -816,12 +883,10 @@
         currentExpectedAmount = totalPrice;
         currentTransactionCode = 'DT' + Date.now();
         
-        // Cập nhật text
         document.getElementById('transactionCode').innerText = currentTransactionCode;
         document.getElementById('expectedAmount').innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
         document.getElementById('totalPriceDisplay').innerHTML = totalPrice.toLocaleString('vi-VN') + 'đ';
         
-        // Cập nhật thông tin ngân hàng
         const bankInfoDiv = document.getElementById('bankInfo');
         bankInfoDiv.innerHTML = `
             <p><strong>Ngân hàng:</strong> ${BANK_INFO.name}</p>
@@ -831,16 +896,12 @@
             <p><strong>Số tiền:</strong> <span style="font-weight: bold; color: #10b981;">${totalPrice.toLocaleString('vi-VN')}đ</span></p>
         `;
         
-        // Tạo QR code MB Bank động
-        // Format: https://mbank.com.vn/qr/{accountNo}/{amount}/{description}
-        // Hoặc dùng API của MB Bank
         const qrUrl = `https://img.vietqr.net/img/qr-only-2.png?amount=${totalPrice}&addInfo=${encodeURIComponent(currentTransactionCode)}&accountName=${encodeURIComponent(BANK_INFO.accountName)}&accountNo=${BANK_INFO.accountNo}&bankCode=MB&template=compact`;
         
         const qrImg = document.getElementById('qrCodeImg');
         if (qrImg) {
             qrImg.src = qrUrl;
             qrImg.onerror = function() {
-                // Fallback nếu không tải được QR từ VietQR
                 this.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Chuyen%20khoan%20${totalPrice}%20VND%20den%20TK%20${BANK_INFO.accountNo}%20ND%20${currentTransactionCode}`;
             };
         }
